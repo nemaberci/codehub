@@ -1,0 +1,63 @@
+@startuml Run solution
+title Run solution
+
+actor "User" as user
+participant "Uploaded Challenge" as challenge
+database "Storage bucket" as bucket
+database "Cloud SQL" as sql
+queue "Message queue" as mq
+entity "Solution verifier builder" as builder
+
+user -> challenge ++: Upload challenge
+challenge -> sql ++: Upload challenge title, description, etc.
+sql -> challenge --
+
+alt Input data is generated
+challenge -> bucket ++: Upload input file generator script(s)
+bucket -> challenge --
+loop For each uploaded generator script
+challenge -> mq ++: File generator script uploaded
+mq -> challenge --
+end
+else
+challenge -> bucket ++: Upload input file(s)
+bucket -> challenge --
+end
+
+alt Dynamic output verifer is present
+challenge -> bucket ++: Upload output verifiedr script(s)
+bucket -> challenge --
+loop For each uploaded output verifier script
+challenge -> mq ++: Output verifier script uploaded
+mq -> challenge --
+else
+end
+challenge -> bucket ++: Upload expected output file(s)
+bucket -> challenge --
+end
+
+challenge -> user --
+
+...
+
+loop For each uploaded generator script
+mq -> builder ++: File generator script uploaded
+builder -> builder : Generate executable
+builder -> bucket ++: Upload executable
+bucket -> builder --
+builder -> sql ++: Store generator executable location
+sql -> builder --
+deactivate builder
+end
+
+loop For each uploaded output verifier script
+mq -> builder ++: Output verifier script uploaded
+builder -> builder : Generate executable
+builder -> bucket ++: Upload executable
+bucket -> builder --
+builder -> sql ++: Store output verifier executable location
+sql -> builder --
+deactivate builder
+end
+
+@enduml

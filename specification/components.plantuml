@@ -1,0 +1,56 @@
+@startuml Micro Service commponents
+title Micro services
+
+skinparam Linetype polyline
+
+folder "MicroServices" {
+    node "User" as user #LightSalmon
+    node "Submitted Solution" as solution #LightSalmon
+    node "Uploaded Challenge" as challenge #LightSalmon
+    node "Solution evaluator" as evaluator #LightSalmon
+    node "Notification publisher" as notification #LightSalmon
+}
+
+cloud {
+    cloud "Message queue" as mq #LightCyan
+    database "Storage" {
+        [Cloud Storage] as storage #LightCyan
+        [Cloud SQL] as db #LightCyan
+    }
+    [Solution builder] as builder #LightSalmon
+    [Solution verifier builder] as verifierbuilder #LightSalmon
+    [Solution runner] as runner #LightSalmon
+}
+
+solution .up.|> user : depends on
+challenge .up.|> user : depends on
+evaluator .up.|> solution : depends on
+notification .up.|> evaluator: depends on
+
+
+builder -left-> mq : R/W
+runner -right-> mq : R/W
+solution --> mq : W
+notification --> mq : R
+verifierbuilder -up-> mq : R/W
+challenge -down-> mq : W
+
+
+builder -down-> storage: R/W
+runner -down-> storage : R/W
+verifierbuilder -down-> storage: R/W
+challenge -down-> storage: W
+
+
+legend top left
+|  **Color**  |  **Purpose**  |
+|  <#LightCyan>  |  Google Cloud provided solutions  |
+|  <#LightSalmon>  |  Own services  |
+
+|  **Abbreviation**  |  **Meaning**  |
+|  R  |  Reads data  |
+|  W  |  Writes data  |
+|  R/W  |  Reads and writes data  |
+endlegend
+
+@enduml

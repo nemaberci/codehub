@@ -1,0 +1,46 @@
+@startuml Run solution
+title Run solution
+
+entity "Solution runner" as runner
+database "Storage bucket" as bucket
+queue "Message queue" as mq
+
+runner -> runner ++: Evaluate solution
+
+alt Input data is generated
+runner -> bucket ++: Get generator executable
+bucket -> runner --: generator executable
+runner -> runner : Generate input
+else
+runner -> bucket ++: Get input file
+bucket -> runner --: input file
+end
+
+runner -> runner : Run solution executable with input
+note right of runner
+* record maximum memory usage (byte / kilobyte accuracy)
+* record time elapsed (ms accuracy)
+* set strict limits in both
+    - time elapsed
+    - memory used
+    - resources used
+end note
+
+alt Dynamic output verifer is present
+runner -> bucket ++: Get output verifer executable
+bucket -> runner --: output verifer executable
+runner -> runner : Run output verifer executable with input and output
+else
+runner -> bucket ++: Get expected output file
+bucket -> runner --: expected output file
+runner -> runner : Compare to expected output
+end
+
+runner -> bucket ++: Upload results
+bucket -> runner --
+runner -> mq ++: Solution results uploaded
+mq -> runner --
+
+deactivate runner
+
+@enduml

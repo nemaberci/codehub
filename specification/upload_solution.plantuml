@@ -1,0 +1,79 @@
+@startuml Upload solution
+title Upload solution
+
+actor User as user
+participant "Submitted Solution" as solution
+queue "Message queue" as mq
+database "Storage bucket" as bucket
+user -> solution ++ : Upload solution
+
+solution -> bucket ++: Upload source code
+bucket -> solution --
+
+solution -> mq ++: Solution uploaded
+mq -> solution --
+
+solution -> user --
+
+participant "Solution evaluator" as eval
+
+mq -> eval ++: Solution uploaded
+eval -> mq --
+
+entity "Solution builder" as builder
+entity "Solution runner" as runner
+
+eval -> eval ++: Evaluate solution
+
+
+eval -> builder ++: Build solution
+builder -> eval --
+deactivate eval
+
+builder -> builder ++: Build solution
+builder -> bucket ++: Get source code
+bucket -> builder --: source code
+builder -> builder ++: Build source code
+
+note right of builder
+Building the source code may take a **//long//** time
+end note
+
+deactivate builder
+builder -> bucket ++: Upload built executable
+bucket -> builder --
+builder -> mq ++: Solution built
+mq -> builder --
+deactivate builder
+
+mq -> eval ++: Solution built
+eval -> mq --
+
+eval -> eval ++: Run solution
+eval -> runner ++: Run solution
+
+runner -> eval --
+deactivate eval
+
+runner -> runner ++: Run solution and get results
+runner -> bucket ++: Get executable
+bucket -> runner --: executable
+note right of runner
+Running the source code may take a long time
+end note
+
+runner -> bucket ++: Upload results
+bucket -> runner --
+runner -> mq ++: Solution results uploaded
+mq -> runner --
+deactivate runner
+
+participant "Notification publisher" as notification
+
+mq -> notification ++: Solution results uploaded
+notification -> mq --
+notification -> notification ++: Send notifications
+notification -> user : Solution evaluated
+deactivate
+
+@enduml
