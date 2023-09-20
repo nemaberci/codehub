@@ -13,12 +13,16 @@ folder "MicroServices" {
 
 cloud {
     cloud "Message queue" as mq #LightCyan
-    database "Storage" {
+    database "File storage" {
         [Cloud Storage] as storage #LightCyan
+    }
+    database "Structured storage" {
         [Cloud SQL] as db #LightCyan
     }
     [Solution builder] as builder #LightSalmon
-    [Solution verifier builder] as verifierbuilder #LightSalmon
+    [Challenge control solution builder] as controlSolutionBuilder #LightSalmon
+    [Challenge input generator builder] as inputGeneratorBuilder #LightSalmon
+    [Challenge output verifier builder] as outputVerifierBuilder #LightSalmon
     [Solution runner] as runner #LightSalmon
 }
 
@@ -26,20 +30,31 @@ solution .up.|> user : depends on
 challenge .up.|> user : depends on
 evaluator .up.|> solution : depends on
 notification .up.|> evaluator: depends on
+solution .left.|> challenge : depends on
 
 
 builder -left-> mq : R/W
 runner -right-> mq : R/W
 solution --> mq : W
 notification --> mq : R
-verifierbuilder -up-> mq : R/W
+controlSolutionBuilder -up-> mq : R/W
+inputGeneratorBuilder -up-> mq : R/W
+outputVerifierBuilder -up-> mq : R/W
 challenge -down-> mq : W
 
 
 builder -down-> storage: R/W
 runner -down-> storage : R/W
-verifierbuilder -down-> storage: R/W
+controlSolutionBuilder -down-> storage: R/W
+inputGeneratorBuilder -down-> storage: R/W
+outputVerifierBuilder -down-> storage: R/W
 challenge -down-> storage: W
+solution -down-> storage : W
+
+
+solution -down-> db : R/W
+challenge -down-> db: R/W
+user -down-> db: R/W
 
 
 legend top left

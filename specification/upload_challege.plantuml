@@ -1,16 +1,25 @@
-@startuml Run solution
-title Run solution
+@startuml Upload challenge
+title Upload challenge
 
 actor "User" as user
 participant "Uploaded Challenge" as challenge
 database "Storage bucket" as bucket
 database "Cloud SQL" as sql
 queue "Message queue" as mq
-entity "Solution verifier builder" as builder
+entity "Challenge control solution builder" as controlSolutionBuilder
+entity "Challenge input generator builder" as inputGeneratorBuilder
+entity "Challenge output verifier builder" as outputVerifierBuilder
 
 user -> challenge ++: Upload challenge
 challenge -> sql ++: Upload challenge title, description, etc.
 sql -> challenge --
+
+challenge -> bucket ++: Upload control solution(s)
+bucket -> challenge --
+loop For each control solution
+challenge -> mq ++: Control solution uploaded
+mq -> challenge --
+end
 
 alt Input data is generated
 challenge -> bucket ++: Upload input file generator script(s)
@@ -40,24 +49,67 @@ challenge -> user --
 
 ...
 
+loop For each uploaded control solution
+mq -> controlSolutionBuilder ++: Control solution uploaded
+controlSolutionBuilder -> mq --
+controlSolutionBuilder -> controlSolutionBuilder ++
+controlSolutionBuilder -> controlSolutionBuilder : Generate executable
+controlSolutionBuilder -> bucket ++: Upload executable
+bucket -> controlSolutionBuilder --
+controlSolutionBuilder -> mq ++: Control solution executable uploaded
+mq -> controlSolutionBuilder --
+deactivate controlSolutionBuilder
+end
+
 loop For each uploaded generator script
-mq -> builder ++: File generator script uploaded
-builder -> builder : Generate executable
-builder -> bucket ++: Upload executable
-bucket -> builder --
-builder -> sql ++: Store generator executable location
-sql -> builder --
-deactivate builder
+mq -> inputGeneratorBuilder ++: File generator script uploaded
+inputGeneratorBuilder -> mq --
+inputGeneratorBuilder -> inputGeneratorBuilder ++
+inputGeneratorBuilder -> inputGeneratorBuilder : Generate executable
+inputGeneratorBuilder -> bucket ++: Upload executable
+bucket -> inputGeneratorBuilder --
+inputGeneratorBuilder -> mq ++: File generator executable uploaded
+mq -> inputGeneratorBuilder --
+deactivate inputGeneratorBuilder
 end
 
 loop For each uploaded output verifier script
-mq -> builder ++: Output verifier script uploaded
-builder -> builder : Generate executable
-builder -> bucket ++: Upload executable
-bucket -> builder --
-builder -> sql ++: Store output verifier executable location
-sql -> builder --
-deactivate builder
+mq -> outputVerifierBuilder ++: Output verifier script uploaded
+outputVerifierBuilder -> mq --
+outputVerifierBuilder -> outputVerifierBuilder ++
+outputVerifierBuilder -> outputVerifierBuilder : Generate executable
+outputVerifierBuilder -> bucket ++: Upload executable
+bucket -> outputVerifierBuilder --
+outputVerifierBuilder -> mq ++: Output verifier executable uploaded
+mq -> outputVerifierBuilder --
+deactivate outputVerifierBuilder
+end
+
+loop For each uploaded control solution
+mq -> challenge ++: Control solution executable uploaded
+challenge -> mq --
+challenge -> challenge ++
+challenge -> sql ++: Store control solution executable location
+sql -> challenge --
+deactivate challenge
+end
+
+loop For each uploaded generator script
+mq -> challenge ++: File generator executable uploaded
+challenge -> mq --
+challenge -> challenge ++
+challenge -> sql ++: Store generator executable location
+sql -> challenge --
+deactivate challenge
+end
+
+loop For each uploaded output verifier script
+mq -> challenge ++: Output verifier executable uploaded
+challenge -> mq --
+challenge -> challenge ++
+challenge -> sql ++: Store verifier executable location
+sql -> challenge --
+deactivate challenge
 end
 
 @enduml
