@@ -3,7 +3,7 @@ title Micro services
 
 skinparam Linetype polyline
 
-folder "MicroServices" {
+folder "Micro-services" {
     node "User" as user #LightSalmon
     node "Submitted Solution" as solution #LightSalmon
     node "Uploaded Challenge" as challenge #LightSalmon
@@ -12,13 +12,22 @@ folder "MicroServices" {
 }
 
 cloud {
-    cloud "Message queue" as mq #LightCyan
     database "File storage" {
         [Cloud Storage] as storage #LightCyan
     }
+}
+
+cloud {
     database "Structured storage" {
         [Cloud SQL] as db #LightCyan
     }
+}
+
+cloud {
+    cloud "Message queue" as mq #LightCyan
+}
+
+folder "Cloud functions" {
     [Solution builder] as builder #LightSalmon
     [Challenge control solution builder] as controlSolutionBuilder #LightSalmon
     [Challenge input generator builder] as inputGeneratorBuilder #LightSalmon
@@ -35,12 +44,12 @@ solution .left.|> challenge : depends on
 
 builder -left-> mq : R/W
 runner -right-> mq : R/W
-solution --> mq : W
-notification --> mq : R
+solution --> mq #Blue : W 
+notification --> mq #Green : R
 controlSolutionBuilder -up-> mq : R/W
 inputGeneratorBuilder -up-> mq : R/W
 outputVerifierBuilder -up-> mq : R/W
-challenge -down-> mq : W
+challenge -down-> mq #Blue : W
 
 
 builder -down-> storage: R/W
@@ -48,8 +57,8 @@ runner -down-> storage : R/W
 controlSolutionBuilder -down-> storage: R/W
 inputGeneratorBuilder -down-> storage: R/W
 outputVerifierBuilder -down-> storage: R/W
-challenge -down-> storage: W
-solution -down-> storage : W
+challenge -down-> storage #Blue : W
+solution -down-> storage #Blue : W
 
 
 solution -down-> db : R/W

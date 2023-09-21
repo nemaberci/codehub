@@ -17,7 +17,9 @@ sql -> challenge --
 challenge -> bucket ++: Upload control solution(s)
 bucket -> challenge --
 loop For each control solution
-challenge -> mq ++: Control solution uploaded
+challenge -> bucket ++: Upload control solution
+bucket -> challenge --
+challenge -> mq ++: Control solution uploaded (**control solution source location**)
 mq -> challenge --
 end
 
@@ -25,7 +27,7 @@ alt Input data is generated
 challenge -> bucket ++: Upload input file generator script(s)
 bucket -> challenge --
 loop For each uploaded generator script
-challenge -> mq ++: File generator script uploaded
+challenge -> mq ++: File generator script uploaded (**input generator source location**)
 mq -> challenge --
 end
 else
@@ -37,7 +39,7 @@ alt Dynamic output verifer is present
 challenge -> bucket ++: Upload output verifiedr script(s)
 bucket -> challenge --
 loop For each uploaded output verifier script
-challenge -> mq ++: Output verifier script uploaded
+challenge -> mq ++: Output verifier script uploaded (**output verifier source location**)
 mq -> challenge --
 else
 end
@@ -50,63 +52,69 @@ challenge -> user --
 ...
 
 loop For each uploaded control solution
-mq -> controlSolutionBuilder ++: Control solution uploaded
+mq -> controlSolutionBuilder ++: Control solution uploaded (**control solution source location**)
 controlSolutionBuilder -> mq --
-controlSolutionBuilder -> controlSolutionBuilder ++
+controlSolutionBuilder -> bucket ++: Get control solution source code
+bucket -> controlSolutionBuilder --: control solution source code
+controlSolutionBuilder -> controlSolutionBuilder ++: Build control solution
 controlSolutionBuilder -> controlSolutionBuilder : Generate executable
 controlSolutionBuilder -> bucket ++: Upload executable
 bucket -> controlSolutionBuilder --
-controlSolutionBuilder -> mq ++: Control solution executable uploaded
+controlSolutionBuilder -> mq ++: Control solution executable uploaded (**control solution executable location**)
 mq -> controlSolutionBuilder --
 deactivate controlSolutionBuilder
 end
 
 loop For each uploaded generator script
-mq -> inputGeneratorBuilder ++: File generator script uploaded
+mq -> inputGeneratorBuilder ++: File generator script uploaded (**input generator source location**)
 inputGeneratorBuilder -> mq --
-inputGeneratorBuilder -> inputGeneratorBuilder ++
+inputGeneratorBuilder -> bucket ++: Get file generator source code
+bucket -> inputGeneratorBuilder --: file generator source code
+inputGeneratorBuilder -> inputGeneratorBuilder ++: Build input generator
 inputGeneratorBuilder -> inputGeneratorBuilder : Generate executable
 inputGeneratorBuilder -> bucket ++: Upload executable
 bucket -> inputGeneratorBuilder --
-inputGeneratorBuilder -> mq ++: File generator executable uploaded
+inputGeneratorBuilder -> mq ++: File generator executable uploaded (**input generator executable location**)
 mq -> inputGeneratorBuilder --
 deactivate inputGeneratorBuilder
 end
 
 loop For each uploaded output verifier script
-mq -> outputVerifierBuilder ++: Output verifier script uploaded
+mq -> outputVerifierBuilder ++: Output verifier script uploaded (**output verifier source location**)
 outputVerifierBuilder -> mq --
-outputVerifierBuilder -> outputVerifierBuilder ++
+outputVerifierBuilder -> bucket ++: Get output verifier source code
+bucket -> outputVerifierBuilder --: output verifier source code
+outputVerifierBuilder -> outputVerifierBuilder ++: Build output verifier
 outputVerifierBuilder -> outputVerifierBuilder : Generate executable
 outputVerifierBuilder -> bucket ++: Upload executable
 bucket -> outputVerifierBuilder --
-outputVerifierBuilder -> mq ++: Output verifier executable uploaded
+outputVerifierBuilder -> mq ++: Output verifier executable uploaded (**output verifier executable location**)
 mq -> outputVerifierBuilder --
 deactivate outputVerifierBuilder
 end
 
 loop For each uploaded control solution
-mq -> challenge ++: Control solution executable uploaded
+mq -> challenge ++: Control solution executable uploaded (**control solution executable location**)
 challenge -> mq --
-challenge -> challenge ++
+challenge -> challenge ++: Save control solution location
 challenge -> sql ++: Store control solution executable location
 sql -> challenge --
 deactivate challenge
 end
 
 loop For each uploaded generator script
-mq -> challenge ++: File generator executable uploaded
+mq -> challenge ++: File generator executable uploaded (**input generator executable location**)
 challenge -> mq --
-challenge -> challenge ++
+challenge -> challenge ++: Save file generator location
 challenge -> sql ++: Store generator executable location
 sql -> challenge --
 deactivate challenge
 end
 
 loop For each uploaded output verifier script
-mq -> challenge ++: Output verifier executable uploaded
+mq -> challenge ++: Output verifier executable uploaded (**output verifier executable location**)
 challenge -> mq --
-challenge -> challenge ++
+challenge -> challenge ++: Save verifier location
 challenge -> sql ++: Store verifier executable location
 sql -> challenge --
 deactivate challenge
