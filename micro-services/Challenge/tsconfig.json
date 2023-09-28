@@ -17,13 +17,12 @@
         ],
         "skipLibCheck": false,
         "noEmit": false,
-        "outDir": "dist"
+        "outDir": "out"
     },
     "exclude": [
         "*/node_modules/*"
     ],
     "include": [
-        "./**/*.ts",
-        "./**/*.js"
+        "./**/*.ts"
     ]
 }

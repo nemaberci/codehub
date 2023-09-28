@@ -14,12 +14,13 @@ WORKDIR /work/User
 
 RUN ["npm", "install"]
 RUN ["npm", "run", "build"]
+RUN ["npm", "run", "compile-alpine"]
 
-FROM node:alpine AS runner
+FROM alpine:latest AS runner
 
 WORKDIR /work
-COPY --from=builder /work/User/dist/ChallengeServer.js ./server.js
+COPY --from=builder /work/User/dist/lib/index ./index
 
 EXPOSE 3000
 
-ENTRYPOINT ["node", "server.js"]
+ENTRYPOINT ["./index"]

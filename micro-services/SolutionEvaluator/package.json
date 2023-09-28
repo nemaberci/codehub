@@ -13,7 +13,9 @@
         "package.json"
     ],
     "scripts": {
-        "build": "esbuild --bundle ChallengeServer.ts --outfile=dist/ChallengeServer.js --platform=node --target=node20"
+        "build": "esbuild --bundle SolutionEvaluatorServer.ts --outfile=dist/src/solution-evaluator_server.js --platform=node --target=node20",
+        "compile-alpine": "pkg -t latest-alpine -o dist/lib/index dist/src/solution-evaluator_server.js",
+        "build-and-run": "esbuild --bundle SolutionEvaluatorServer.ts --outfile=dist/src/solution-evaluator_server.js --platform=node --target=node20 && node dist/src/solution-evaluator_server.js"
     },
     "devDependencies": {
         "@types/node": "^20.4.2",
@@ -21,6 +23,7 @@
         "@types/jsonwebtoken": "^9.0.2",
         "concurrently": "^8.1.0",
         "esbuild": "0.17.19",
+        "pkg": "^5.8.1",
         "typescript": "^5.1.3"
     }
 }

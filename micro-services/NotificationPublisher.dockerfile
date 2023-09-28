@@ -14,12 +14,13 @@ WORKDIR /work/NotificationPublisher
 
 RUN ["npm", "install"]
 RUN ["npm", "run", "build"]
+RUN ["npm", "run", "compile-alpine"]
 
-FROM node:alpine AS runner
+FROM alpine:latest AS runner
 
 WORKDIR /work
-COPY --from=builder /work/NotificationPublisher/dist/ChallengeServer.js ./server.js
+COPY --from=builder /work/NotificationPublisher/dist/lib/index ./index
 
 EXPOSE 3000
 
-ENTRYPOINT ["node", "server.js"]
+ENTRYPOINT ["./index"]
