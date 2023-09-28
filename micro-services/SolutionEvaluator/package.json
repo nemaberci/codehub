@@ -13,9 +13,9 @@
         "package.json"
     ],
     "scripts": {
-        "build": "esbuild --bundle SolutionEvaluatorServer.ts --outfile=dist/src/solution-evaluator_server.js --platform=node --target=node20",
-        "compile-alpine": "pkg -t latest-alpine -o dist/lib/index dist/src/solution-evaluator_server.js",
-        "build-and-run": "esbuild --bundle SolutionEvaluatorServer.ts --outfile=dist/src/solution-evaluator_server.js --platform=node --target=node20 && node dist/src/solution-evaluator_server.js"
+        "build": "esbuild --bundle SolutionEvaluatorServer.ts --outfile=dist/src/solution_evaluator_server.js --platform=node --target=node20",
+        "compile-alpine": "pkg -t latest-alpine -o dist/lib/index dist/src/solution_evaluator_server.js",
+        "build-and-run": "esbuild --bundle SolutionEvaluatorServer.ts --outfile=dist/src/solution_evaluator_server.js --platform=node --target=node20 && node dist/src/solution_evaluator_server.js"
     },
     "devDependencies": {
         "@types/node": "^20.4.2",

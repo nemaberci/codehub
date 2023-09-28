@@ -13,9 +13,9 @@
         "package.json"
     ],
     "scripts": {
-        "build": "esbuild --bundle NotificationPublisherServer.ts --outfile=dist/src/notification-publisher_server.js --platform=node --target=node20",
-        "compile-alpine": "pkg -t latest-alpine -o dist/lib/index dist/src/notification-publisher_server.js",
-        "build-and-run": "esbuild --bundle NotificationPublisherServer.ts --outfile=dist/src/notification-publisher_server.js --platform=node --target=node20 && node dist/src/notification-publisher_server.js"
+        "build": "esbuild --bundle NotificationPublisherServer.ts --outfile=dist/src/notification_publisher_server.js --platform=node --target=node20",
+        "compile-alpine": "pkg -t latest-alpine -o dist/lib/index dist/src/notification_publisher_server.js",
+        "build-and-run": "esbuild --bundle NotificationPublisherServer.ts --outfile=dist/src/notification_publisher_server.js --platform=node --target=node20 && node dist/src/notification_publisher_server.js"
     },
     "devDependencies": {
         "@types/node": "^20.4.2",
