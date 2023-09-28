@@ -1,0 +1,114 @@
+@startuml Micro Service commponents
+title Micro services
+
+skinparam Linetype ortho
+left to right direction
+
+folder "Micro-services" {
+    node "User" as user #LightSalmon
+    node "Submitted Solution" as solution #LightSalmon
+    node "Uploaded Challenge" as challenge #LightSalmon
+    node "Solution evaluator" as evaluator #LightSalmon
+    node "Notification publisher" as notification #LightSalmon
+}
+
+cloud {
+    database "File storage" {
+        [Source code storage] as storage_source #LightCyan
+        [Executable storage] as storage_exec #LightCyan
+        [Evaluation results storage] as storage_eval #LightCyan
+    }
+}
+
+database "Structured storage" {
+    [Solution evaluations] as db_eval #LightCyan
+    [Challenges] as db_challenge #LightCyan
+    [Solutions] as db_solution #LightCyan
+    [Users] as db_user #LightCyan
+}
+
+folder "Solution evaluation message queue channels" {
+    cloud "Solution built" as mq_solution_built #LightCyan
+    cloud "Solution uploaded" as mq_solution_uploaded #LightCyan
+    cloud "Solution results uploaded" as mq_solution_results_uploaded #LightCyan
+    cloud "Solution evaluation uploaded" as mq_solution_evaluation_uploaded #LightCyan
+}
+folder "Challenge upload message queue channels" {
+    cloud "Control solution uploaded" as mq_control_solution_uploaded #LightCyan
+    cloud "File generator script uploaded" as mq_file_generator_script_uploaded #LightCyan
+    cloud "Output verifier script uploaded" as mq_output_verifier_script_uploaded #LightCyan
+    cloud "Control solution executable uploaded" as mq_control_solution_executable_uploaded #LightCyan
+    cloud "File generator executable uploaded" as mq_file_generator_executable_uploaded #LightCyan
+    cloud "Output verifier executable uploaded" as mq_output_verifier_executable_uploaded #LightCyan
+}
+
+
+folder "Cloud functions" {
+    [Solution builder] as builder #LightSalmon
+    [Challenge control solution builder] as controlSolutionBuilder #LightSalmon
+    [Challenge input generator builder] as inputGeneratorBuilder #LightSalmon
+    [Challenge output verifier builder] as outputVerifierBuilder #LightSalmon
+    [Solution runner] as runner #LightSalmon
+}
+
+node "Frontend" as frontend
+
+solution .up.|> user
+challenge .up.|> user
+evaluator .up.|> solution
+notification .up.|> evaluator
+solution .left.|> challenge
+frontend <-down-> user
+frontend <-down-> solution
+frontend <-down-> challenge
+frontend <-down- notification #Green
+
+solution -right-> mq_solution_uploaded #Blue
+builder <--up-- mq_solution_uploaded #Green
+builder -up-> mq_solution_built #Blue
+runner <-up- mq_solution_built #Green
+runner -down-> mq_solution_results_uploaded #Blue
+solution <-down- mq_solution_results_uploaded #Green
+solution -left-> mq_solution_evaluation_uploaded #Blue
+notification <-left- mq_solution_evaluation_uploaded #Green
+controlSolutionBuilder <-left- mq_control_solution_uploaded #Green
+controlSolutionBuilder --> mq_control_solution_executable_uploaded #Blue
+inputGeneratorBuilder <-- mq_file_generator_script_uploaded #Green
+inputGeneratorBuilder --> mq_file_generator_executable_uploaded #Blue
+outputVerifierBuilder <-- mq_output_verifier_script_uploaded #Green
+outputVerifierBuilder --> mq_output_verifier_executable_uploaded #Blue
+challenge --right--> mq_control_solution_uploaded #Blue
+challenge --right--> mq_file_generator_script_uploaded #Blue
+challenge --right--> mq_output_verifier_script_uploaded #Blue
+challenge <---- mq_output_verifier_executable_uploaded #Green
+challenge <---- mq_file_generator_executable_uploaded #Green
+challenge <---- mq_control_solution_executable_uploaded #Green
+
+builder <-- storage_source #Green 
+builder --> storage_exec #Blue 
+runner <-- storage_exec #Green 
+controlSolutionBuilder <-- storage_source #Green
+controlSolutionBuilder --> storage_exec #Blue
+inputGeneratorBuilder <-- storage_source #Green
+inputGeneratorBuilder --> storage_exec #Blue
+outputVerifierBuilder <-- storage_source #Green
+outputVerifierBuilder --> storage_exec #Blue
+challenge <-- storage_source #Blue
+solution --> storage_source #Blue
+runner <-- storage_eval #Blue
+evaluator --> storage_eval #Green
+
+
+solution <--> db_solution 
+challenge <--> db_challenge 
+user <--> db_user 
+evaluator <--> db_eval 
+
+
+legend top left
+|  **Color**  |  **Purpose**  |
+|  <#LightCyan>  |  Google Cloud provided solutions  |
+|  <#LightSalmon>  |  Own services  |
+endlegend
+
+@enduml
