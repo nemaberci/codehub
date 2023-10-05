@@ -60,6 +60,18 @@ services:
       - default
     volumes:
       - ./keys/:/work/keys/
+  filehandling:
+    build:
+      context: .
+      dockerfile: FileHandling.dockerfile
+    environment:
+      - PORT=3005
+    ports:
+      - "3005:3005"
+    networks:
+      - default
+    volumes:
+      - ./keys/:/work/keys/
 
 networks:
   default:
