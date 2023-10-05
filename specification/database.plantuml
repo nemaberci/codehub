@@ -1,0 +1,67 @@
+@startuml
+
+skinparam linetype ortho
+
+entity "Challenge" as c {
+    name
+    short_resume
+    description
+    control_solution
+    --
+    time_uploaded
+}
+
+entity "TestCase" as tc {
+    max_runtime
+    max_memory
+    --
+    name 
+    description 
+    output_file
+    points
+}
+
+entity "Solution" as s {
+    entry_point
+    --
+    time_submitted
+}
+
+entity "User" as u {
+    kca_pass
+    --
+    nickname
+}
+
+entity "File" as f {
+    location_in_bucket
+}
+
+entity "Result" as r {
+    time_evaluated
+    scored_points
+}
+
+entity "SubResult" as sr {
+    points
+    --
+    runtime
+    memory
+}
+
+
+u ||--o{ s
+s ||--|{ f
+c ||--|{ f
+tc ||--|{ f
+c ||--|{ tc
+s }o--|| c
+' can we have multiple results for a solution?
+s ||-|| r
+
+r ||--|{ sr 
+sr }|--|| tc
+
+f }|--|| sr
+
+@enduml 
