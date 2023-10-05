@@ -5,7 +5,11 @@ services:
     environment:
       - "FILE_HANDLER_URL=host.docker.internal:3000"
       - "TOKEN=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.nxC8muqeGMT0PlGyHpGyTEwBQpQHJAonzD_pwT0yLtFPGOCZFXBuTA_40nz4Zs2KLSykEbGsDhrFRnht9HvRuM76SX49r572HfPsA3SX7ZEwjF3evHhmFHzK3-b7rn743MfWEsGhuec6PzxEzD-7X3EKIC543QQqW5c4QN8aUQHn3dQDeKfvKu5LZH6HFdXqhdvU5hofwRRDelgWf72r43spX68THWWtP0TdlgV2JBokOQyD67h4CclR5UyTZIzxd75-O_NGHa1_aiXkLW8mTkLn5UFhfvNHRH5fw7iYCt-iiJCy_GG1NtQDGODibNQIGYJRMpRrnaCHvkcWLE8HrErboxOHLeN_DswuAX9aFc9u_tJdaElObKfsrf-87D9umhOx9__mobpiw6ePkVpFOCZgFuzDQVB-fwGrB94h4lk8IuBjKgCDe_y81xFA2r53arb8j1dP1tLBbuNfZabYNvrZ7QRZafxgxeeOLVWc1ovXn-PVv9298XFVjar5JiTi"
-      - "ENTRY_POINT=Main.java"
-      - "EXECUTABLE_FOLDER_NAME=test2"
-      - "RESULTS_FOLDER_NAME=results2"
+      - "ENTRY_POINT=Solution"
+      - "EXECUTABLE_FOLDER_NAME=test-solution-executable"
+      - "INPUT_TXT_FOLDER_NAME=test-solution-input-txt"
+      - "INPUT_PY_FOLDER_NAME=test-solution-input-py"
+      - 'TEST_CASES_GENERATED=true;false;false'
+      - 'TEST_CASES_LOCATION=input-gen.py;input-1.txt;input-2.txt'
+      - "RESULTS_FOLDER_NAME=test-solution-results"
     network_mode: "bridge"

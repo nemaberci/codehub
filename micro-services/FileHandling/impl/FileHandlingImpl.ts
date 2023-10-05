@@ -16,7 +16,7 @@ export default class FileHandlingImpl implements FileHandlingService {
                     (resolve, reject) => {
                         const buff = Buffer.from(file.content, 'base64');
                         bucket.file(fileName).save(
-                            buff.toString('binary')
+                            buff
                         ).then(
                             () => resolve(true)
                         ).catch(
