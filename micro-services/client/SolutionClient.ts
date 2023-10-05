@@ -9,16 +9,18 @@ import * as inputValueModel from "./inputTypes";
 */
 class SolutionClient {
     static async solve(
-        authToken: string,
-        challengeId: string,
-        solutionSource: inputValueModel.SolutionSource
+        authToken: string
+        
+        
+        ,challengeId: string
+        ,solutionSource: inputValueModel.SolutionSource
     ) {
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
                     port: 3000,
-                    path: '/solution/solve',
+                    path: `/solution/solve/`,
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json',

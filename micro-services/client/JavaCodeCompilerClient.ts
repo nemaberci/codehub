@@ -5,25 +5,24 @@ import * as returnValueModel from "./returnedTypes";
 import * as inputValueModel from "./inputTypes";
 
 /** 
-* @description Stores and handles challenges
+* @description Compiles java source code
 */
-class ChallengeClient {
-    static async upload(
+class JavaCodeCompilerClient {
+    static async compile(
+        
         authToken: string
         
-        
-        ,name: string
-        ,description: string
-        ,controlSolutions: inputValueModel.SolutionSource[]
-        ,testCases: inputValueModel.TestCase[]
-        ,outputVerifierLocation?: string
+        ,inputFolderName: string
+        ,entryPoint: string
+        ,outputFolderName: string
+        ,maxTime: number
     ) {
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
                     port: 3000,
-                    path: `/challenge/upload/`,
+                    path: `/java_code_compiler/compile/`,
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json',
@@ -48,15 +47,14 @@ class ChallengeClient {
             });
         
             req.write({
-                name,
-                description,
-                controlSolutions,
-                testCases,
-                outputVerifierLocation
+                inputFolderName,
+                entryPoint,
+                outputFolderName,
+                maxTime
             });
             req.end();
         });
     }
 }
 
-export default ChallengeClient
+export default JavaCodeCompilerClient
