@@ -45,8 +45,7 @@ export default class FileHandlingImpl implements FileHandlingService {
         let promises: Promise<File>[] = []
         const files = await bucket.getFiles(
             {
-                prefix: body.folderName,
-                delimiter: '/'
+                prefix: `${body.folderName}/`
             }
         )
         for (const file of files[0]) {
@@ -72,8 +71,7 @@ export default class FileHandlingImpl implements FileHandlingService {
 
         }
         try {
-            const files = await Promise.all(promises);
-            return files;
+            return await Promise.all(promises);
         } catch (e) {
             throw {
                 message: "Error while downloading files",
