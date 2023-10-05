@@ -8,6 +8,7 @@ export default class FileHandlingImpl implements FileHandlingService {
         const storage = new Storage();
         const bucket = storage.bucket(process.env.STORAGE_BUCKET_NAME ?? "code-hub-sources");
         let promises: Promise<boolean>[] = []
+        console.log(body)
         body.files.forEach(file => {
             const fileName = `${body.folderName}/${file.name}`;
             promises.push(
@@ -48,7 +49,7 @@ export default class FileHandlingImpl implements FileHandlingService {
                 prefix: `${body.folderName}/`
             }
         )
-        for (const file of files[0]) {
+        for (const file of files[0].filter(f => f.name.length > `${body.folderName}/`.length)) {
             promises.push(
                 new Promise(
                     (resolve, reject) => {
@@ -71,7 +72,9 @@ export default class FileHandlingImpl implements FileHandlingService {
 
         }
         try {
-            return await Promise.all(promises);
+            const transformedFiles = await Promise.all(promises)
+            console.log(transformedFiles)
+            return transformedFiles;
         } catch (e) {
             throw {
                 message: "Error while downloading files",

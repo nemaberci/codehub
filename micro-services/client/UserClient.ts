@@ -9,15 +9,17 @@ import * as inputValueModel from "./inputTypes";
 */
 class UserClient {
     static async byEmailAddress(
-        authToken: string,
-        emailAddress: string
+        authToken: string
+        
+        
+        ,emailAddress: string
     ) {
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
                     port: 3000,
-                    path: '/user/by_email_address',
+                    path: `/user/by_email_address/`,
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json',

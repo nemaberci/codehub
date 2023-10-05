@@ -10,17 +10,20 @@ import * as inputValueModel from "./inputTypes";
 class FileHandlingClient {
     static async uploadFolderContent(
         
-        files: inputValueModel.File[]
+        authToken: string,
+        folderName: string
+        ,files: inputValueModel.File[]
     ) {
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
                     port: 3000,
-                    path: '/file_handling/upload_folder_content',
+                    path: `/file_handling/upload_folder_content/${ folderName }`,
                     method: "POST",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {
@@ -48,16 +51,19 @@ class FileHandlingClient {
     }
     static async downloadFolderContent(
         
+        authToken: string,
+        folderName: string
     ) {
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
                     port: 3000,
-                    path: '/file_handling/download_folder_content',
+                    path: `/file_handling/download_folder_content/${ folderName }`,
                     method: "POST",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {
@@ -82,16 +88,19 @@ class FileHandlingClient {
     }
     static async deleteFolder(
         
+        authToken: string,
+        folderName: string
     ) {
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
                     port: 3000,
-                    path: '/file_handling/delete_folder',
+                    path: `/file_handling/delete_folder/${ folderName }`,
                     method: "POST",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {
