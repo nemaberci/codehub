@@ -5,6 +5,8 @@
     "dependencies": {
         "tslib": "^2.6.0",
         "jsonwebtoken": "^9.0.0",
+        "@google-cloud/storage": "^7.1.0",
+        "@google-cloud/pubsub": "^4.0.6",
         "express": "^4.18.2"
     },
     "files": [
@@ -16,7 +18,8 @@
         "user",
         "challenge",
         "solution",
-        "solution-evaluator"
+        "solution-evaluator",
+        "file-handling"
     ],
     "devDependencies": {
         "@types/node": "^20.4.2",

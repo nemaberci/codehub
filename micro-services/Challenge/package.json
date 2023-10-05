@@ -13,9 +13,9 @@
         "package.json"
     ],
     "scripts": {
-        "build": "esbuild --bundle ChallengeServer.ts --outfile=dist/src/challenge_server.js --platform=node --target=node20",
+        "build": "tsc && esbuild --bundle out/Challenge/ChallengeServer.js --outfile=dist/src/challenge_server.js --platform=node --target=node20 --minify",
         "compile-alpine": "pkg -t latest-alpine -o dist/lib/index dist/src/challenge_server.js",
-        "build-and-run": "esbuild --bundle ChallengeServer.ts --outfile=dist/src/challenge_server.js --platform=node --target=node20 && node dist/src/challenge_server.js"
+        "build-and-run": "tsc && esbuild --bundle out/Challenge/ChallengeServer.js --outfile=dist/src/challenge_server.js --platform=node --target=node20 && node dist/src/challenge_server.js"
     },
     "devDependencies": {
         "@types/node": "^20.4.2",

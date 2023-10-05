@@ -4,7 +4,8 @@ import express, { RequestHandler } from 'express'
 import { readFileSync } from 'fs'
 import { verify, JwtPayload } from "jsonwebtoken";
 
-const publicKey = readFileSync(process.env.PUBLIC_KEY_FILE_LOCATION ?? "keys/public.pem").toString()
+const internalPublicKey = readFileSync(process.env.INTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/internalPublic.pem").toString()
+const externalPublicKey = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
 
 const isJwtPayload = (token: string | JwtPayload): token is JwtPayload => {
   return 'sub' in (token as JwtPayload);
@@ -14,17 +15,30 @@ const serviceImpl: ChallengeService = new ChallengeImpl()
 
 const userAuthMiddleware: RequestHandler = async (req, res, next) => {
   try {
-    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", publicKey, { complete: false });
+    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", externalPublicKey, { complete: false });
     if (token && isJwtPayload(token)) {
-      // todo
+      // todo: check if user is allowed to access this endpoint
       next();
       return;
+    } else {
+      console.warn("No Authorization token, or invalid Authorization token");
     }
-    console.warn("No Authorization token, or invalid Authorization token");
   } catch (e: any) {
-    // todo
-    next();
-    return;
+    console.error(e);
+    res.status(401).send(e.message ?? "Unauthorized");
+  }
+};
+
+const internalAuthMiddleware: RequestHandler = async (req, res, next) => {
+  try {
+    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
+    if (token) {
+      next();
+      return;
+    } else {
+      console.warn("No Authorization token, or invalid Authorization token");
+    }
+  } catch (e: any) {
     console.error(e);
     res.status(401).send(e.message ?? "Unauthorized");
   }
@@ -32,10 +46,10 @@ const userAuthMiddleware: RequestHandler = async (req, res, next) => {
 
 const app = express()
 app.use(express.json())
-console.log("Registered endpoint on '/challenge/upload'");
-app.post('/challenge/upload',
+console.log("Registered endpoint on '/challenge/upload/'");
+app.post('/challenge/upload/',
   (req, res, next) => {
-    console.log("Call to '/challenge/upload'");
+    console.log("Call to '/challenge/upload/'");
     next();
   },
   userAuthMiddleware,
