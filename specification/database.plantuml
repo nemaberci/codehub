@@ -3,10 +3,10 @@
 skinparam linetype ortho
 
 entity "Challenge" as c {
-    name
+    *name
+    control_solution
     short_resume
     description
-    control_solution
     --
     time_uploaded
 }
@@ -17,7 +17,6 @@ entity "TestCase" as tc {
     --
     name 
     description 
-    output_file
     points
 }
 
@@ -28,7 +27,7 @@ entity "Solution" as s {
 }
 
 entity "User" as u {
-    kca_pass
+    *kca_id
     --
     nickname
 }
@@ -50,18 +49,16 @@ entity "SubResult" as sr {
 }
 
 
-u ||--o{ s
-s ||--|{ f
+u ||-o{ s
+s ||-|{ f
 c ||--|{ f
 tc ||--|{ f
 c ||--|{ tc
-s }o--|| c
-' can we have multiple results for a solution?
+s }o-|| c
 s ||-|| r
-
 r ||--|{ sr 
-sr }|--|| tc
-
+sr }|-|| tc
 f }|--|| sr
+c }o--|| u
 
 @enduml 
