@@ -1,0 +1,78 @@
+@startuml Data Model
+'Tóth Bálint
+
+' Just the conceptual entities
+
+skinparam linetype ortho
+
+entity "Challenge" as c {
+    *name
+    short_resume
+    description
+    --
+    time_uploaded
+    has_checkmark
+}
+
+entity "TestCase" as tc {
+    max_runtime
+    max_memory
+    --
+    name 
+    description 
+    points
+}
+
+entity "Solution" as s {
+    entry_point
+    --
+    time_submitted
+}
+
+entity "User" as u {
+    *kca_id
+    --
+    nickname
+}
+
+entity "File" as f {
+    location_in_bucket
+}
+
+entity "Result" as r {
+    time_evaluated
+    scored_points
+}
+
+entity "SubResult" as sr {
+    points
+    --
+    runtime
+    memory
+}
+
+entity "Language" as l {
+    name
+    runtime
+}
+
+' user can create a challenge
+c }o--|| u : creates
+
+' challenge can have multiple test cases
+c ||--|{ tc
+
+' output checker script, or file to compare the result against
+c ||--|{ f : control source
+
+u ||-o{ s : submits
+s ||-|{ f : source
+tc ||--|{ f : in/out
+s }o-|| c
+s ||-|| r
+r ||--|{ sr
+sr }|-|| tc
+f }|--|| sr : output
+c }o-|{ l
+
+@enduml 

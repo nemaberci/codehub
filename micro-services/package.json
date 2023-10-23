@@ -19,7 +19,6 @@
         "challenge",
         "solution",
         "solution-evaluator",
-        "java-code-compiler",
         "file-handling"
     ],
     "devDependencies": {
