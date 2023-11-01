@@ -11,5 +11,5 @@ services:
       - "INPUT_PY_FOLDER_NAME=test-solution-input-py"
       - 'TEST_CASES_GENERATED=true;false;false'
       - 'TEST_CASES_LOCATION=input-gen.py;input-1.txt;input-2.txt'
-      - "RESULTS_FOLDER_NAME=test-solution-results"
+      - "RESULTS_FOLDER_NAME=test-solution-results-2"
     network_mode: "bridge"

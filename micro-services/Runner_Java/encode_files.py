@@ -3,10 +3,10 @@ import base64
 import os
 
 files_to_write = []
-files = os.listdir("output")
+files = os.listdir("/work/output")
 
 for file in files:
-    f = open("output/" + file, "rb")
+    f = open("/work/output/" + file, "rb")
     files_to_write.append(
         {
             "name": file,
@@ -15,10 +15,10 @@ for file in files:
     )
     f.close()
 
-files = os.listdir("time")
+files = os.listdir("/work/time")
 
 for file in files:
-    f = open("time/" + file, "rb")
+    f = open("/work/time/" + file, "rb")
     files_to_write.append(
         {
             "name": file,
@@ -27,6 +27,6 @@ for file in files:
     )
     f.close()
 
-f = open("files.txt", "w")
+f = open("/work/files.txt", "w")
 f.write(json.dumps({ "files": files_to_write}))
 f.close()
