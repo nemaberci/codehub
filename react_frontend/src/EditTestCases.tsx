@@ -1,4 +1,3 @@
-import { Divide } from "@phosphor-icons/react";
 import { ErrorMessage, Field, Formik, Form as FormikForm } from "formik";
 import { Button, Divider, Indicator, Input, Textarea } from "react-daisyui";
 import { useNavigate } from "react-router-dom";
@@ -90,8 +89,10 @@ function TestCase() {
 			<table className="table">
 				<tbody>
 					<FormRow name="name" title="Név (opcionális)" />
-					<FormRow name="name" title="Leírás" />
+					<FormRow name="name" title="Leírás (opcionális)" />
 					<FormRow name="name" title="Pontszám" type="number" />
+					<FormRow name="maxRuntime" title="Max. futásidő (ms)" type="number" />
+					<FormRow name="maxMemory" title="Max. memória (MB)" type="number" />
 					<tr>
 						<td>
 							<h3>Bemenet</h3>
@@ -143,7 +144,7 @@ export default function EditTestCases() {
 						}, 400);
 					}}
 				>
-					{({ errors, isSubmitting }) => (
+					{({ isSubmitting }) => (
 						<FormikForm className="w-full max-w-5xl">
 							<table className="table">
 								<tbody>
@@ -168,11 +169,14 @@ export default function EditTestCases() {
 							</table>
 							<h3>Tesztesetek</h3>
 							<TestCase />
+							{/*<TestCase />
 							<TestCase />
 							<TestCase />
 							<TestCase />
-							<TestCase />
-							<TestCase />
+							<TestCase />*/}
+							<div className="text-center my-4">
+								<Button className="w-1/4 btn-outline">Új teszteset</Button>
+							</div>
 							<div className="flex justify-evenly">
 								<Button disabled={isSubmitting} className="w-1/4" onClick={() => navigate("/editor/0")}>
 									Mentés

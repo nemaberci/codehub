@@ -2,10 +2,11 @@ import { ErrorMessage, Field, Form as FormikForm, Formik } from "formik";
 import { Button, Indicator, Input, Steps, Textarea } from "react-daisyui";
 import { useNavigate } from "react-router-dom";
 
-interface MyFormValues {
-	email?: string;
-	password?: string;
-}
+/*interface MyFormValues {
+	name?: string;
+	short_desc?: string;
+	long_desc?: string;
+}*/
 
 interface FormFieldProps {
 	name: string;
@@ -67,18 +68,8 @@ export default function Upload() {
 					<Steps.Step>Etalon megoldás feltöltése</Steps.Step>
 				</Steps>
 				<Formik
-					initialValues={{ email: "", password: "" }}
-					validate={(values) => {
-						const errors: MyFormValues = {};
-
-						if (!values.email) {
-							errors.email = "Required";
-						} else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
-							errors.email = "Invalid email address";
-						}
-
-						return errors;
-					}}
+					initialValues={{ name: "", short_desc: "", long_desc: "" }}
+					validate={() => {}}
 					onSubmit={(values, { setSubmitting }) => {
 						setTimeout(() => {
 							alert(JSON.stringify(values, null, 2));
@@ -92,7 +83,7 @@ export default function Upload() {
 							<table className="table">
 								<tbody>
 									<FormRow name="name" title="Feladatnév" error={errors.name} />
-									<FormRow name="short_desc" title="Rövid leírás" error={errors.name} />
+									<FormRow name="short_desc" title="Rövid leírás" error={errors.short_desc} />
 									<FormRow
 										name="long_desc"
 										type="textarea"
@@ -109,7 +100,7 @@ export default function Upload() {
 												</a>
 											</>
 										}
-										error={errors.name}
+										error={errors.long_desc}
 									/>
 									<tr>
 										<td>Elfogadott programozási nyelvek</td>
