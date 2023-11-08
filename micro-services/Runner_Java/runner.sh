@@ -1,19 +1,41 @@
-#!/bin/bash
-
 # Step 1: Download executable files
 
-curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${EXECUTABLE_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "downloaded.txt"
-python3 create_files.py
+cd /work
 
-# Step 2: Prepare environment
+curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${EXECUTABLE_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_executable.txt"
+python3 create_files_executable.py 
 
-useradd runner_user
+mkdir /work/input
+mkdir -m 777 /work/output
+mkdir /work/time
+mkdir /work/input_txt
+mkdir /work/input_py
 
-# Step 3: Run program
+curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${INPUT_TXT_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_input_txt.txt"
+python3 create_files_input_txt.py 
 
-su runner_user -s "java ${ENTRY_POINT} < test_case.txt > actual_output.txt"
+curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${INPUT_PY_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_input_py.txt"
+python3 create_files_input_py.py 
 
-# Step 4: Upload results
+TEST_CASES_GENERATED_ARR=(${TEST_CASES_GENERATED//;/ })
+TEST_CASES_LOCATION_ARR=(${TEST_CASES_LOCATION//;/ })
 
-python3 encode_files.py
-curl ${FILE_HANDLER_URL}/file_handling/upload_folder_content/${RESULTS_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -H "Content-Type: application/json" --data "@files.txt"
+for i in ${!TEST_CASES_GENERATED_ARR[@]}; do 
+    if [[ ${TEST_CASES_GENERATED_ARR[i]} == true ]]; 
+        then python3 /work/input_py/${TEST_CASES_LOCATION_ARR[i]} > /work/input/input_${i};
+        else mv /work/input_txt/${TEST_CASES_LOCATION_ARR[i]} /work/input/input_${i};
+    fi; 
+done 
+
+adduser --system --shell /bin/bash --disabled-password runneruser
+
+for i in ${!TEST_CASES_GENERATED_ARR[@]}; do
+    date +%s%N > /work/time/before_${i};
+    INPUT_NAME=/work/input/input_${i}
+    OUTPUT_NAME=/work/output/output_${i}
+    timeout 10s su runneruser -c "cd /work && ${JAVA_HOME}/bin/java ${ENTRY_POINT} < ${INPUT_NAME} > ${OUTPUT_NAME}";
+    date +%s%N > /work/time/after_${i};
+done
+
+python3 encode_files.py 
+curl ${FILE_HANDLER_URL}/file_handling/upload_folder_content/${RESULTS_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -H "Content-Type: application/json" --data "@/work/files.txt"
