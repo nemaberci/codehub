@@ -1,0 +1,14 @@
+# start with kubectl apply -f <filename>
+# test of the repository connectivity
+# env variables are not passed, it doesn't run correctly
+# the goal was to have it start up
+apiVersion: v1
+kind: Pod
+metadata:
+  name: registry-tester
+  labels:
+    app: test
+spec:
+  containers:
+  - name: nginx
+    image: europe-west4-docker.pkg.dev/codehub-400314/code-hub-main/micro-service-builder
