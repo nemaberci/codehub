@@ -46,10 +46,29 @@ function FormRow({ name, type, title, error }: FormFieldProps) {
 	);
 }
 
-function Checkbox({ name, title }: { name: string; title: string }) {
+function Checkbox({
+	name,
+	title,
+	value,
+	onChange,
+	onBlur,
+}: {
+	name: string;
+	title: string;
+	value: string;
+	onChange: any;
+	onBlur: any;
+}) {
 	return (
 		<label className="label cursor-pointer justify-start gap-4">
-			<input type="checkbox" className="checkbox" name={name} />
+			<Field
+				type="checkbox"
+				className="checkbox"
+				name={name}
+				value={value}
+				onChange={onChange}
+				onBlur={onBlur}
+			/>
 			<span className="label-text">{title}</span>
 		</label>
 	);
@@ -68,13 +87,14 @@ export default function Upload() {
 					<Steps.Step>Etalon megoldás feltöltése</Steps.Step>
 				</Steps>
 				<Formik
-					initialValues={{ name: "", short_desc: "", long_desc: "" }}
-					validate={() => {}}
+					initialValues={{ name: "", short_desc: "", long_desc: "", enabled: [] }}
+					//validate={() => {}}
 					onSubmit={(values, { setSubmitting }) => {
 						setTimeout(() => {
 							alert(JSON.stringify(values, null, 2));
 
 							setSubmitting(false);
+							navigate("/edit/0/testcases");
 						}, 400);
 					}}
 				>
@@ -105,9 +125,15 @@ export default function Upload() {
 									<tr>
 										<td>Elfogadott programozási nyelvek</td>
 										<td>
-											<Field as={Checkbox} type="checkbox" name="javaEnabled" title="Java" />
-											<Field as={Checkbox} type="checkbox" name="pythonEnabled" title="Python" />
-											<Field as={Checkbox} type="checkbox" name="cppEnabled" title="C++" />
+											<Field as={Checkbox} type="checkbox" name="enabled" value="java" title="Java" />
+											<Field
+												as={Checkbox}
+												type="checkbox"
+												name="enabled"
+												value="python"
+												title="Python"
+											/>
+											<Field as={Checkbox} type="checkbox" name="enabled" value="c++" title="C++" />
 										</td>
 									</tr>
 								</tbody>
@@ -118,7 +144,7 @@ export default function Upload() {
 												type="submit"
 												disabled={isSubmitting}
 												className="w-1/2"
-												onClick={() => navigate("/edit/0/testcases")}
+												//onClick={() => navigate("/edit/0/testcases")}
 											>
 												Tovább
 											</Button>
