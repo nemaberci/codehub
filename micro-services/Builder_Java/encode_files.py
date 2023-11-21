@@ -1,5 +1,5 @@
 import json
-import base64 
+import binascii 
 import os
 
 files = os.listdir("output")
@@ -10,7 +10,7 @@ for file in files:
     files_to_write.append(
         {
             "name": file,
-            "content": base64.b64encode(f.read()).decode("ascii")
+            "content": binascii.b2a_base64(f.read()).decode("utf-8")
         }
     )
     f.close()

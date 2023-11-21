@@ -1,32 +1,41 @@
-#!/bin/bash
-
 # Step 1: Download executable files
 
-curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${EXECUTABLE_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "downloaded_executable.txt"
-python3 create_files_executable.py
+cd /work
 
-# Step 2.1: Donwload the input files if txt file
-curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${INPUT_TXT_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "downloaded_input_txt.txt"
-python3 create_files_input_txt.py
+curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${EXECUTABLE_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_executable.txt"
+python3 create_files_executable.py 
 
-# Step 2.2: Donwload the input files if python script
-curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${INPUT_PY_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "downloaded_input_py.txt"
-python3 create_files_input_py.py
+mkdir /work/input
+mkdir -m 777 /work/output
+mkdir /work/time
+mkdir /work/input_txt
+mkdir /work/input_py
 
-for i in ${!TEST_CASES_GENERATED[@]}; do  
-    if [[ "${TEST_CASES_GENERATED[i]}" == "true" ]]; 
-        then python3 input_py/${TEST_CASES_LOCATION[i]} > input/input_${i}; 
-        else mv input_txt/${TEST_CASES_LOCATION[i]} input/input_${i}; 
+curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${INPUT_TXT_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_input_txt.txt"
+python3 create_files_input_txt.py 
+
+curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${INPUT_PY_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_input_py.txt"
+python3 create_files_input_py.py 
+
+TEST_CASES_GENERATED_ARR=(${TEST_CASES_GENERATED//;/ })
+TEST_CASES_LOCATION_ARR=(${TEST_CASES_LOCATION//;/ })
+
+for i in ${!TEST_CASES_GENERATED_ARR[@]}; do 
+    if [[ ${TEST_CASES_GENERATED_ARR[i]} == true ]]; 
+        then python3 /work/input_py/${TEST_CASES_LOCATION_ARR[i]} > /work/input/input_${i};
+        else mv /work/input_txt/${TEST_CASES_LOCATION_ARR[i]} /work/input/input_${i};
     fi; 
+done 
+
+adduser --system --shell /bin/bash --disabled-password runneruser
+
+for i in ${!TEST_CASES_GENERATED_ARR[@]}; do
+    date +%s%N > /work/time/before_${i};
+    INPUT_NAME=/work/input/input_${i}
+    OUTPUT_NAME=/work/output/output_${i}
+    timeout 10s su runneruser -c "cd /work && ${JAVA_HOME}/bin/java ${ENTRY_POINT} < ${INPUT_NAME} > ${OUTPUT_NAME}";
+    date +%s%N > /work/time/after_${i};
 done
 
-# Step 2: Compile source files
-
-for i in ${!TEST_CASES_GENERATED[@]}; do
-    date +%s%N > time/before_${i}
-    java ${ENTRY_POINT} < input/input_${i} > output/output_${i}
-    date +%s%N > time/after_${i}
-done
-
-python3 encode_files.py
-curl ${FILE_HANDLER_URL}/file_handling/upload_folder_content/${RESULTS_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -H "Content-Type: application/json" --data "@files.txt"
+python3 encode_files.py 
+curl ${FILE_HANDLER_URL}/file_handling/upload_folder_content/${RESULTS_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -H "Content-Type: application/json" --data "@/work/files.txt"
