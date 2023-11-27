@@ -86,6 +86,43 @@ class FileHandlingClient {
             req.end();
         });
     }
+    static async downloadFile(
+        
+        authToken: string,
+        folderName: string,fileName: string
+    ) {
+        return new Promise((resolve, reject) => {
+            const req = http.request(
+                {
+                    hostname: url,
+                    port: 3000,
+                    path: `/file_handling/download_file/${ folderName }${ fileName }`,
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    agent: false
+                }, (res) => {
+                res.setEncoding('utf8');
+                let responseBody = '';
+            
+                res.on('data', (chunk) => {
+                    responseBody += chunk;
+                });
+            
+                res.on('end', () => {
+                    resolve(JSON.parse(responseBody));
+                });
+            });
+        
+            req.on('error', (err) => {
+                reject(err);
+            });
+        
+            req.end();
+        });
+    }
     static async deleteFolder(
         
         authToken: string,

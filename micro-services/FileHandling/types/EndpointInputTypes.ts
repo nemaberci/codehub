@@ -23,6 +23,19 @@ interface DownloadFolderContentBody {
     folderName: string;
 }
 /** 
+* @description Download a single file from a storage bucket
+*/
+interface DownloadFileBody {
+    /** 
+    * @description Name of the folder to download the content from
+    */
+    folderName: string;
+    /** 
+    * @description Name of the file to download
+    */
+    fileName: string;
+}
+/** 
 * @description Delete a folder
 */
 interface DeleteFolderBody {
@@ -35,5 +48,6 @@ interface DeleteFolderBody {
 export {
     UploadFolderContentBody,
     DownloadFolderContentBody,
+    DownloadFileBody,
     DeleteFolderBody
 }

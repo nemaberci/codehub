@@ -92,6 +92,29 @@ app.get('/file_handling/download_folder_content/:folder_name',
     res.end();
   }
 )
+console.log("Registered endpoint on '/file_handling/download_file/:folder_name:file_name'");
+app.get('/file_handling/download_file/:folder_name:file_name',
+  (req, res, next) => {
+    console.log("Call to '/file_handling/download_file/:folder_name:file_name'");
+    next();
+  },
+  internalAuthMiddleware,
+  userContentAccess,
+  async (req, res, next) => {
+    try {
+      let answer = await serviceImpl.downloadFile(
+        {
+          folderName: req.params.folder_name,
+          fileName: req.params.file_name,
+          ...req.body        }
+      );
+      res.status(200).send(answer);
+    } catch (e: any) {
+      res.status(e.status ?? 500).send(typeof e.message === "string" ? `["${e.message}"]` : e.message);
+    }
+    res.end();
+  }
+)
 console.log("Registered endpoint on '/file_handling/delete_folder/:folder_name'");
 app.delete('/file_handling/delete_folder/:folder_name',
   (req, res, next) => {

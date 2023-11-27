@@ -40,6 +40,18 @@ class FileHandlingClient {
         );
         return await answer.json();
     }
+    static async downloadFile(
+    ): Promise<returnValueModel.File> {
+        const answer = await fetch(
+            `${url}/file_handling/download_file`,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method: "GET"            }
+        );
+        return await answer.json();
+    }
     static async deleteFolder(
     ): Promise<> {
         const answer = await fetch(
