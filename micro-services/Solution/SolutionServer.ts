@@ -3,9 +3,35 @@ import SolutionService from './api/SolutionService'
 import express, { RequestHandler } from 'express'
 import { readFileSync } from 'fs'
 import { verify, JwtPayload } from "jsonwebtoken";
+import FileHandlingClient from "../client/FileHandlingClient";
 
-const internalPublicKey = readFileSync(process.env.INTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/internalPublic.pem").toString()
-const externalPublicKey = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
+let internalPublicKey: string;
+let internalPrivateKey: string;
+let externalPublicKey: string;
+let externalPrivateKey: string;
+
+async function initKeys() {
+  try {
+
+    let fileHandlingClient = FileHandlingClient;
+    let file = await fileHandlingClient.downloadFile(
+      (process.env as any).FILE_HANDLING_API_KEY, 
+      "internal-keys", 
+      "internalPrivate.pem"
+    );
+
+  } catch (e) {
+    console.warn("Could not get private key from secret manager, falling back to file");
+    console.warn(e);
+
+    internalPublicKey = readFileSync(process.env.INTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/internalPublic.pem").toString()
+    externalPublicKey = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
+
+  }
+
+}
+
+initKeys();
 
 const isJwtPayload = (token: string | JwtPayload): token is JwtPayload => {
   return 'sub' in (token as JwtPayload);
