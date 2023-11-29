@@ -2,13 +2,11 @@ import SolutionImpl from './impl/SolutionImpl'
 import SolutionService from './api/SolutionService'
 import express, { RequestHandler } from 'express'
 import { readFileSync } from 'fs'
-import { verify, JwtPayload } from "jsonwebtoken";
-import FileHandlingClient from "../client/FileHandlingClient";
+import { verify, JwtPayload, sign } from "jsonwebtoken";
+import FileHandlingClient from '../client/FileHandlingClient';
 
 let internalPublicKey: string;
-let internalPrivateKey: string;
 let externalPublicKey: string;
-let externalPrivateKey: string;
 
 async function initKeys() {
   try {
@@ -17,8 +15,11 @@ async function initKeys() {
     let file = await fileHandlingClient.downloadFile(
       (process.env as any).FILE_HANDLING_API_KEY, 
       "internal-keys", 
-      "internalPrivate.pem"
+      "private2.pem"
     );
+    let buff = Buffer.from(file.content, 'base64');
+    let text = buff.toString('ascii');
+    console.log(sign({}, text, { expiresIn: "1h", algorithm: "RS256" }));
 
   } catch (e) {
     console.warn("Could not get private key from secret manager, falling back to file");
@@ -95,5 +96,5 @@ app.post('/solution/solve/',
   }
 )
 
-app.listen(parseInt(process.env.PORT ?? '3000'))
-console.log(`App started and listening on port ${process.env.PORT ?? 3000}`);
+app.listen(parseInt(process.env.PORT ?? '3001'))
+console.log(`App started and listening on port ${process.env.PORT ?? 3001}`);

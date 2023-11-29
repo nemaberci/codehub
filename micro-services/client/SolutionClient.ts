@@ -14,7 +14,7 @@ class SolutionClient {
         
         ,challengeId: string
         ,solutionSource: inputValueModel.SolutionSource
-    ) {
+    ): Promise<returnValueModel.Solution> {
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {

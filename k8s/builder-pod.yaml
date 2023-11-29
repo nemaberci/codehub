@@ -2,13 +2,57 @@
 # test of the repository connectivity
 # env variables are not passed, it doesn't run correctly
 # the goal was to have it start up
-apiVersion: v1
-kind: Pod
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: registry-tester
+  name: builder-job
   labels:
-    app: test
+    app: builder
 spec:
-  containers:
-  - name: nginx
-    image: europe-west4-docker.pkg.dev/codehub-400314/code-hub-main/micro-service-builder
+  activeDeadlineSeconds: 600
+  backoffLimit: 1
+  completionMode: NonIndexed
+  completions: 1
+  parallelism: 1
+  ttlSecondsAfterFinished: 60
+  template:
+    spec:
+      containers:
+      - name: micro-service-builder
+        image: europe-west4-docker.pkg.dev/codehub-400314/code-hub-main/micro-service-builder:latest
+        resources:
+          limits:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 2Gi
+          requests:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 2Gi
+        securityContext:
+          capabilities:
+            drop:
+            - NET_RAW
+        env:
+        - name: FILE_HANDLER_URL
+          value: "10.95.0.106:3000"
+        - name: TOKEN
+          value: <TOKEN>
+        - name: ENTRY_POINT
+          value: Main.java
+        - name: SOURCE_FOLDER_NAME
+          value: <SOURCE_FOLDER_NAME>
+        - name: EXECUTABLE_FOLDER_NAME
+          value: <UPLOAD_FOLDER_NAME>
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      schedulerName: default-scheduler
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: amd64

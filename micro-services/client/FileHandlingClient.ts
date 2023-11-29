@@ -13,13 +13,13 @@ class FileHandlingClient {
         authToken: string,
         folderName: string
         ,files: inputValueModel.File[]
-    ) {
+    ): Promise<boolean> {
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
                     port: 3000,
-                    path: `/file_handling/upload_folder_content/${ folderName }`,
+                    path: `/file_handling/upload_folder_content/${ folderName }/`,
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json',
@@ -53,14 +53,14 @@ class FileHandlingClient {
         
         authToken: string,
         folderName: string
-    ) {
+    ): Promise<returnValueModel.File[]> {
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
                     port: 3000,
-                    path: `/file_handling/download_folder_content/${ folderName }`,
-                    method: "POST",
+                    path: `/file_handling/download_folder_content/${ folderName }/`,
+                    method: "GET",
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${authToken}`
@@ -89,15 +89,15 @@ class FileHandlingClient {
     static async downloadFile(
         
         authToken: string,
-        folderName: string,fileName: string
-    ) {
+        bucketName: string,fileName: string
+    ): Promise<returnValueModel.File> {
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
                     port: 3000,
-                    path: `/file_handling/download_file/${ folderName }${ fileName }`,
-                    method: "POST",
+                    path: `/file_handling/download_file/${ bucketName }/${ fileName }/`,
+                    method: "GET",
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${authToken}`
@@ -127,14 +127,14 @@ class FileHandlingClient {
         
         authToken: string,
         folderName: string
-    ) {
+    ): Promise<boolean> {
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
                     port: 3000,
-                    path: `/file_handling/delete_folder/${ folderName }`,
-                    method: "POST",
+                    path: `/file_handling/delete_folder/${ folderName }/`,
+                    method: "DELETE",
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${authToken}`

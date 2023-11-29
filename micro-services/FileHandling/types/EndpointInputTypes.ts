@@ -27,9 +27,9 @@ interface DownloadFolderContentBody {
 */
 interface DownloadFileBody {
     /** 
-    * @description Name of the folder to download the content from
+    * @description Name of the storage bucket to download the content from
     */
-    folderName: string;
+    bucketName: string;
     /** 
     * @description Name of the file to download
     */

@@ -17,7 +17,7 @@ class ChallengeClient {
         ,controlSolutions: inputValueModel.SolutionSource[]
         ,testCases: inputValueModel.TestCase[]
         ,outputVerifierLocation?: string
-    ) {
+    ): Promise<returnValueModel.Challenge> {
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {

@@ -14,8 +14,9 @@
         "package.json"
     ],
     "scripts": {
-        "build": "tsc && esbuild --bundle out/FileHandling/FileHandlingServer.js --outfile=dist/src/file_handling_server.js --platform=node --target=node20 --minify",
+        "build": "tsc && esbuild --bundle out/FileHandling/FileHandlingServer.js --outfile=dist/src/file_handling_server.js --platform=node --keep-names --target=node20 --minify",
         "compile-alpine": "pkg -t latest-alpine -o dist/lib/index dist/src/file_handling_server.js",
+        "compile-windows": "pkg -t latest-windows -o ./index.exe dist/src/file_handling_server.js",
         "build-and-run": "tsc && esbuild --bundle out/FileHandling/FileHandlingServer.js --outfile=dist/src/file_handling_server.js --platform=node --target=node20 && node dist/src/file_handling_server.js"
     },
     "devDependencies": {
