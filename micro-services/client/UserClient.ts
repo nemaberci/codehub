@@ -49,6 +49,46 @@ class UserClient {
             req.end();
         });
     }
+    static async fromGoogleAuthToken(
+        
+        
+        
+        ,token: string
+    ): Promise<returnValueModel.User> {
+        return new Promise((resolve, reject) => {
+            const req = http.request(
+                {
+                    hostname: url,
+                    port: 3000,
+                    path: `/user/from_google_auth_token/`,
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    agent: false
+                }, (res) => {
+                res.setEncoding('utf8');
+                let responseBody = '';
+            
+                res.on('data', (chunk) => {
+                    responseBody += chunk;
+                });
+            
+                res.on('end', () => {
+                    resolve(JSON.parse(responseBody));
+                });
+            });
+        
+            req.on('error', (err) => {
+                reject(err);
+            });
+        
+            req.write({
+                token
+            });
+            req.end();
+        });
+    }
 }
 
 export default UserClient

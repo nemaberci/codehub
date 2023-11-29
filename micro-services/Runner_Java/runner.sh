@@ -3,7 +3,7 @@
 cd /work
 
 curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${EXECUTABLE_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_executable.txt"
-python3 create_files_executable.py 
+python3 ./create_files_executable.py 
 
 mkdir /work/input
 mkdir -m 777 /work/output
@@ -12,10 +12,10 @@ mkdir /work/input_txt
 mkdir /work/input_py
 
 curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${INPUT_TXT_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_input_txt.txt"
-python3 create_files_input_txt.py 
+python3 ./create_files_input_txt.py 
 
 curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${INPUT_PY_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_input_py.txt"
-python3 create_files_input_py.py 
+python3 ./create_files_input_py.py 
 
 TEST_CASES_GENERATED_ARR=(${TEST_CASES_GENERATED//;/ })
 TEST_CASES_LOCATION_ARR=(${TEST_CASES_LOCATION//;/ })
@@ -37,5 +37,5 @@ for i in ${!TEST_CASES_GENERATED_ARR[@]}; do
     date +%s%N > /work/time/after_${i};
 done
 
-python3 encode_files.py 
+python3 ./encode_files.py 
 curl ${FILE_HANDLER_URL}/file_handling/upload_folder_content/${RESULTS_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -H "Content-Type: application/json" --data "@/work/files.txt"
