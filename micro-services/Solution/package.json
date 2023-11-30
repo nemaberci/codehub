@@ -13,7 +13,7 @@
         "package.json"
     ],
     "scripts": {
-        "build": "tsc && esbuild --bundle out/Solution/SolutionServer.js --outfile=dist/src/solution_server.js --platform=node --target=node20 --minify",
+        "build": "tsc && esbuild --bundle out/Solution/SolutionServer.js --outfile=dist/src/solution_server.js --platform=node --target=node20 --minify --keep-names",
         "compile-alpine": "pkg -t latest-alpine -o dist/lib/index dist/src/solution_server.js",
         "build-and-run": "tsc && esbuild --bundle out/Solution/SolutionServer.js --outfile=dist/src/solution_server.js --platform=node --target=node20 && node dist/src/solution_server.js"
     },

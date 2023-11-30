@@ -30,6 +30,25 @@ class UserClient {
         );
         return await answer.json();
     }
+    static async fromGoogleAuthToken(
+        token: string
+    ): Promise<returnValueModel.User> {
+        const answer = await fetch(
+            `${url}/user/from_google_auth_token`,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method: "GET",
+                body: JSON.stringify(
+                    {
+                        token, 
+                    }
+                )
+            }
+        );
+        return await answer.json();
+    }
 }
 
 export default UserClient;

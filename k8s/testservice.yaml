@@ -1,0 +1,18 @@
+# this is a service, that connects to the pod named myjob
+# start after the sample-pod.yaml
+# start with kubectl apply -f <filename>
+apiVersion: v1
+kind: Service
+metadata:
+  name: myjob
+  namespace: default
+spec:
+  selector:
+    app: nginx
+  type: NodePort
+  ports:
+  - name: myjob
+    protocol: TCP
+    port: 80
+    targetPort: 80
+
