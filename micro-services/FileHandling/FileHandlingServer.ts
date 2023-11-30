@@ -47,10 +47,10 @@ const internalAuthMiddleware: RequestHandler = async (req, res, next) => {
 
 const app = express()
 app.use(express.json())
-console.log("Registered endpoint on '/file_handling/upload_folder_content/:folder_name'");
-app.post('/file_handling/upload_folder_content/:folder_name',
+console.log("Registered endpoint on '/file_handling/upload_folder_content/:folder_name/'");
+app.post('/file_handling/upload_folder_content/:folder_name/',
   (req, res, next) => {
-    console.log("Call to '/file_handling/upload_folder_content/:folder_name'");
+    console.log("Call to '/file_handling/upload_folder_content/:folder_name/'");
     next();
   },
   internalAuthMiddleware,
@@ -70,10 +70,10 @@ app.post('/file_handling/upload_folder_content/:folder_name',
     res.end();
   }
 )
-console.log("Registered endpoint on '/file_handling/download_folder_content/:folder_name'");
-app.get('/file_handling/download_folder_content/:folder_name',
+console.log("Registered endpoint on '/file_handling/download_folder_content/:folder_name/'");
+app.get('/file_handling/download_folder_content/:folder_name/',
   (req, res, next) => {
-    console.log("Call to '/file_handling/download_folder_content/:folder_name'");
+    console.log("Call to '/file_handling/download_folder_content/:folder_name/'");
     next();
   },
   internalAuthMiddleware,
@@ -92,10 +92,33 @@ app.get('/file_handling/download_folder_content/:folder_name',
     res.end();
   }
 )
-console.log("Registered endpoint on '/file_handling/delete_folder/:folder_name'");
-app.delete('/file_handling/delete_folder/:folder_name',
+console.log("Registered endpoint on '/file_handling/download_file/:bucket_name/:file_name/'");
+app.get('/file_handling/download_file/:bucket_name/:file_name/',
   (req, res, next) => {
-    console.log("Call to '/file_handling/delete_folder/:folder_name'");
+    console.log("Call to '/file_handling/download_file/:bucket_name/:file_name/'");
+    next();
+  },
+  internalAuthMiddleware,
+  userContentAccess,
+  async (req, res, next) => {
+    try {
+      let answer = await serviceImpl.downloadFile(
+        {
+          bucketName: req.params.bucket_name,
+          fileName: req.params.file_name,
+          ...req.body        }
+      );
+      res.status(200).send(answer);
+    } catch (e: any) {
+      res.status(e.status ?? 500).send(typeof e.message === "string" ? `["${e.message}"]` : e.message);
+    }
+    res.end();
+  }
+)
+console.log("Registered endpoint on '/file_handling/delete_folder/:folder_name/'");
+app.delete('/file_handling/delete_folder/:folder_name/',
+  (req, res, next) => {
+    console.log("Call to '/file_handling/delete_folder/:folder_name/'");
     next();
   },
   internalAuthMiddleware,

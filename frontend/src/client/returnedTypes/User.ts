@@ -9,6 +9,11 @@ interface User {
     * @type string
     */
     id: string;
+    /** 
+    * @description The email address of the user
+    * @type string
+    */
+    emailAddress: string;
 }
 
 export default User

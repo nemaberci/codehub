@@ -68,6 +68,25 @@ app.get('/user/by_email_address/',
     res.end();
   }
 )
+console.log("Registered endpoint on '/user/from_google_auth_token/'");
+app.get('/user/from_google_auth_token/',
+  (req, res, next) => {
+    console.log("Call to '/user/from_google_auth_token/'");
+    next();
+  },
+  async (req, res, next) => {
+    try {
+      let answer = await serviceImpl.fromGoogleAuthToken(
+        {
+          ...req.body        }
+      );
+      res.status(200).send(answer);
+    } catch (e: any) {
+      res.status(e.status ?? 500).send(typeof e.message === "string" ? `["${e.message}"]` : e.message);
+    }
+    res.end();
+  }
+)
 
 app.listen(parseInt(process.env.PORT ?? '3000'))
 console.log(`App started and listening on port ${process.env.PORT ?? 3000}`);

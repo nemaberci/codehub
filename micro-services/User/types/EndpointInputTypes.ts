@@ -13,7 +13,17 @@ interface ByEmailAddressBody {
     */
     emailAddress: string;
 }
+/** 
+* @description Get user by Google auth token
+*/
+interface FromGoogleAuthTokenBody {
+    /** 
+    * @description Google auth token
+    */
+    token: string;
+}
 
 export {
-    ByEmailAddressBody
+    ByEmailAddressBody,
+    FromGoogleAuthTokenBody
 }
