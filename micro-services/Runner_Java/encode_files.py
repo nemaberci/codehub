@@ -15,6 +15,18 @@ for file in files:
     )
     f.close()
 
+files = os.listdir("/work/input")
+
+for file in files:
+    f = open("/work/input/" + file, "rb")
+    files_to_write.append(
+        {
+            "name": file,
+            "content": base64.b64encode(f.read()).decode("ascii")
+        }
+    )
+    f.close()
+
 files = os.listdir("/work/time")
 
 for file in files:

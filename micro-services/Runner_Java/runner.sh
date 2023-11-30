@@ -39,3 +39,5 @@ done
 
 python3 ./encode_files.py 
 curl ${FILE_HANDLER_URL}/file_handling/upload_folder_content/${RESULTS_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -H "Content-Type: application/json" --data "@/work/files.txt"
+
+python3 ./publish_evaluated_event.py ${EXECUTABLE_FOLDER_NAME} ${CHALLENGE_ID}
