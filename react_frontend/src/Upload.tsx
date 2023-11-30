@@ -1,3 +1,4 @@
+import axios from "axios";
 import { ErrorMessage, Field, Form as FormikForm, Formik } from "formik";
 import { Button, Indicator, Input, Steps, Textarea } from "react-daisyui";
 import { useNavigate } from "react-router-dom";
@@ -90,12 +91,17 @@ export default function Upload() {
 					initialValues={{ name: "", short_desc: "", long_desc: "", enabled: [] }}
 					//validate={() => {}}
 					onSubmit={(values, { setSubmitting }) => {
-						setTimeout(() => {
+						axios.post("http://localhost:3000/challenge/upload", {
+								name: values.name,
+								shortDescription: values.short_desc,
+								description: values.long_desc
+						})
+						/*setTimeout(() => {
 							alert(JSON.stringify(values, null, 2));
 
 							setSubmitting(false);
 							navigate("/edit/0/testcases");
-						}, 400);
+						}, 400);*/
 					}}
 				>
 					{({ errors, isSubmitting }) => (

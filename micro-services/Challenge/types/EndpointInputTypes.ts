@@ -17,13 +17,21 @@ interface UploadBody {
     */
     description: string;
     /** 
+    * @description Short description of the challenge
+    */
+    shortDescription: string;
+    /** 
+    * @description The accepted language of the solution
+    */
+    language: string;
+    /** 
     * @description Control solutions of the challenge
     */
-    controlSolutions: model.SolutionSource[];
+    controlSolutions?: model.SolutionSource[];
     /** 
     * @description Test cases of the challenge
     */
-    testCases: model.TestCase[];
+    testCases?: model.TestCase[];
     /** 
     * @description Location of the output verifier source
     */

@@ -14,7 +14,7 @@ const isJwtPayload = (token: string | JwtPayload): token is JwtPayload => {
 const serviceImpl: ChallengeService = new ChallengeImpl()
 
 const userAuthMiddleware: RequestHandler = async (req, res, next) => {
-  try {
+  /*try {
     let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", externalPublicKey, { complete: false });
     if (token && isJwtPayload(token)) {
       // todo: check if user is allowed to access this endpoint
@@ -26,7 +26,8 @@ const userAuthMiddleware: RequestHandler = async (req, res, next) => {
   } catch (e: any) {
     console.error(e);
     res.status(401).send(e.message ?? "Unauthorized");
-  }
+  }*/
+  next();
 };
 
 const internalAuthMiddleware: RequestHandler = async (req, res, next) => {
@@ -46,6 +47,14 @@ const internalAuthMiddleware: RequestHandler = async (req, res, next) => {
 
 const app = express()
 app.use(express.json())
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "*");
+  next();
+});
+
 console.log("Registered endpoint on '/challenge/upload/'");
 app.post('/challenge/upload/',
   (req, res, next) => {
@@ -58,7 +67,7 @@ app.post('/challenge/upload/',
       let answer = await serviceImpl.upload(
         {
           ...req.body,
-          authToken: req.headers.authorization!.substring("Bearer ".length)
+          //authToken: req.headers.authorization?.substring("Bearer ".length) ?? ""
         }
       );
       res.status(200).send(answer);

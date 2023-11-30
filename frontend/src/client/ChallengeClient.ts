@@ -13,8 +13,10 @@ class ChallengeClient {
         authToken: string,
         name: string,
         description: string,
-        controlSolutions: inputValueModel.SolutionSource[],
-        testCases: inputValueModel.TestCase[],
+        shortDescription: string,
+        language: string,
+        controlSolutions?: inputValueModel.SolutionSource[],
+        testCases?: inputValueModel.TestCase[],
         outputVerifierLocation?: string
     ): Promise<returnValueModel.Challenge> {
         const answer = await fetch(
@@ -29,6 +31,8 @@ class ChallengeClient {
                     {
                         name, 
                         description, 
+                        shortDescription, 
+                        language, 
                         controlSolutions, 
                         testCases, 
                         outputVerifierLocation, 

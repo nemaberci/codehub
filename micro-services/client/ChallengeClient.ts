@@ -14,8 +14,10 @@ class ChallengeClient {
         
         ,name: string
         ,description: string
-        ,controlSolutions: inputValueModel.SolutionSource[]
-        ,testCases: inputValueModel.TestCase[]
+        ,shortDescription: string
+        ,language: string
+        ,controlSolutions?: inputValueModel.SolutionSource[]
+        ,testCases?: inputValueModel.TestCase[]
         ,outputVerifierLocation?: string
     ): Promise<returnValueModel.Challenge> {
         return new Promise((resolve, reject) => {
@@ -50,6 +52,8 @@ class ChallengeClient {
             req.write({
                 name,
                 description,
+                shortDescription,
+                language,
                 controlSolutions,
                 testCases,
                 outputVerifierLocation
