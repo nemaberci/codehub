@@ -19,7 +19,7 @@ interface FormFieldProps {
 function FormRow({ name, type, title, error }: FormFieldProps) {
 	let input;
 	if (type === "textarea") {
-		input = <Textarea bordered className="w-full h-64 font-mono" />;
+		input = <Field as={Textarea} bordered className="w-full h-64 font-mono" name={name} />;
 	} else {
 		input = (
 			<Field as={Input} type={type} name={name} className="w-full" color={error ? "error" : "neutral"} />
@@ -90,18 +90,20 @@ export default function Upload() {
 				<Formik
 					initialValues={{ name: "", short_desc: "", long_desc: "", enabled: [] }}
 					//validate={() => {}}
-					onSubmit={(values, { setSubmitting }) => {
-						axios.post("http://localhost:3000/challenge/upload", {
+					onSubmit={async (values, { setSubmitting }) => {
+						try {
+							const response = await axios.post("http://localhost:3000/challenge/upload", {
 								name: values.name,
 								shortDescription: values.short_desc,
-								description: values.long_desc
-						})
-						/*setTimeout(() => {
-							alert(JSON.stringify(values, null, 2));
-
+								description: values.long_desc,
+							});
 							setSubmitting(false);
-							navigate("/edit/0/testcases");
-						}, 400);*/
+							const id = 0; //response.data.id
+							navigate(`/edit/${id}/testcases`);
+						} catch (error) {
+							console.error(error);
+							setSubmitting(false);
+						}
 					}}
 				>
 					{({ errors, isSubmitting }) => (
