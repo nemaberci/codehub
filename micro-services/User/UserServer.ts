@@ -2,10 +2,11 @@ import UserImpl from './impl/UserImpl'
 import UserService from './api/UserService'
 import express, { RequestHandler } from 'express'
 import { readFileSync } from 'fs'
-import { verify, JwtPayload } from "jsonwebtoken";
+import { verify, JwtPayload, sign } from "jsonwebtoken";
+import FileHandlingClient from '../client/FileHandlingClient';
 
-const internalPublicKey = readFileSync(process.env.INTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/internalPublic.pem").toString()
-const externalPublicKey = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
+let internalPublicKey = readFileSync(process.env.INTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/internalPublic.pem").toString()
+let externalPublicKey = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
 
 const isJwtPayload = (token: string | JwtPayload): token is JwtPayload => {
   return 'sub' in (token as JwtPayload);
@@ -43,6 +44,25 @@ const internalAuthMiddleware: RequestHandler = async (req, res, next) => {
     res.status(401).send(e.message ?? "Unauthorized");
   }
 };
+
+const loadInternalKey: () => Promise<void> = async () => {
+    try {
+        let fileHandlingClient = FileHandlingClient;
+        let file = await fileHandlingClient.downloadFile(
+            (process.env as any).FILE_HANDLING_API_KEY, 
+            (process.env as any).PUBLIC_KEY_BUCKET ?? "internal-keys",
+            (process.env as any).PUBLIC_KEY_LOCATION ?? "public2.pem"
+        );
+        let buff = Buffer.from(file.content, 'base64');
+        let text = buff.toString('ascii');
+        internalPublicKey = text;
+    } catch (e) {
+        console.warn(e);
+    }
+}
+
+loadInternalKey();
+
 
 const app = express()
 app.use(express.json())
