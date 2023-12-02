@@ -14,9 +14,10 @@ db = firestore.client()
 
 doc_ref = db.collection("Challenge").document(os.getenv('CHALLENGE_ID'))
 
-doc = doc_ref.get()
+doc = doc_ref.get().to_dict()
+print(doc)
 
-if doc.generator_location:
-    os.environ['GENERATOR_LOCATION'] = doc.generator_location
-else:
-    os.environ['RESULTS_LOCATION'] = doc.results_location
+if "output_verifier_location" in doc:
+    os.environ['OUTPUT_VERIFIER_LOCATION'] = doc["output_verifier_location"]
+if "results_location" in doc:
+    os.environ['RESULTS_LOCATION'] = doc["results_location"]
