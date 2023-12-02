@@ -18,7 +18,6 @@
         "user",
         "challenge",
         "solution",
-        "solution-evaluator",
         "file-handling"
     ],
     "devDependencies": {

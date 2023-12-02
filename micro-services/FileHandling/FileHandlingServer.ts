@@ -6,7 +6,7 @@ import { verify, JwtPayload, sign } from "jsonwebtoken";
 import { userContentAccess, userUploadLimiter,  } from "./impl/FileHandlingMiddlewares"
 
 let internalPublicKey = readFileSync(process.env.INTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/internalPublic.pem").toString()
-const externalPublicKey = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
+let externalPublicKey = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
 
 const isJwtPayload = (token: string | JwtPayload): token is JwtPayload => {
   return 'sub' in (token as JwtPayload);
@@ -68,7 +68,7 @@ const printJwt: () => Promise<void> = async () => {
         let file = await serviceImpl.downloadFile(
             {
                 bucketName: (process.env as any).PUBLIC_KEY_BUCKET ?? "internal-keys",
-                fileName: (process.env as any).PUBLIC_KEY_LOCATION ?? "private2.pem"
+                fileName: (process.env as any).PUBLIC_KEY_LOCATION ?? "public2.pem"
             }
         );
         let buff = Buffer.from(file.content, 'base64');
