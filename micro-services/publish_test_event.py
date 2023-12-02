@@ -21,5 +21,5 @@ print(
     "Allowed permissions for topic {}: {}".format(topic_path, allowed_permissions)
 )
 
-future = publisher.publish(topic_name, b'', entryPoint='Solution.java', sourceFolderName='test-solution-source', challengeId='vFoKe4ncsq6nTxDoGGNb')
+future = publisher.publish(topic_name, b'', entryPoint='Solution.java', sourceFolderName='test-solution-source', challengeId='vFoKe4ncsq6nTxDoGGNb', solutionId='WXHd5S65lcnAOv0T6YsW')
 print(future.result())

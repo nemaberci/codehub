@@ -12,6 +12,7 @@ app = firebase_admin.initialize_app()
 
 db = firestore.client()
 
+print(os.getenv('CHALLENGE_ID'))
 doc_ref = db.collection("Challenge").document(os.getenv('CHALLENGE_ID'))
 
 doc = doc_ref.get().to_dict()

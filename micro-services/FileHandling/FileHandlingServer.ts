@@ -67,8 +67,8 @@ const printJwt: () => Promise<void> = async () => {
     try {
         let file = await serviceImpl.downloadFile(
             {
-                bucketName: (process.env as any).PUBLIC_KEY_BUCKET ?? "internal-keys",
-                fileName: (process.env as any).PUBLIC_KEY_LOCATION ?? "public2.pem"
+                bucketName: "internal-keys",
+                fileName: "private2.pem"
             }
         );
         let buff = Buffer.from(file.content, 'base64');
@@ -79,7 +79,7 @@ const printJwt: () => Promise<void> = async () => {
     }
 }
 
-// printJwt();
+printJwt();
 
 const app = express()
 app.use(express.json())

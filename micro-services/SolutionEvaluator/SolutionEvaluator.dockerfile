@@ -6,5 +6,7 @@ RUN pip install --upgrade firebase-admin
 COPY solutionevaluator.sh .
 COPY create_files.py .
 COPY evaluate_solution.py .
+COPY create_import_verifier.py .
+COPY load_challenge_info.py .
 
 ENTRYPOINT [ "sh", "./solutionevaluator.sh" ]

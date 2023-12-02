@@ -8,5 +8,5 @@ topic_name = 'projects/{project_id}/topics/{topic}'.format(
     topic='SolutionEvaluationUploaded',
 )
 print(sys.argv[1], sys.argv[2])
-future = publisher.publish(topic_name, b'', targetFolderName=sys.argv[1], challengeId=sys.argv[2])
+future = publisher.publish(topic_name, b'', targetFolderName=sys.argv[1], challengeId=sys.argv[2], solutionId=sys.argv[3])
 print(future.result())

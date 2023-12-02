@@ -14,17 +14,60 @@ db = firestore.client()
 
 doc_ref = db.collection("Challenge").document(os.getenv('CHALLENGE_ID'))
 test_cases_ref = doc_ref.collection("Testcases")
+result_ref = db.collection("Solution").document(os.getenv('SOLUTION_ID')).collection("Result").document("Result")
+result_ref.set(
+    {
+        "time_evaluated": firestore.SERVER_TIMESTAMP
+    }
+)
+sub_results_ref = result_ref.collection("SubResults")
 
 doc = doc_ref.get().to_dict()
 test_cases = list(map(lambda x: x.to_dict(), test_cases_ref.get()))
 
 print(doc)
+test_case_doc_refs = list(test_cases_ref.list_documents())
 
 for i in range(len(test_cases)):
     test_case = test_cases[i]
     print(test_case)
+    millis = (int(open("after_" + str(i), "r").read()) - int(open("before_" + str(i), "r").read())) / 1_000_000
+    print("Test case " + str(i) + " took " + str(millis) + " milliseconds")
+    if millis > test_case["max_runtime"]:
+        print("Test case " + str(i) + " failed: exceeded max runtime")
+        sub_results_ref.document("Testcase_" + str(i)).set(
+            {
+                "runtime": millis,
+                "points": 0,
+                "test_case_id": test_case_doc_refs[i].id
+            }
+        )
+        continue
     if "output_verifier_location" in doc:
-        os.environ['OUTPUT_VERIFIER_LOCATION'] = test_case["output_verifier_location"]
+        from import_verifier import verify
+        testcase_input = open("input_" + str(i), "r").readlines()
+        produced_output = open("output_" + str(i), "r").readlines()
+        if verify(testcase_input, produced_output):
+            print("Test case " + str(i) + " passed")
+            sub_results_ref.document("Testcase_" + str(i)).set(
+                {
+                    "runtime": millis,
+                    "points": test_case["points"],
+                    "test_case_id": test_case_doc_refs[i].id
+                }
+            )
+        else:
+            print("Test case " + str(i) + " failed: output did not match expected output")
+            sub_results_ref.document("Testcase_" + str(i)).set(
+                {
+                    "runtime": millis,
+                    "points": 0,
+                    "test_case_id": test_case_doc_refs[i].id
+                }
+            )
     if "results_location" in doc:
         expected_output = open(doc["results_location"] + "/" + test_case["location"], "r").readlines()
-        testcase_input = open(os.environ["RESULTS_FOLDER_NAME"] + "/" + "input_" + i, "r").readlines()
+        produced_output = open("output_" + str(i), "r").readlines()
+        for i in range(len(expected_output)):
+            print(expected_output[i] == produced_output[i])
+
