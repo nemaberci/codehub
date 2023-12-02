@@ -7,7 +7,6 @@ topic_name = 'projects/{project_id}/topics/{topic}'.format(
     project_id='codehub-400314',
     topic='SolutionBuilt',
 )
-print(sys.argv[1], sys.argv[2], sys.argv[3])
 
 client = pubsub_v1.PublisherClient()
 topic_path = client.topic_path('codehub-400314', 'SolutionBuilt')

@@ -9,6 +9,7 @@ metadata:
   labels:
     app: builder
 spec:
+  serviceAccountName: builder
   activeDeadlineSeconds: 600
   backoffLimit: 1
   completionMode: NonIndexed
