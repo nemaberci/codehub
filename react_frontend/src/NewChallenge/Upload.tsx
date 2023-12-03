@@ -1,6 +1,8 @@
+import CheckboxField from "@components/CheckboxField";
+import FormRow from "@components/FormRow";
 import axios from "axios";
-import { ErrorMessage, Field, Form as FormikForm, Formik } from "formik";
-import { Button, Indicator, Input, Steps, Textarea } from "react-daisyui";
+import { Form as FormikForm, Formik } from "formik";
+import { Button, Steps } from "react-daisyui";
 import { useNavigate } from "react-router-dom";
 
 /*interface MyFormValues {
@@ -8,72 +10,6 @@ import { useNavigate } from "react-router-dom";
 	short_desc?: string;
 	long_desc?: string;
 }*/
-
-interface FormFieldProps {
-	name: string;
-	type?: string;
-	title: string | React.ReactElement;
-	error?: string | boolean;
-}
-
-function FormRow({ name, type, title, error }: FormFieldProps) {
-	let input;
-	if (type === "textarea") {
-		input = <Field as={Textarea} bordered className="w-full h-64 font-mono" name={name} />;
-	} else {
-		input = (
-			<Field as={Input} type={type} name={name} className="w-full" color={error ? "error" : "neutral"} />
-		);
-	}
-
-	return (
-		<>
-			<tr>
-				<td className="w-1/4">{title}</td>
-				<td>
-					{error ? (
-						<Indicator>
-							<Indicator.Item className="badge text-red-500">
-								<ErrorMessage name={name} />
-							</Indicator.Item>
-							{input}
-						</Indicator>
-					) : (
-						input
-					)}
-				</td>
-			</tr>
-		</>
-	);
-}
-
-function Checkbox({
-	name,
-	title,
-	value,
-	onChange,
-	onBlur,
-}: {
-	name: string;
-	title: string;
-	value: string;
-	onChange: any;
-	onBlur: any;
-}) {
-	return (
-		<label className="label cursor-pointer justify-start gap-4">
-			<Field
-				type="checkbox"
-				className="checkbox"
-				name={name}
-				value={value}
-				onChange={onChange}
-				onBlur={onBlur}
-			/>
-			<span className="label-text">{title}</span>
-		</label>
-	);
-}
 
 export default function Upload() {
 	const navigate = useNavigate();
@@ -133,15 +69,9 @@ export default function Upload() {
 									<tr>
 										<td>Elfogadott programozási nyelvek</td>
 										<td>
-											<Field as={Checkbox} type="checkbox" name="enabled" value="java" title="Java" />
-											<Field
-												as={Checkbox}
-												type="checkbox"
-												name="enabled"
-												value="python"
-												title="Python"
-											/>
-											<Field as={Checkbox} type="checkbox" name="enabled" value="c++" title="C++" />
+											<CheckboxField name="enabled" value="java" title="Java" />
+											<CheckboxField name="enabled" value="python" title="Python" />
+											<CheckboxField name="enabled" value="c++" title="C++" />
 										</td>
 									</tr>
 								</tbody>
