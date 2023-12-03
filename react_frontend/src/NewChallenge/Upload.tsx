@@ -28,6 +28,7 @@ export default function Upload() {
 					//validate={() => {}}
 					onSubmit={async (values, { setSubmitting }) => {
 						try {
+							// @ts-expect-error demo version
 							const response = await axios.post("http://localhost:3000/challenge/upload", {
 								name: values.name,
 								shortDescription: values.short_desc,

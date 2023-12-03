@@ -62,7 +62,7 @@ export default function EditTestCases() {
 								name="testCases"
 								render={(arrayHelpers) => (
 									<>
-										{values.testCases.map((testCase, index) => (
+										{values.testCases.map((_, index) => (
 											<>
 												<TestCase index={index} />
 												<Button

@@ -5,7 +5,9 @@ import { Allotment } from "allotment";
 import "allotment/dist/style.css";
 import TabView from "../components/Tabs";
 import { useNavigate } from "react-router-dom";
+// @ts-expect-error demo file
 import demoTask from "../assets/DemoTask.md";
+// @ts-expect-error demo file
 import demoSolution from "../assets/DemoSolution.java";
 import Markdown from "react-markdown";
 import { useEffect, useState } from "react";

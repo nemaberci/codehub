@@ -4,7 +4,7 @@ import FormRow from "@components/FormRow";
 import Radio from "@components/Radio";
 import CheckboxField from "@components/CheckboxField";
 
-interface TestCaseType {
+/*interface TestCaseType {
 	name: string;
 	description: string;
 	score: number;
@@ -14,10 +14,10 @@ interface TestCaseType {
 	inputText?: string;
 	outputType: "raw" | "script";
 	outputText?: string;
-}
+}*/
 
 function OutputFields({ objectPath }: { objectPath: string }) {
-	const context = useFormikContext();
+	const context: any = useFormikContext();
 	console.log(context.values);
 	const disabled = context.values.isOutputScript;
 	console.log("OutputField", disabled);
