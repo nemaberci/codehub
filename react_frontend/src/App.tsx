@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SolutionEditor from "./SolutionEditor/SolutionEditor";
 import ChallengeList from "./ChallengeList/ChallengeList";
-import Highscores from "./Highscores";
+import Highscores from "./Highscores/Highscores";
 import Upload from "./NewChallenge/Upload";
 import Frame from "./components/Frame";
 import EditTestCases from "./EditTestCases/EditTestCases";
