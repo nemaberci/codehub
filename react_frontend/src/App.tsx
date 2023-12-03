@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import SolutionEditor from "./SolutionEditor";
+import SolutionEditor from "./SolutionEditor/SolutionEditor";
 import ChallengeList from "./ChallengeList";
 import Highscores from "./Highscores";
 import Upload from "./NewChallenge/Upload";
