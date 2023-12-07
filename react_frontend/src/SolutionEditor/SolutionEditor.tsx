@@ -1,4 +1,4 @@
-import { CaretCircleRight, Question, Trash, TrendUp } from "@phosphor-icons/react";
+import { CaretCircleRight, CircleNotch, Question, Trash, TrendUp } from "@phosphor-icons/react";
 import { Editor } from "@monaco-editor/react";
 import { Button, Divider } from "react-daisyui";
 import { Allotment } from "allotment";
@@ -16,6 +16,7 @@ export default function SolutionEditor() {
 	const navigate = useNavigate();
 	const [text, setText] = useState("");
 	const [solution, setSolution] = useState("");
+	const [running, setRunning] = useState(false);
 
 	async function fetchText() {
 		setText(await fetch(demoTask).then((res) => res.text()));
@@ -25,10 +26,23 @@ export default function SolutionEditor() {
 		setSolution(await fetch(demoSolution).then((res) => res.text()));
 	}
 
+	async function submitSolution() {
+		setRunning(true);
+		//alert(solution);
+		setTimeout(() => setRunning(false), 2000);
+	}
+
 	useEffect(() => {
 		fetchText();
 		fetchSolution();
 	}, []);
+
+	let runIcon = <></>;
+	if (running) {
+		runIcon = <CircleNotch size={24} className="spinning-fast" />;
+	} else {
+		runIcon = <CaretCircleRight size={24} />;
+	}
 
 	return (
 		<>
@@ -43,12 +57,22 @@ export default function SolutionEditor() {
 				<Allotment vertical>
 					<Allotment.Pane>
 						<TabView />
-						<Editor height="90vh" width="100%" defaultLanguage="java" value={solution} theme="vs-dark" />
+						<Editor
+							height="90vh"
+							width="100%"
+							defaultLanguage="java"
+							value={solution}
+							theme="vs-dark"
+							onChange={(value) => {
+								console.log("changed");
+								setSolution(value ?? "");
+							}}
+						/>
 					</Allotment.Pane>
 
 					<Allotment.Pane minSize={216} preferredSize={216} className="p-4">
 						<div className="flex gap-2 flex-wrap">
-							<Button color="success" startIcon={<CaretCircleRight size={24} />}>
+							<Button color="success" startIcon={runIcon} onClick={submitSolution}>
 								Indítás
 							</Button>
 							<Button
