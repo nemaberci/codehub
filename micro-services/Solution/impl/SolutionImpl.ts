@@ -51,7 +51,7 @@ export default class SolutionImpl implements SolutionService {
         await pubsub.topic(topicName).publishMessage(
             {
                 attributes: {
-                    folderName: folderName,
+                    sourceFolderName: folderName,
                     challengeId: body.challengeId,
                     entryPoint: body.entryPoint ?? "Solution.java",
                     solutionId: solutionId
