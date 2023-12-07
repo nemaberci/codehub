@@ -43,9 +43,9 @@ class FileHandlingClient {
                 reject(err);
             });
         
-            req.write({
+            req.write(JSON.stringify({
                 files
-            });
+            }));
             req.end();
         });
     }

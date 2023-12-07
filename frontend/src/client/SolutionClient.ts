@@ -12,7 +12,8 @@ class SolutionClient {
     static async solve(
         authToken: string,
         challengeId: string,
-        solutionSource: inputValueModel.SolutionSource
+        folderContents: inputValueModel.File[],
+        entryPoint?: string
     ): Promise<returnValueModel.Solution> {
         const answer = await fetch(
             `${url}/solution/solve`,
@@ -25,7 +26,8 @@ class SolutionClient {
                 body: JSON.stringify(
                     {
                         challengeId, 
-                        solutionSource, 
+                        folderContents, 
+                        entryPoint, 
                     }
                 )
             }

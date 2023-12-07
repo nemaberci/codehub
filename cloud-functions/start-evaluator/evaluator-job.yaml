@@ -46,6 +46,10 @@ spec:
           value: <CHALLENGE_ID>
         - name: SOLUTION_ID
           value: <SOLUTION_ID>
+        - name: OUTPUT_VERIFIER_LOCATION
+          value: <OUTPUT_VERIFIER_LOCATION>
+        - name: RESULTS_LOCATION
+          value: <RESULTS_LOCATION>
       dnsPolicy: ClusterFirst
       restartPolicy: OnFailure
       schedulerName: default-scheduler

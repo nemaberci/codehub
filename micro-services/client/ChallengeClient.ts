@@ -47,13 +47,13 @@ class ChallengeClient {
                 reject(err);
             });
         
-            req.write({
+            req.write(JSON.stringify({
                 name,
                 description,
                 controlSolutions,
                 testCases,
                 outputVerifierLocation
-            });
+            }));
             req.end();
         });
     }

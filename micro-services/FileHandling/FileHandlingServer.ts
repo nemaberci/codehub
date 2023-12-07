@@ -5,8 +5,8 @@ import { readFileSync } from 'fs'
 import { verify, JwtPayload, sign } from "jsonwebtoken";
 import { userContentAccess, userUploadLimiter,  } from "./impl/FileHandlingMiddlewares"
 
-let internalPublicKey = readFileSync(process.env.INTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/internalPublic.pem").toString()
-let externalPublicKey = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
+let internalPublicKey: string // = readFileSync(process.env.INTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/internalPublic.pem").toString()
+let externalPublicKey: string // = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
 
 const isJwtPayload = (token: string | JwtPayload): token is JwtPayload => {
   return 'sub' in (token as JwtPayload);
@@ -17,12 +17,13 @@ const serviceImpl: FileHandlingService = new FileHandlingImpl()
 const userAuthMiddleware: RequestHandler = async (req, res, next) => {
   try {
     let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", externalPublicKey, { complete: false });
-    if (token && isJwtPayload(token)) {
+    if (token) {
       // todo: check if user is allowed to access this endpoint
       next();
       return;
     } else {
       console.warn("No Authorization token, or invalid Authorization token");
+      res.status(401).send("Unauthorized");
     }
   } catch (e: any) {
     console.error(e);
@@ -63,6 +64,24 @@ const loadInternalKey: () => Promise<void> = async () => {
 
 loadInternalKey();
 
+const loadExternalKey: () => Promise<void> = async () => {
+    try {
+        let file = await serviceImpl.downloadFile(
+            {
+                bucketName: (process.env as any).PUBLIC_KEY_BUCKET ?? "internal-keys",
+                fileName: (process.env as any).PUBLIC_KEY_LOCATION ?? "public1.pem"
+            }
+        );
+        let buff = Buffer.from(file.content, 'base64');
+        let text = buff.toString('ascii');
+        externalPublicKey = text;
+    } catch (e) {
+        console.warn(e);
+    }
+}
+
+loadExternalKey();
+
 const printJwt: () => Promise<void> = async () => {
     try {
         let file = await serviceImpl.downloadFile(
@@ -73,13 +92,22 @@ const printJwt: () => Promise<void> = async () => {
         );
         let buff = Buffer.from(file.content, 'base64');
         let text = buff.toString('ascii');
-        console.log(sign({}, text, { expiresIn: "1y", algorithm: "RS256" }))
+        console.log("Internal jwt: ", sign({}, text, { expiresIn: "1y", algorithm: "RS256" }))
+        file = await serviceImpl.downloadFile(
+            {
+                bucketName: "internal-keys",
+                fileName: "private1.pem"
+            }
+        );
+        buff = Buffer.from(file.content, 'base64');
+        text = buff.toString('ascii');
+        console.log("External jwt: ", sign({}, text, { expiresIn: "1y", algorithm: "RS256" }))
     } catch (e) {
         console.warn(e);
     }
 }
 
-printJwt();
+// printJwt();
 
 const app = express()
 app.use(express.json())

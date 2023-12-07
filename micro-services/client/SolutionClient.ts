@@ -13,7 +13,8 @@ class SolutionClient {
         
         
         ,challengeId: string
-        ,solutionSource: inputValueModel.SolutionSource
+        ,folderContents: inputValueModel.File[]
+        ,entryPoint?: string
     ): Promise<returnValueModel.Solution> {
         return new Promise((resolve, reject) => {
             const req = http.request(
@@ -44,10 +45,11 @@ class SolutionClient {
                 reject(err);
             });
         
-            req.write({
+            req.write(JSON.stringify({
                 challengeId,
-                solutionSource
-            });
+                folderContents,
+                entryPoint
+            }));
             req.end();
         });
     }

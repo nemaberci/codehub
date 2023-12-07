@@ -13,9 +13,13 @@ interface SolveBody {
     */
     challengeId: string;
     /** 
-    * @description Source of the solution
+    * @description The contents of the source code folder
     */
-    solutionSource: model.SolutionSource;
+    folderContents: model.File[];
+    /** 
+    * @description The entry point of the solution (by default: Solution.java)
+    */
+    entryPoint?: string;
 }
 
 export {

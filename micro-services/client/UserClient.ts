@@ -43,9 +43,9 @@ class UserClient {
                 reject(err);
             });
         
-            req.write({
+            req.write(JSON.stringify({
                 emailAddress
-            });
+            }));
             req.end();
         });
     }
@@ -83,9 +83,9 @@ class UserClient {
                 reject(err);
             });
         
-            req.write({
+            req.write(JSON.stringify({
                 token
-            });
+            }));
             req.end();
         });
     }
