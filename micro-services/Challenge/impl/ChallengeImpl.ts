@@ -8,6 +8,7 @@ import { initializeApp, applicationDefault, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { PubSub } from "@google-cloud/pubsub";
 import { File } from "../../client/inputTypes";
+import challenge from "../../client/returnedTypes/Challenge";
 
 // initializeApp({
 //     credential: applicationDefault()
@@ -41,11 +42,16 @@ export default class ChallengeImpl implements ChallengeService {
                 [body.outputVerifier]
             );
             console.log("Uploaded output verifier to: ", outputVerifierLocation)
+            await db.collection("Challenge").doc(challengeId).update({
+                output_verifier_location: outputVerifierLocation
+            });
         }
 
         let inputFiles: File[] = []
         let inputGeneratorFiles: File[] = [];
+        let outputFiles: File[] = [];
         let testCaseFileNames: string[] = [];
+        let outputFilesNames: string[] = [];
 
         for (let testCase of body.testCases) {
             if (!testCase.input && !testCase.inputGenerator) {
@@ -61,6 +67,19 @@ export default class ChallengeImpl implements ChallengeService {
             if (testCase.inputGenerator) {
                 testCaseFileNames.push(testCase.inputGenerator.name);
                 inputGeneratorFiles.push(testCase.inputGenerator);
+            }
+            if (testCase.output) {
+                let outputName = "output-" + randomUUID().toString();
+                outputFiles.push({
+                    content: testCase.output,
+                    name: outputName
+                });
+                outputFilesNames.push(outputName);
+            } else {
+                if (!body.outputVerifier) {
+                    throw new Error("Test case must have output or challenge must have output verifier");
+                }
+                outputFilesNames.push("");
             }
         }
 
