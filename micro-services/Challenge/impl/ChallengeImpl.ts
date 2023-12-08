@@ -53,7 +53,7 @@ export default class ChallengeImpl implements ChallengeService {
         let testCaseFileNames: string[] = [];
         let outputFilesNames: string[] = [];
 
-        for (let testCase of body.testCases) {
+        for (let testCase of body.testCases!) {
             if (!testCase.input && !testCase.inputGenerator) {
                 throw new Error("Test case must have input or input generator");
             }
@@ -107,7 +107,7 @@ export default class ChallengeImpl implements ChallengeService {
             console.log("Uploaded input generators to: ", scriptLocation)
         }
 
-        for (let i in body.testCases) {
+        for (let i in body.testCases!) {
             let testCase = body.testCases[i];
             let testCaseId = "test-case-" + randomUUID().toString();
             console.log("Creating test case: ", {

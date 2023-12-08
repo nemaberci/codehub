@@ -49,6 +49,7 @@ const internalAuthMiddleware: RequestHandler = async (req, res, next) => {
 
 const loadInternalKey: () => Promise<void> = async () => {
     try {
+      console.log((process.env as any).FILE_HANDLING_API_KEY)
         let fileHandlingClient = FileHandlingClient;
         let file = await fileHandlingClient.downloadFile(
             (process.env as any).FILE_HANDLING_API_KEY, 
@@ -67,6 +68,7 @@ loadInternalKey();
 
 const loadExternalKey: () => Promise<void> = async () => {
     try {
+      console.log((process.env as any).FILE_HANDLING_API_KEY)
         let fileHandlingClient = FileHandlingClient;
         let file = await fileHandlingClient.downloadFile(
             (process.env as any).FILE_HANDLING_API_KEY, 
@@ -89,7 +91,7 @@ app.use(express.json())
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   res.header("Access-Control-Allow-Methods", "*");
   next();
 });

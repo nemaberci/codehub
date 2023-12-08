@@ -6,7 +6,7 @@ import Upload from "./NewChallenge/Upload";
 import Frame from "./components/Frame";
 import EditTestCases from "./EditTestCases/EditTestCases";
 import { FirebaseAppProvider } from "reactfire";
-import { firebaseConfig } from "@lib/firebase";
+import { firebaseConfig } from "@lib/Firebase";
 
 export default function App() {
 	return (
