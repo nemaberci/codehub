@@ -108,7 +108,7 @@ const printJwt: () => Promise<void> = async () => {
     }
 }
 
-printJwt();
+// printJwt();
 
 const app = express()
 app.use(cors())

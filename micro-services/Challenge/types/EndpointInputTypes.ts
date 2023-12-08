@@ -44,7 +44,7 @@ interface AddTestCasesBody {
     /** 
     * @description Test cases of the challenge
     */
-    testCases?: model.TestCase[];
+    testCases: model.TestCase[];
     /** 
     * @description Output verifier of the challenge
     */

@@ -126,5 +126,5 @@ app.post('/user/register/',
   }
 )
 
-app.listen(parseInt(process.env.PORT ?? '3003'))
-console.log(`App started and listening on port ${process.env.PORT ?? 3003}`);
+app.listen(parseInt(process.env.PORT ?? '3000'))
+console.log(`App started and listening on port ${process.env.PORT ?? 3000}`);

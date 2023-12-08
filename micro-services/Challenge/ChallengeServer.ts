@@ -30,7 +30,6 @@ const userAuthMiddleware: RequestHandler = async (req, res, next) => {
     console.error(e);
     res.status(401).send(e.message ?? "Unauthorized");
   }
-  next();
 };
 
 const internalAuthMiddleware: RequestHandler = async (req, res, next) => {
@@ -50,7 +49,6 @@ const internalAuthMiddleware: RequestHandler = async (req, res, next) => {
 
 const loadInternalKey: () => Promise<void> = async () => {
     try {
-      console.log((process.env as any).FILE_HANDLING_API_KEY)
         let fileHandlingClient = FileHandlingClient;
         let file = await fileHandlingClient.downloadFile(
             (process.env as any).FILE_HANDLING_API_KEY, 
@@ -69,7 +67,6 @@ loadInternalKey();
 
 const loadExternalKey: () => Promise<void> = async () => {
     try {
-      console.log((process.env as any).FILE_HANDLING_API_KEY)
         let fileHandlingClient = FileHandlingClient;
         let file = await fileHandlingClient.downloadFile(
             (process.env as any).FILE_HANDLING_API_KEY, 
@@ -90,14 +87,6 @@ loadExternalKey();
 const app = express()
 app.use(cors())
 app.use(express.json())
-
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  res.header("Access-Control-Allow-Methods", "*");
-  next();
-});
-
 console.log("Registered endpoint on '/challenge/upload/'");
 app.post('/challenge/upload/',
   (req, res, next) => {
@@ -110,7 +99,7 @@ app.post('/challenge/upload/',
       let answer = await serviceImpl.upload(
         {
           ...req.body,
-          //authToken: req.headers.authorization?.substring("Bearer ".length) ?? ""
+          authToken: req.headers.authorization!.substring("Bearer ".length)
         }
       );
       res.status(200).send(answer);
