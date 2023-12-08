@@ -4,6 +4,7 @@ import express, { RequestHandler } from 'express'
 import { readFileSync } from 'fs'
 import { verify, JwtPayload, sign } from "jsonwebtoken";
 import FileHandlingClient from '../client/FileHandlingClient';
+import cors from 'cors'
 
 let internalPublicKey: string // = readFileSync(process.env.INTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/internalPublic.pem").toString()
 let externalPublicKey: string // = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
@@ -84,6 +85,7 @@ loadExternalKey();
 
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 console.log("Registered endpoint on '/user/login/'");
 app.post('/user/login/',

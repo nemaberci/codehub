@@ -4,6 +4,7 @@ import express, { RequestHandler } from 'express'
 import { readFileSync } from 'fs'
 import { verify, JwtPayload, sign } from "jsonwebtoken";
 import FileHandlingClient from '../client/FileHandlingClient';
+import cors from 'cors'
 
 let internalPublicKey: string // = readFileSync(process.env.INTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/internalPublic.pem").toString()
 let externalPublicKey: string // = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
@@ -84,6 +85,7 @@ loadExternalKey();
 
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 console.log("Registered endpoint on '/challenge/upload/'");
 app.post('/challenge/upload/',
@@ -96,6 +98,52 @@ app.post('/challenge/upload/',
     try {
       let answer = await serviceImpl.upload(
         {
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
+      );
+      res.status(200).send(answer);
+    } catch (e: any) {
+      res.status(e.status ?? 500).send(typeof e.message === "string" ? `["${e.message}"]` : e.message);
+    }
+    res.end();
+  }
+)
+console.log("Registered endpoint on '/challenge/add_test_cases/:challenge_id/'");
+app.post('/challenge/add_test_cases/:challenge_id/',
+  (req, res, next) => {
+    console.log("Call to '/challenge/add_test_cases/:challenge_id/'");
+    next();
+  },
+  userAuthMiddleware,
+  async (req, res, next) => {
+    try {
+      let answer = await serviceImpl.addTestCases(
+        {
+          challengeId: req.params.challenge_id,
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
+      );
+      res.status(200).send(answer);
+    } catch (e: any) {
+      res.status(e.status ?? 500).send(typeof e.message === "string" ? `["${e.message}"]` : e.message);
+    }
+    res.end();
+  }
+)
+console.log("Registered endpoint on '/challenge/add_control_solution/:challenge_id/'");
+app.post('/challenge/add_control_solution/:challenge_id/',
+  (req, res, next) => {
+    console.log("Call to '/challenge/add_control_solution/:challenge_id/'");
+    next();
+  },
+  userAuthMiddleware,
+  async (req, res, next) => {
+    try {
+      let answer = await serviceImpl.addControlSolution(
+        {
+          challengeId: req.params.challenge_id,
           ...req.body,
           authToken: req.headers.authorization!.substring("Bearer ".length)
         }

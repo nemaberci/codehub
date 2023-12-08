@@ -14,8 +14,8 @@ class ChallengeClient {
         name: string,
         description: string,
         shortDescription: string,
-        controlSolution: inputValueModel.SolutionSource,
-        testCases: inputValueModel.TestCase[],
+        controlSolution?: inputValueModel.SolutionSource,
+        testCases?: inputValueModel.TestCase[],
         outputVerifier?: inputValueModel.File
     ): Promise<returnValueModel.Challenge> {
         const answer = await fetch(
@@ -34,6 +34,50 @@ class ChallengeClient {
                         controlSolution, 
                         testCases, 
                         outputVerifier, 
+                    }
+                )
+            }
+        );
+        return await answer.json();
+    }
+    static async addTestCases(
+        authToken: string,
+        testCases: inputValueModel.TestCase[],
+        outputVerifier: inputValueModel.File
+    ): Promise<returnValueModel.Challenge> {
+        const answer = await fetch(
+            `${url}/challenge/add_test_cases`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "POST",
+                body: JSON.stringify(
+                    {
+                        testCases, 
+                        outputVerifier, 
+                    }
+                )
+            }
+        );
+        return await answer.json();
+    }
+    static async addControlSolution(
+        authToken: string,
+        controlSolution: inputValueModel.SolutionSource
+    ): Promise<returnValueModel.Challenge> {
+        const answer = await fetch(
+            `${url}/challenge/add_control_solution`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "POST",
+                body: JSON.stringify(
+                    {
+                        controlSolution, 
                     }
                 )
             }

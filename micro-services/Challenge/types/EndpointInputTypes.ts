@@ -23,7 +23,24 @@ interface UploadBody {
     /** 
     * @description Control solutions of the challenge
     */
-    controlSolution: model.SolutionSource;
+    controlSolution?: model.SolutionSource;
+    /** 
+    * @description Test cases of the challenge
+    */
+    testCases?: model.TestCase[];
+    /** 
+    * @description Output verifier of the challenge
+    */
+    outputVerifier?: model.File;
+}
+/** 
+* @description Add test cases to a challenge
+*/
+interface AddTestCasesBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string,
     /** 
     * @description Test cases of the challenge
     */
@@ -31,9 +48,32 @@ interface UploadBody {
     /** 
     * @description Output verifier of the challenge
     */
-    outputVerifier?: model.File;
+    outputVerifier: model.File;
+    /** 
+    * @description Id of the challenge to add test cases to
+    */
+    challengeId: string;
+}
+/** 
+* @description Add a control solution to a challenge
+*/
+interface AddControlSolutionBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string,
+    /** 
+    * @description Control solutions of the challenge
+    */
+    controlSolution: model.SolutionSource;
+    /** 
+    * @description Id of the challenge to add test cases to
+    */
+    challengeId: string;
 }
 
 export {
-    UploadBody
+    UploadBody,
+    AddTestCasesBody,
+    AddControlSolutionBody
 }

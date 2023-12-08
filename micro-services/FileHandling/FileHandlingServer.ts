@@ -4,6 +4,7 @@ import express, { RequestHandler } from 'express'
 import { readFileSync } from 'fs'
 import { verify, JwtPayload, sign } from "jsonwebtoken";
 import { userContentAccess, userUploadLimiter,  } from "./impl/FileHandlingMiddlewares"
+import cors from 'cors'
 
 let internalPublicKey: string // = readFileSync(process.env.INTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/internalPublic.pem").toString()
 let externalPublicKey: string // = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
@@ -110,6 +111,7 @@ const printJwt: () => Promise<void> = async () => {
 // printJwt();
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 console.log("Registered endpoint on '/file_handling/upload_folder_content/:folder_name/'");
 app.post('/file_handling/upload_folder_content/:folder_name/',
