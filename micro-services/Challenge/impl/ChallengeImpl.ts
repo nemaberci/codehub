@@ -40,6 +40,7 @@ export default class ChallengeImpl implements ChallengeService {
                 outputVerifierLocation,
                 [body.outputVerifier]
             );
+            console.log("Uploaded output verifier to: ", outputVerifierLocation)
         }
 
         let inputFiles: File[] = []
@@ -69,6 +70,10 @@ export default class ChallengeImpl implements ChallengeService {
                 textLocation,
                 inputFiles
             );
+            await db.collection("Challenge").doc(challengeId).update({
+                text_location: textLocation
+            });
+            console.log("Uploaded input files to: ", textLocation)
         }
 
         if (inputGeneratorFiles.length > 0) {
@@ -77,20 +82,34 @@ export default class ChallengeImpl implements ChallengeService {
                 scriptLocation,
                 inputGeneratorFiles
             );
+            await db.collection("Challenge").doc(challengeId).update({
+                script_location: scriptLocation
+            });
+            console.log("Uploaded input generators to: ", scriptLocation)
         }
 
         for (let i in body.testCases) {
             let testCase = body.testCases[i];
             let testCaseId = "test-case-" + randomUUID().toString();
+            console.log("Creating test case: ", {
+                description: testCase.description,
+                is_generated: !!testCase.inputGenerator,
+                location: testCaseFileNames[i],
+                max_memory: testCase.maxMemory,
+                max_runtime: testCase.maxTime,
+                points: testCase.points,
+                name: testCase.name
+            });
             await db.collection("Challenge").doc(challengeId).collection("Testcases").doc(testCaseId).set({
                 description: testCase.description,
-                is_generated: testCase.inputGenerator ? true : false,
+                is_generated: !!testCase.inputGenerator,
                 location: testCaseFileNames[i],
                 max_memory: testCase.maxMemory,
                 max_runtime: testCase.maxTime,
                 points: testCase.points,
                 name: testCase.name
             })
+            console.log("Uploaded test case to firestore: ", testCaseId)
         }
 
         let folderName = "solution-source-" + randomUUID().toString();
@@ -118,16 +137,16 @@ export default class ChallengeImpl implements ChallengeService {
 
         const pubsub = new PubSub();
         const topicName = "SolutionUploaded";
-        // await pubsub.topic(topicName).publishMessage(
-        //     {
-        //         attributes: {
-        //             sourceFolderName: folderName,
-        //             challengeId: challengeId,
-        //             entryPoint: body.controlSolution.entryPoint ?? "Solution.java",
-        //             solutionId: solutionId
-        //         }
-        //     }
-        // );
+        await pubsub.topic(topicName).publishMessage(
+            {
+                attributes: {
+                    sourceFolderName: folderName,
+                    challengeId: challengeId,
+                    entryPoint: body.controlSolution.entryPoint ?? "Solution.java",
+                    solutionId: solutionId
+                }
+            }
+        );
         console.log("Published message to pubsub topic: ", topicName);
 
         return {
