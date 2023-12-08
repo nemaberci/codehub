@@ -9,12 +9,12 @@ import * as inputValueModel from "./inputTypes";
 */
 class SolutionClient {
     static async solve(
-        authToken: string
+        authToken: string,
         
         
-        ,challengeId: string
-        ,folderContents: inputValueModel.File[]
-        ,entryPoint?: string
+        challengeId: string,
+        folderContents: inputValueModel.File[],
+        entryPoint?: string,
     ): Promise<returnValueModel.Solution> {
         return new Promise((resolve, reject) => {
             const req = http.request(

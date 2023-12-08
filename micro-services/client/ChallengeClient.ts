@@ -9,15 +9,15 @@ import * as inputValueModel from "./inputTypes";
 */
 class ChallengeClient {
     static async upload(
-        authToken: string
+        authToken: string,
         
         
-        ,name: string
-        ,description: string
-        ,shortDescription: string
-        ,controlSolution: inputValueModel.SolutionSource
-        ,testCases: inputValueModel.TestCase[]
-        ,outputVerifier?: inputValueModel.File
+        name: string,
+        description: string,
+        shortDescription: string,
+        controlSolution: inputValueModel.SolutionSource,
+        testCases: inputValueModel.TestCase[],
+        outputVerifier?: inputValueModel.File,
     ): Promise<returnValueModel.Challenge> {
         return new Promise((resolve, reject) => {
             const req = http.request(

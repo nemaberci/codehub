@@ -11,8 +11,8 @@ class FileHandlingClient {
     static async uploadFolderContent(
         
         authToken: string,
-        folderName: string
-        ,files: inputValueModel.File[]
+        folderName: string,
+        files: inputValueModel.File[],
     ): Promise<boolean> {
         return new Promise((resolve, reject) => {
             const req = http.request(

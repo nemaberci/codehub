@@ -2,6 +2,6 @@ import * as EndpointInputTypes from "../types/EndpointInputTypes";
 import * as EndpointReturnedTypes from "../types/EndpointReturnedTypes";
 
 export default interface UserService {
-    byEmailAddress(body: EndpointInputTypes.ByEmailAddressBody): Promise<EndpointReturnedTypes.ByEmailAddressReturned>
-    fromGoogleAuthToken(body: EndpointInputTypes.FromGoogleAuthTokenBody): Promise<EndpointReturnedTypes.FromGoogleAuthTokenReturned>
+    login(body: EndpointInputTypes.LoginBody): Promise<EndpointReturnedTypes.LoginReturned>
+    register(body: EndpointInputTypes.RegisterBody): Promise<EndpointReturnedTypes.RegisterReturned>
 }

@@ -1,9 +1,9 @@
 import * as model from '../../client/returnedTypes';
 
-type ByEmailAddressReturned = model.User;
-type FromGoogleAuthTokenReturned = model.User;
+type LoginReturned = string;
+type RegisterReturned = string;
 
 export {
-    ByEmailAddressReturned,
-    FromGoogleAuthTokenReturned
+    LoginReturned,
+    RegisterReturned
 }
