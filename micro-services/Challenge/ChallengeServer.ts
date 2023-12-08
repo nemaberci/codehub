@@ -16,7 +16,7 @@ const isJwtPayload = (token: string | JwtPayload): token is JwtPayload => {
 const serviceImpl: ChallengeService = new ChallengeImpl()
 
 const userAuthMiddleware: RequestHandler = async (req, res, next) => {
-  /*try {
+  try {
     let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", externalPublicKey, { complete: false });
     if (token) {
       // todo: check if user is allowed to access this endpoint
@@ -29,7 +29,7 @@ const userAuthMiddleware: RequestHandler = async (req, res, next) => {
   } catch (e: any) {
     console.error(e);
     res.status(401).send(e.message ?? "Unauthorized");
-  }*/
+  }
   next();
 };
 
