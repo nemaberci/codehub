@@ -13,9 +13,10 @@ class ChallengeClient {
         authToken: string,
         name: string,
         description: string,
-        controlSolutions: inputValueModel.SolutionSource[],
+        shortDescription: string,
+        controlSolution: inputValueModel.SolutionSource,
         testCases: inputValueModel.TestCase[],
-        outputVerifierLocation?: string
+        outputVerifier?: inputValueModel.File
     ): Promise<returnValueModel.Challenge> {
         const answer = await fetch(
             `${url}/challenge/upload`,
@@ -29,9 +30,10 @@ class ChallengeClient {
                     {
                         name, 
                         description, 
-                        controlSolutions, 
+                        shortDescription, 
+                        controlSolution, 
                         testCases, 
-                        outputVerifierLocation, 
+                        outputVerifier, 
                     }
                 )
             }

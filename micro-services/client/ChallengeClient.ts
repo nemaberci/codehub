@@ -14,9 +14,10 @@ class ChallengeClient {
         
         ,name: string
         ,description: string
-        ,controlSolutions: inputValueModel.SolutionSource[]
+        ,shortDescription: string
+        ,controlSolution: inputValueModel.SolutionSource
         ,testCases: inputValueModel.TestCase[]
-        ,outputVerifierLocation?: string
+        ,outputVerifier?: inputValueModel.File
     ): Promise<returnValueModel.Challenge> {
         return new Promise((resolve, reject) => {
             const req = http.request(
@@ -50,9 +51,10 @@ class ChallengeClient {
             req.write(JSON.stringify({
                 name,
                 description,
-                controlSolutions,
+                shortDescription,
+                controlSolution,
                 testCases,
-                outputVerifierLocation
+                outputVerifier
             }));
             req.end();
         });
