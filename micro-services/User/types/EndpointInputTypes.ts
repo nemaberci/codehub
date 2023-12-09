@@ -17,6 +17,10 @@ interface LoginBody {
 * @description Register a new user
 */
 interface RegisterBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string,
     /** 
     * @description The username of the user
     */

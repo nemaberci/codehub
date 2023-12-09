@@ -156,5 +156,5 @@ app.post('/challenge/add_control_solution/:challenge_id/',
   }
 )
 
-app.listen(parseInt(process.env.PORT ?? '3002'))
-console.log(`App started and listening on port ${process.env.PORT ?? 3002}`);
+app.listen(parseInt(process.env.PORT ?? '3000'))
+console.log(`App started and listening on port ${process.env.PORT ?? 3000}`);

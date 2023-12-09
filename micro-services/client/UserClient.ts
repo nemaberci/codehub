@@ -1,4 +1,3 @@
-const url = "127.0.0.1";
 import http from "node:http";
 
 import * as returnValueModel from "./returnedTypes";
@@ -15,11 +14,12 @@ class UserClient {
         username: string,
         password: string,
     ): Promise<string> {
+        const url = (process.env as any).USER_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
-                    port: 3000,
+                    port: parseInt((process.env as any).USER_PORT ?? '3000'),
                     path: `/user/login/`,
                     method: "POST",
                     headers: {
@@ -51,21 +51,23 @@ class UserClient {
         });
     }
     static async register(
-        
+        authToken: string,
         
         
         username: string,
         password: string,
     ): Promise<string> {
+        const url = (process.env as any).USER_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
-                    port: 3000,
+                    port: parseInt((process.env as any).USER_PORT ?? '3000'),
                     path: `/user/register/`,
                     method: "POST",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {

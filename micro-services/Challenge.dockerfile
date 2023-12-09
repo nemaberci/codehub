@@ -8,7 +8,10 @@ COPY Challenge/types ./Challenge/types
 COPY Challenge/package.json ./Challenge
 COPY Challenge/tsconfig.json ./Challenge
 COPY Challenge/ChallengeServer.ts ./Challenge
+COPY package.json .
 COPY client ./client
+
+RUN ["npm", "install"]
 
 WORKDIR /work/Challenge
 

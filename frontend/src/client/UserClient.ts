@@ -31,6 +31,7 @@ class UserClient {
         return await answer.json();
     }
     static async register(
+        authToken: string,
         username: string,
         password: string
     ): Promise<> {
@@ -38,7 +39,8 @@ class UserClient {
             `${url}/user/register`,
             {
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
                 },
                 method: "POST",
                 body: JSON.stringify(

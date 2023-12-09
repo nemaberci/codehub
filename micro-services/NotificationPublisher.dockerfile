@@ -8,7 +8,10 @@ COPY NotificationPublisher/types ./NotificationPublisher/types
 COPY NotificationPublisher/package.json ./NotificationPublisher
 COPY NotificationPublisher/tsconfig.json ./NotificationPublisher
 COPY NotificationPublisher/NotificationPublisherServer.ts ./NotificationPublisher
+COPY package.json .
 COPY client ./client
+
+RUN ["npm", "install"]
 
 WORKDIR /work/NotificationPublisher
 

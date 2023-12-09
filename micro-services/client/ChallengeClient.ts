@@ -1,4 +1,3 @@
-const url = "127.0.0.1";
 import http from "node:http";
 
 import * as returnValueModel from "./returnedTypes";
@@ -19,11 +18,12 @@ class ChallengeClient {
         testCases?: inputValueModel.TestCase[],
         outputVerifier?: inputValueModel.File,
     ): Promise<returnValueModel.Challenge> {
+        const url = (process.env as any).CHALLENGE_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
-                    port: 3000,
+                    port: parseInt((process.env as any).CHALLENGE_PORT ?? '3000'),
                     path: `/challenge/upload/`,
                     method: "POST",
                     headers: {
@@ -66,11 +66,12 @@ class ChallengeClient {
         testCases: inputValueModel.TestCase[],
         outputVerifier: inputValueModel.File,
     ): Promise<returnValueModel.Challenge> {
+        const url = (process.env as any).CHALLENGE_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
-                    port: 3000,
+                    port: parseInt((process.env as any).CHALLENGE_PORT ?? '3000'),
                     path: `/challenge/add_test_cases/${ challengeId }/`,
                     method: "POST",
                     headers: {
@@ -108,11 +109,12 @@ class ChallengeClient {
         challengeId: string,
         controlSolution: inputValueModel.SolutionSource,
     ): Promise<returnValueModel.Challenge> {
+        const url = (process.env as any).CHALLENGE_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
-                    port: 3000,
+                    port: parseInt((process.env as any).CHALLENGE_PORT ?? '3000'),
                     path: `/challenge/add_control_solution/${ challengeId }/`,
                     method: "POST",
                     headers: {

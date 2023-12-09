@@ -39,7 +39,7 @@ export default class UserImpl implements UserService {
         );
         let buff = Buffer.from(file.content, 'base64');
         let text = buff.toString('ascii');
-        return sign({}, text, { expiresIn: "1y", algorithm: "RS256" });
+        return sign({}, text, { expiresIn: "1h", algorithm: "RS256" });
 
     }
 

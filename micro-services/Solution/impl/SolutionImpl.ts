@@ -1,6 +1,6 @@
-import { Solution, SolutionResult } from "../../client/returnedTypes";
+import { Solution } from "../../client/returnedTypes";
 import SolutionService from "../api/SolutionService";
-import { ResultsBody, SolveBody } from "../types/EndpointInputTypes";
+import {  SolveBody } from "../types/EndpointInputTypes";
 import FileHandlingClient from '../../client/FileHandlingClient';
 import { sign } from "jsonwebtoken";
 import { randomUUID } from "crypto";
@@ -14,7 +14,7 @@ import { getFirestore } from "firebase-admin/firestore";
 initializeApp();
 
 export default class SolutionImpl implements SolutionService {
-    async results(body: ResultsBody): Promise<SolutionResult[]> {
+    async results(body: any): Promise<any[]> {
         const db = getFirestore()
         let results = await db.collection("Solution").doc(body.solutionId).collection("Result").doc("Result").collection("SubResults").get()
         console.log(results)

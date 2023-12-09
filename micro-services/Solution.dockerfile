@@ -8,7 +8,10 @@ COPY Solution/types ./Solution/types
 COPY Solution/package.json ./Solution
 COPY Solution/tsconfig.json ./Solution
 COPY Solution/SolutionServer.ts ./Solution
+COPY package.json .
 COPY client ./client
+
+RUN ["npm", "install"]
 
 WORKDIR /work/Solution
 

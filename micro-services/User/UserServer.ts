@@ -112,11 +112,14 @@ app.post('/user/register/',
     console.log("Call to '/user/register/'");
     next();
   },
+  userAuthMiddleware,
   async (req, res, next) => {
     try {
       let answer = await serviceImpl.register(
         {
-          ...req.body        }
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
       );
       res.status(200).send(answer);
     } catch (e: any) {

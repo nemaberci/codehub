@@ -109,29 +109,6 @@ app.post('/solution/solve/',
     res.end();
   }
 )
-console.log("Registered endpoint on '/solution/results/:solution_id/'");
-app.get('/solution/results/:solution_id/',
-  (req, res, next) => {
-    console.log("Call to '/solution/results/:solution_id/'");
-    next();
-  },
-  userAuthMiddleware,
-  async (req, res, next) => {
-    try {
-      let answer = await serviceImpl.results(
-        {
-          solutionId: req.params.solution_id,
-          ...req.body,
-          authToken: req.headers.authorization!.substring("Bearer ".length)
-        }
-      );
-      res.status(200).send(answer);
-    } catch (e: any) {
-      res.status(e.status ?? 500).send(typeof e.message === "string" ? `["${e.message}"]` : e.message);
-    }
-    res.end();
-  }
-)
 
-app.listen(parseInt(process.env.PORT ?? '3001'))
-console.log(`App started and listening on port ${process.env.PORT ?? 3001}`);
+app.listen(parseInt(process.env.PORT ?? '3000'))
+console.log(`App started and listening on port ${process.env.PORT ?? 3000}`);

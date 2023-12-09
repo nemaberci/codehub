@@ -21,21 +21,7 @@ interface SolveBody {
     */
     entryPoint?: string;
 }
-/** 
-* @description get results
-*/
-interface ResultsBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string
-    /** 
-    * @description Id of the Solution
-    */
-    solutionId: string;
-}
 
 export {
-    SolveBody,
-    ResultsBody
+    SolveBody
 }
