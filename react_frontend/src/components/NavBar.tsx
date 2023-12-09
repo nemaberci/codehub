@@ -5,19 +5,16 @@ import { useNavigate } from "react-router-dom";
 export default function NavBar() {
 	const navigate = useNavigate();
 
-	let loginButton = <></>;
-	const signInStatus = "success";
-	const signInCheckResult = { signedIn: true };
-	const user = { displayName: "Proba" };
+	const loginButton = <></>;
 
-	if (signInStatus === "loading") {
+	/*if (signInStatus === "loading") {
 		loginButton = <NavBarButtonsLoading />;
 	} else if (signInStatus === "error") {
 		loginButton = <Button color="error">Auth Error</Button>;
 	} else if (signInStatus === "success") {
 		if (signInCheckResult.signedIn) {
 			loginButton = (
-				<NavBarButtonsSignedIn displayName={user?.displayName ?? ""} logout={() => auth.signOut()} />
+				<NavBarButtonsSignedIn displayName={user?.displayName ?? ""} logout={() => alert("Sign out")} />
 			);
 		} else {
 			loginButton = (
@@ -28,7 +25,7 @@ export default function NavBar() {
 				/>
 			);
 		}
-	}
+	}*/
 
 	return (
 		<>
@@ -55,10 +52,12 @@ export default function NavBar() {
 	);
 }
 
+//@ts-expect-error not-yet-used
 function NavBarButtonsLoading() {
 	return <CircleNotch className="spinning-slow" size={24} />;
 }
 
+//@ts-expect-error not-yet-used
 function NavBarButtonsSignedIn({ displayName, logout }: { displayName: string; logout: () => void }) {
 	const navigate = useNavigate();
 
@@ -76,6 +75,7 @@ function NavBarButtonsSignedIn({ displayName, logout }: { displayName: string; l
 	);
 }
 
+//@ts-expect-error not-yet-used
 function NavBarButtonsGuest({ action }: { action: () => void }) {
 	return (
 		<Button color="primary" onClick={action}>
