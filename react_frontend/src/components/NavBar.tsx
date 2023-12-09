@@ -1,31 +1,31 @@
-import { CircleNotch } from "@phosphor-icons/react";
+import { jwtDecode } from "jwt-decode";
 import { Button, Navbar, Tooltip } from "react-daisyui";
 import { useNavigate } from "react-router-dom";
 
 export default function NavBar() {
 	const navigate = useNavigate();
 
-	const loginButton = <></>;
+	let loginButton = <></>;
 
-	/*if (signInStatus === "loading") {
-		loginButton = <NavBarButtonsLoading />;
-	} else if (signInStatus === "error") {
-		loginButton = <Button color="error">Auth Error</Button>;
-	} else if (signInStatus === "success") {
-		if (signInCheckResult.signedIn) {
-			loginButton = (
-				<NavBarButtonsSignedIn displayName={user?.displayName ?? ""} logout={() => alert("Sign out")} />
-			);
-		} else {
-			loginButton = (
-				<NavBarButtonsGuest
-					action={() => {
-						navigate("/login");
-					}}
-				/>
-			);
-		}
-	}*/
+	if (localStorage.getItem("token")?.trim().length) {
+		loginButton = (
+			<NavBarButtonsSignedIn
+				displayName={jwtDecode(localStorage.getItem("token")!).exp + ""}
+				logout={() => {
+					localStorage.clear();
+					navigate("/");
+				}}
+			/>
+		);
+	} else {
+		loginButton = (
+			<NavBarButtonsGuest
+				action={() => {
+					navigate("/login");
+				}}
+			/>
+		);
+	}
 
 	return (
 		<>
@@ -52,12 +52,6 @@ export default function NavBar() {
 	);
 }
 
-//@ts-expect-error not-yet-used
-function NavBarButtonsLoading() {
-	return <CircleNotch className="spinning-slow" size={24} />;
-}
-
-//@ts-expect-error not-yet-used
 function NavBarButtonsSignedIn({ displayName, logout }: { displayName: string; logout: () => void }) {
 	const navigate = useNavigate();
 
@@ -75,7 +69,6 @@ function NavBarButtonsSignedIn({ displayName, logout }: { displayName: string; l
 	);
 }
 
-//@ts-expect-error not-yet-used
 function NavBarButtonsGuest({ action }: { action: () => void }) {
 	return (
 		<Button color="primary" onClick={action}>

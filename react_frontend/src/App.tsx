@@ -1,26 +1,93 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { RouterProvider, createBrowserRouter, redirect } from "react-router-dom";
 import SolutionEditor from "./SolutionEditor/SolutionEditor";
 import ChallengeList from "./ChallengeList/ChallengeList";
 import Highscores from "./Highscores/Highscores";
 import Upload from "./NewChallenge/Upload";
 import Frame from "./components/Frame";
 import EditTestCases from "./EditTestCases/EditTestCases";
+import Login from "./Login/Login";
+import axios from "axios";
+
+axios.interceptors.request.use(
+	(config) => {
+		const token = localStorage.getItem("token");
+		if (token?.trim().length) {
+			config.headers.Authorization = localStorage.getItem("token");
+		}
+		return config;
+	},
+	(error) => {
+		return Promise.reject(error);
+	}
+);
+
+axios.interceptors.response.use(
+	(response) => {
+		if (response.status === 401 || response.status === 403) {
+			localStorage.clear();
+			window.location.href = "/";
+		}
+		return response;
+	},
+	(error) => {
+		return Promise.reject(error);
+	}
+);
+
+async function authLoader() {
+	if (!localStorage.getItem("token")?.trim().length) {
+		console.log("not logged in");
+		alert("You need to log in");
+		return redirect("/");
+	}
+	console.log("logged in");
+	return null;
+}
+
+const router = createBrowserRouter([
+	{
+		path: "",
+		element: <Frame />,
+		children: [
+			{
+				path: "/editor/:id",
+				element: <SolutionEditor />,
+				loader: authLoader,
+			},
+			{
+				path: "/highscores/:id",
+				element: <Highscores />,
+				loader: authLoader,
+			},
+			{
+				path: "/upload",
+				element: <Upload />,
+				loader: authLoader,
+			},
+			{
+				path: "/login",
+				element: <Login />,
+				//loader:authLoader
+			},
+			{
+				path: "/edit/:id/testcases",
+				element: <EditTestCases />,
+				loader: authLoader,
+			},
+			{
+				path: "/",
+				element: <ChallengeList />,
+				//loader:authLoader
+			},
+		],
+	},
+	{
+		path: "*",
+		element: "Oops, page not found",
+		//loader:authLoader
+	},
+]);
 
 export default function App() {
-	return (
-		<>
-			<BrowserRouter>
-				<Routes>
-					<Route path="" element={<Frame />}>
-						<Route path="/editor/:id" element={<SolutionEditor />} />
-						<Route path="/highscores/:id" element={<Highscores />} />
-						<Route path="/upload" element={<Upload />} />
-						<Route path="/edit/:id/testcases" element={<EditTestCases />} />
-						<Route path="/" element={<ChallengeList />} />
-					</Route>
-					<Route path="*" element="Oops, page not found" />
-				</Routes>
-			</BrowserRouter>
-		</>
-	);
+	return <RouterProvider router={router} />;
 }

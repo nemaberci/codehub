@@ -31,7 +31,7 @@ export default function SolutionEditor() {
 		try {
 			setRunning(true);
 			await axios.post(
-				"http://localhost:3001/solution/solve",
+				`/api/solution/solve`,
 				{
 					challengeId: "challenge-7ce170c5-b9c6-41f1-bc6c-ee27256de508",
 					folderContents: [
