@@ -1,20 +1,14 @@
 import { CircleNotch } from "@phosphor-icons/react";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { Button, Navbar, Tooltip } from "react-daisyui";
 import { useNavigate } from "react-router-dom";
-import { useAuth, useSigninCheck, useUser } from "reactfire";
-
-const googleAuthProvider = new GoogleAuthProvider();
 
 export default function NavBar() {
 	const navigate = useNavigate();
 
-	const auth = useAuth();
-
-	const { data: user } = useUser();
-	const { status: signInStatus, data: signInCheckResult } = useSigninCheck();
-
 	let loginButton = <></>;
+	const signInStatus = "success";
+	const signInCheckResult = { signedIn: true };
+	const user = { displayName: "Proba" };
 
 	if (signInStatus === "loading") {
 		loginButton = <NavBarButtonsLoading />;
@@ -29,7 +23,7 @@ export default function NavBar() {
 			loginButton = (
 				<NavBarButtonsGuest
 					action={() => {
-						signInWithPopup(auth, googleAuthProvider);
+						navigate("/login");
 					}}
 				/>
 			);
