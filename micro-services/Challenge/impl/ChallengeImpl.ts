@@ -1,14 +1,25 @@
-import { Challenge } from "../../client/returnedTypes";
-import {AddControlSolutionBody, AddTestCasesBody, UploadBody} from "../types/EndpointInputTypes";
+import {Challenge} from "../../client/returnedTypes";
+import {
+    AddControlSolutionBody,
+    AddTestCasesBody,
+    GetBody,
+    ListBody,
+    ListByUserBody,
+    UploadBody
+} from "../types/EndpointInputTypes";
 import ChallengeService from "../api/ChallengeService";
 import FileHandlingClient from "../../client/FileHandlingClient";
-import { randomUUID } from "crypto";
-import { initializeApp, applicationDefault, cert } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
-import { PubSub } from "@google-cloud/pubsub";
-import { File } from "../../client/inputTypes";
-import {AddControlSolutionReturned, AddTestCasesReturned} from "../types/EndpointReturnedTypes";
-import challenge from "../../client/returnedTypes/Challenge";
+import {randomUUID} from "crypto";
+import {initializeApp, applicationDefault, cert} from "firebase-admin/app";
+import {getFirestore} from "firebase-admin/firestore";
+import {PubSub} from "@google-cloud/pubsub";
+import {File} from "../../client/inputTypes";
+import {
+    AddControlSolutionReturned,
+    AddTestCasesReturned,
+    GetReturned, ListByUserReturned,
+    ListReturned
+} from "../types/EndpointReturnedTypes";
 
 // initializeApp({
 //     credential: applicationDefault()
@@ -37,7 +48,7 @@ export default class ChallengeImpl implements ChallengeService {
 
         if (body.outputVerifier) {
             await fileHandlingClient.uploadFolderContent(
-                (process.env as any).FILE_HANDLING_API_KEY, 
+                (process.env as any).FILE_HANDLING_API_KEY,
                 outputVerifierLocation,
                 [body.outputVerifier]
             );
@@ -87,7 +98,7 @@ export default class ChallengeImpl implements ChallengeService {
 
         if (inputFiles.length > 0) {
             await fileHandlingClient.uploadFolderContent(
-                (process.env as any).FILE_HANDLING_API_KEY, 
+                (process.env as any).FILE_HANDLING_API_KEY,
                 textLocation,
                 inputFiles
             );
@@ -99,7 +110,7 @@ export default class ChallengeImpl implements ChallengeService {
 
         if (inputGeneratorFiles.length > 0) {
             await fileHandlingClient.uploadFolderContent(
-                (process.env as any).FILE_HANDLING_API_KEY, 
+                (process.env as any).FILE_HANDLING_API_KEY,
                 scriptLocation,
                 inputGeneratorFiles
             );
@@ -172,9 +183,7 @@ export default class ChallengeImpl implements ChallengeService {
             console.log("Published message to pubsub topic: ", topicName);
         }
 
-        return {
-            id: challengeId
-        };
+        return await this.freshDTO(challengeId);
 
     }
 
@@ -220,9 +229,7 @@ export default class ChallengeImpl implements ChallengeService {
         );
         console.log("Published message to pubsub topic: ", topicName);
 
-        return {
-            id: body.challengeId
-        };
+        return await this.freshDTO(body.challengeId);
 
     }
 
@@ -234,6 +241,7 @@ export default class ChallengeImpl implements ChallengeService {
         let outputVerifierLocation = "output-verifier-" + randomUUID().toString();
         let scriptLocation = "script-" + randomUUID().toString();
         let textLocation = "text-" + randomUUID().toString();
+        let resultsLocation = "results-" + randomUUID().toString();
 
         if (body.outputVerifier) {
             await fileHandlingClient.uploadFolderContent(
@@ -251,8 +259,8 @@ export default class ChallengeImpl implements ChallengeService {
         let inputGeneratorFiles: File[] = [];
         let testCaseFileNames: string[] = [];
 
-        // let outputFiles: File[] = [];
-        // let outputFilesNames: string[] = [];
+        let outputFiles: File[] = [];
+        let outputFilesNames: string[] = [];
 
         for (let testCase of (body.testCases ?? [])) {
             if (!testCase.input && !testCase.inputGenerator) {
@@ -270,19 +278,19 @@ export default class ChallengeImpl implements ChallengeService {
                 inputGeneratorFiles.push(testCase.inputGenerator);
             }
             // todo: output is constant
-            // if (testCase.output) {
-            //     let outputName = "output-" + randomUUID().toString();
-            //     outputFiles.push({
-            //         content: testCase.output,
-            //         name: outputName
-            //     });
-            //     outputFilesNames.push(outputName);
-            // } else {
-            //     if (!body.outputVerifier) {
-            //         throw new Error("Test case must have output or challenge must have output verifier");
-            //     }
-            //     outputFilesNames.push("");
-            // }
+            if (testCase.output) {
+                let outputName = "output-" + randomUUID().toString();
+                outputFiles.push({
+                    content: testCase.output,
+                    name: outputName
+                });
+                outputFilesNames.push(outputName);
+            } else {
+                if (!body.outputVerifier) {
+                    throw new Error("Test case must have output or challenge must have output verifier");
+                }
+                outputFilesNames.push("");
+            }
         }
 
         if (inputFiles.length > 0) {
@@ -309,6 +317,18 @@ export default class ChallengeImpl implements ChallengeService {
             console.log("Uploaded input generators to: ", scriptLocation)
         }
 
+        if (outputFiles.length > 0) {
+            await fileHandlingClient.uploadFolderContent(
+                (process.env as any).FILE_HANDLING_API_KEY,
+                resultsLocation,
+                outputFiles
+            );
+            await db.collection("Challenge").doc(body.challengeId).update({
+                results_location: resultsLocation
+            });
+            console.log("Uploaded output files to: ", resultsLocation)
+        }
+
         for (let i in (body.testCases ?? [])) {
             let testCase = (body.testCases ?? [])[i];
             let testCaseId = "test-case-" + randomUUID().toString();
@@ -316,6 +336,7 @@ export default class ChallengeImpl implements ChallengeService {
                 description: testCase.description,
                 is_generated: !!testCase.inputGenerator,
                 location: testCaseFileNames[i],
+                output_file_location: outputFilesNames[i],
                 max_memory: testCase.maxMemory,
                 max_runtime: testCase.maxTime,
                 points: testCase.points,
@@ -325,6 +346,7 @@ export default class ChallengeImpl implements ChallengeService {
                 description: testCase.description,
                 is_generated: !!testCase.inputGenerator,
                 location: testCaseFileNames[i],
+                output_file_location: outputFilesNames[i],
                 max_memory: testCase.maxMemory,
                 max_runtime: testCase.maxTime,
                 points: testCase.points,
@@ -333,8 +355,84 @@ export default class ChallengeImpl implements ChallengeService {
             console.log("Uploaded test case to firestore: ", testCaseId)
         }
 
+        return await this.freshDTO(body.challengeId);
+    }
+
+    private async freshDTO(challengeId: string) {
+        const db = getFirestore();
+        const challenge = await db.collection("Challenge").doc(challengeId).get();
+
         return {
-            id: body.challengeId
+            id: challengeId,
+            name: challenge.data()!.name,
+            description: challenge.data()!.description,
+            user: challenge.data()!.created_by,
+            testCases: (await db.collection("Challenge").doc(challengeId).collection("Testcases").get()).docs.map(
+                d => ({
+                    id: d.id,
+                    name: d.data().name,
+                    description: d.data().description,
+                    points: d.data().points
+                })
+            )
         };
+    }
+
+    async get(body: GetBody): Promise<GetReturned> {
+        return await this.freshDTO(body.challengeId);
+    }
+
+    async list(body: ListBody): Promise<ListReturned> {
+        const db = getFirestore();
+        const challenges = await db.collection("Challenge").get();
+        const challengeDTOs: Challenge[] = [];
+
+        for (let challenge of challenges.docs) {
+            challengeDTOs.push({
+                id: challenge.id,
+                name: challenge.data().name,
+                description: challenge.data().description,
+                user: challenge.data().created_by,
+                testCases: (await db.collection("Challenge").doc(challenge.id).collection("Testcases").get()).docs.map(
+                    d => ({
+                        id: d.id,
+                        name: d.data().name,
+                        description: d.data().description,
+                        points: d.data().points
+                    })
+                )
+            });
+        }
+
+        return challengeDTOs;
+    }
+
+    async listByUser(body: ListByUserBody): Promise<ListByUserReturned> {
+        const db = getFirestore();
+        const challenges = await db.collection("Challenge").where(
+            "user",
+            "==",
+            body.userId
+        ).get();
+        const challengeDTOs: Challenge[] = [];
+
+        for (let challenge of challenges.docs) {
+            challengeDTOs.push({
+                id: challenge.id,
+                name: challenge.data().name,
+                description: challenge.data().description,
+                user: challenge.data().created_by,
+                testCases: (await db.collection("Challenge").doc(challenge.id).collection("Testcases").get()).docs.map(
+                    d => ({
+                        id: d.id,
+                        name: d.data().name,
+                        description: d.data().description,
+                        points: d.data().points
+                    })
+                )
+            });
+        }
+
+        return challengeDTOs;
     }
 }

@@ -8,7 +8,6 @@
         "@google-cloud/storage": "^7.1.0",
         "@google-cloud/pubsub": "^4.0.6",
         "firebase-admin": "^11.11.1",
-        "cors": "^2.8.5",
         "express": "^4.18.2"
     },
     "files": [
@@ -16,7 +15,6 @@
         "package.json"
     ],
     "workspaces": [
-        "notification-publisher",
         "user",
         "challenge",
         "solution",

@@ -1,12 +1,13 @@
 import { Solution } from "../../client/returnedTypes";
 import SolutionService from "../api/SolutionService";
-import {  SolveBody } from "../types/EndpointInputTypes";
+import {ListBody, ResultBody, SolveBody} from "../types/EndpointInputTypes";
 import FileHandlingClient from '../../client/FileHandlingClient';
-import { sign } from "jsonwebtoken";
+import { decode } from "jsonwebtoken";
 import { randomUUID } from "crypto";
 import { PubSub } from "@google-cloud/pubsub";
 import { initializeApp, applicationDefault, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import {ListReturned, ResultReturned} from "../types/EndpointReturnedTypes";
 
 // initializeApp({
 //     credential: applicationDefault()
@@ -62,9 +63,87 @@ export default class SolutionImpl implements SolutionService {
         );
         console.log("Published message to pubsub topic: ", topicName);
 
+        const userId = decode(body.authToken, {json: true})!["userId"];
+
         return {
-            id: folderName
+            id: folderName,
+            challengeId: body.challengeId,
+            user: userId,
+            testCaseResults: []
         };
+
+    }
+
+    async result(body: ResultBody): Promise<ResultReturned> {
+        const db = getFirestore()
+        let solution = (await db.collection("Solution")
+            .where(
+                "user",
+                "==",
+                body.userId
+            )
+            .where(
+                "challenge_name",
+                "==",
+                body.challengeId
+            )
+            .get())
+            .docs[0];
+        console.log(solution)
+
+        return {
+            id: solution.id,
+            challengeId: solution.data().challenge_name,
+            user: solution.data().user,
+            testCaseResults: (
+                await db.collection("Solution")
+                    .doc(solution.id)
+                    .collection("Result")
+                    .doc("Result")
+                    .collection("SubResults").get())
+                .docs
+                .map(d => d.data())
+                .map(d => ({
+                    points: d.points as number,
+                    testCaseId: d.test_case_id as string,
+                    memory: d.memory as number,
+                    time: d.runtime as number
+                }))
+        }
+    }
+
+    async list(body: ListBody): Promise<ListReturned> {
+        const db = getFirestore()
+        let solutions = (await db.collection("Solution").get()).docs;
+        console.log(solutions)
+        let returned: ListReturned = solutions.map(d => ({
+            id: d.id,
+            challengeId: d.data().challenge_name,
+            user: d.data().user,
+            testCaseResults: []
+        }));
+
+        for (let i = 0; i < solutions.length; i++) {
+
+            returned[i].testCaseResults = (
+                await db.collection("Solution")
+                    .doc(solutions[i].id)
+                    .collection("Result")
+                    .doc("Result")
+                    .collection("SubResults").get())
+                .docs
+                .map(d => d.data())
+                .map(d => ({
+                    points: d.points as number,
+                    testCaseId: d.test_case_id as string,
+                    memory: d.memory as number,
+                    time: d.runtime as number
+                })
+            );
+
+        }
+
+        return returned;
 
     }
 

@@ -34,6 +34,34 @@ class SolutionClient {
         );
         return await answer.json();
     }
+    static async list(
+        authToken: string
+    ): Promise<returnValueModel.Solution> {
+        const answer = await fetch(
+            `${url}/solution/list`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "GET"            }
+        );
+        return await answer.json();
+    }
+    static async result(
+        authToken: string
+    ): Promise<returnValueModel.Solution> {
+        const answer = await fetch(
+            `${url}/solution/result`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "GET"            }
+        );
+        return await answer.json();
+    }
 }
 
 export default SolutionClient;

@@ -71,9 +71,47 @@ interface AddControlSolutionBody {
     */
     challengeId: string;
 }
+/** 
+* @description Get a challenge
+*/
+interface GetBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string
+    /** 
+    * @description Id of the challenge to get
+    */
+    challengeId: string;
+}
+/** 
+* @description List all challenges
+*/
+interface ListBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string
+}
+/** 
+* @description List all challenges of a user
+*/
+interface ListByUserBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string
+    /** 
+    * @description Id of the user to get the challenges of
+    */
+    userId: string;
+}
 
 export {
     UploadBody,
     AddTestCasesBody,
-    AddControlSolutionBody
+    AddControlSolutionBody,
+    GetBody,
+    ListBody,
+    ListByUserBody
 }

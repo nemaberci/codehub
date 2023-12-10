@@ -84,6 +84,48 @@ class ChallengeClient {
         );
         return await answer.json();
     }
+    static async get(
+        authToken: string
+    ): Promise<returnValueModel.Challenge> {
+        const answer = await fetch(
+            `${url}/challenge/get`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "GET"            }
+        );
+        return await answer.json();
+    }
+    static async list(
+        authToken: string
+    ): Promise<returnValueModel.Challenge> {
+        const answer = await fetch(
+            `${url}/challenge/list`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "GET"            }
+        );
+        return await answer.json();
+    }
+    static async listByUser(
+        authToken: string
+    ): Promise<returnValueModel.Challenge> {
+        const answer = await fetch(
+            `${url}/challenge/list_by_user`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "GET"            }
+        );
+        return await answer.json();
+    }
 }
 
 export default ChallengeClient;

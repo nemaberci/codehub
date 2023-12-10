@@ -66,7 +66,7 @@ for i in range(len(test_cases)):
                 }
             )
     if "results_location" in doc:
-        expected_output = open(doc["results_location"] + "/" + test_case["location"], "r").readlines()
+        expected_output = open(doc["results_location"] + "/" + test_case["output_file_location"], "r").readlines()
         produced_output = open("output_" + str(i), "r").readlines()
         for i in range(len(expected_output)):
             print(expected_output[i] == produced_output[i])
