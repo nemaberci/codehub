@@ -29,6 +29,11 @@ interface Challenge {
     * @type model.Testcase[]
     */
     testCases: model.Testcase[];
+    /** 
+    * @description The date the challenge was created
+    * @type string
+    */
+    createdAt: string;
 }
 
 export default Challenge

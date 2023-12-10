@@ -45,7 +45,7 @@ export default class SolutionImpl implements SolutionService {
             entry_point: body.entryPoint ?? "Solution.java",
             time_submitted: new Date(),
             source_folder: folderName,
-            user: "todo",
+            user: decode(body.authToken, {json: true})!.userId,
         });
         console.log("Uploaded solution to firestore: ", solutionId);
 
