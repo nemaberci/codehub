@@ -87,6 +87,7 @@ export default class SolutionImpl implements SolutionService {
                 "==",
                 body.challengeId
             )
+            .orderBy("time_submitted", "desc")
             .get())
             .docs[0];
         console.log(solution)
@@ -114,7 +115,13 @@ export default class SolutionImpl implements SolutionService {
 
     async list(body: ListBody): Promise<ListReturned> {
         const db = getFirestore()
-        let solutions = (await db.collection("Solution").get()).docs;
+        let solutions = (await db.collection("Solution")
+            .where(
+                "challenge_name",
+                "==",
+                body.challengeId
+            )
+            .get()).docs;
         console.log(solutions)
         let returned: ListReturned = solutions.map(d => ({
             id: d.id,
