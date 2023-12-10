@@ -14,6 +14,14 @@ import axios from "axios";
 	);
 }*/
 
+interface TestCase {
+	score: number;
+	description: string;
+	maxMemory: number;
+	maxRuntime: number;
+	name: string;
+}
+
 export default function EditTestCases() {
 	const navigate = useNavigate();
 	return (
@@ -34,26 +42,31 @@ export default function EditTestCases() {
 						return errors;
 					}}*/
 					onSubmit={async (values, { setSubmitting }) => {
-						const response = await axios.post("http://localhost:3002/challenge/add_test_cases/113/", {
-									"outputVerifier": {
-									  "content": "CgpkZWYgdmVyaWZ5KGlucHV0X2ZpbGVfY29udGVudHMsIG91dHB1dF9maWxlX2NvbnRlbnRzKToKICAgIHByaW50KGludChvdXRwdXRfZmlsZV9jb250ZW50c1swXSksIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzBdKSArIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzFdKSkKICAgIHByaW50KGludChvdXRwdXRfZmlsZV9jb250ZW50c1sxXSksIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzBdKSAqIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzFdKSkKICAgIHJldHVybiBpbnQob3V0cHV0X2ZpbGVfY29udGVudHNbMF0pID09IGludChpbnB1dF9maWxlX2NvbnRlbnRzWzBdKSArIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzFdKSBhbmQgaW50KG91dHB1dF9maWxlX2NvbnRlbnRzWzFdKSA9PSBpbnQoaW5wdXRfZmlsZV9jb250ZW50c1swXSkgKiBpbnQoaW5wdXRfZmlsZV9jb250ZW50c1sxXSkK",
-									  "name": "verifier.py"
-									},
-									"testCases": values.testCases.map((testcase)=>{
-										return {
-										"input": "NTYKNDUK",
-										"points": testcase.score,
-										"description": testcase.description,
-										"maxMemory": testcase.maxMemory,
-										"maxTime": testcase.maxRuntime,
-										"name": testcase.name,
-									}})
-									},{
-									headers:{
-										Authorization:`Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDIwNTM0MzYsImV4cCI6MTczMzYxMTAzNn0.WqM_eJflqKMTlkP9L3SNFYQzMK_UQAwqR30Utmwh16RjOlg1roYWAegMC619bEfp4Oh9QSDlVZtLFPRS7-O0esYeyBiLaioZ6pX25kYMXTfEdtKfRVmdlKFNIfNFJKn5P9srPNqOs-ObI8gtf2vZp8b1Ef1NanFry6zPhTtoTO3U7UkNoPAu9t7oTzji8RcprYDRg8t7NeNakK8oyHUZHqtzToONaM1de69uYGY-P8IFU5W1MK8vGB6GNYZIuxlYb0-SiiTXtwGXckHEiAup5bo0h3XhD56R2LHSsH8lDUcrgCZb5bTJehvzOp9WIC5-Y73Yoj_tjHM3bv2eZOYMMlQDxPpQxllGppRobLwnGQ9JlvotmSGC231rVmIffGIx3tK2rmLrESn1oUNy4nomhw8QvcaYC-PzBJFzL9RyveYHkJel6X3czEm-RIOchDlxbMQV5Wwkeu0BOMGo9KFVFd_lL73XW47ogtxhtbwX13pKQUv-jxT9xVjHWa0yUtxN`
-									}
-								  }
-							);
+						await axios.post(
+							"http://localhost:3002/challenge/add_test_cases/113/",
+							{
+								outputVerifier: {
+									content:
+										"CgpkZWYgdmVyaWZ5KGlucHV0X2ZpbGVfY29udGVudHMsIG91dHB1dF9maWxlX2NvbnRlbnRzKToKICAgIHByaW50KGludChvdXRwdXRfZmlsZV9jb250ZW50c1swXSksIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzBdKSArIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzFdKSkKICAgIHByaW50KGludChvdXRwdXRfZmlsZV9jb250ZW50c1sxXSksIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzBdKSAqIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzFdKSkKICAgIHJldHVybiBpbnQob3V0cHV0X2ZpbGVfY29udGVudHNbMF0pID09IGludChpbnB1dF9maWxlX2NvbnRlbnRzWzBdKSArIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzFdKSBhbmQgaW50KG91dHB1dF9maWxlX2NvbnRlbnRzWzFdKSA9PSBpbnQoaW5wdXRfZmlsZV9jb250ZW50c1swXSkgKiBpbnQoaW5wdXRfZmlsZV9jb250ZW50c1sxXSkK",
+									name: "verifier.py",
+								},
+								testCases: values.testCases.map((testcase: TestCase) => {
+									return {
+										input: "NTYKNDUK",
+										points: testcase.score,
+										description: testcase.description,
+										maxMemory: testcase.maxMemory,
+										maxTime: testcase.maxRuntime,
+										name: testcase.name,
+									};
+								}),
+							},
+							{
+								headers: {
+									Authorization: `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDIwNTM0MzYsImV4cCI6MTczMzYxMTAzNn0.WqM_eJflqKMTlkP9L3SNFYQzMK_UQAwqR30Utmwh16RjOlg1roYWAegMC619bEfp4Oh9QSDlVZtLFPRS7-O0esYeyBiLaioZ6pX25kYMXTfEdtKfRVmdlKFNIfNFJKn5P9srPNqOs-ObI8gtf2vZp8b1Ef1NanFry6zPhTtoTO3U7UkNoPAu9t7oTzji8RcprYDRg8t7NeNakK8oyHUZHqtzToONaM1de69uYGY-P8IFU5W1MK8vGB6GNYZIuxlYb0-SiiTXtwGXckHEiAup5bo0h3XhD56R2LHSsH8lDUcrgCZb5bTJehvzOp9WIC5-Y73Yoj_tjHM3bv2eZOYMMlQDxPpQxllGppRobLwnGQ9JlvotmSGC231rVmIffGIx3tK2rmLrESn1oUNy4nomhw8QvcaYC-PzBJFzL9RyveYHkJel6X3czEm-RIOchDlxbMQV5Wwkeu0BOMGo9KFVFd_lL73XW47ogtxhtbwX13pKQUv-jxT9xVjHWa0yUtxN`,
+								},
+							}
+						);
 						setTimeout(() => {
 							alert(JSON.stringify(values, null, 2));
 

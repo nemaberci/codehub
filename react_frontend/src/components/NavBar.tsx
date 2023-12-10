@@ -1,39 +1,30 @@
-import { CircleNotch } from "@phosphor-icons/react";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { jwtDecode } from "jwt-decode";
 import { Button, Navbar, Tooltip } from "react-daisyui";
 import { useNavigate } from "react-router-dom";
-import { useAuth, useSigninCheck, useUser } from "reactfire";
-
-const googleAuthProvider = new GoogleAuthProvider();
 
 export default function NavBar() {
 	const navigate = useNavigate();
 
-	const auth = useAuth();
-
-	const { data: user } = useUser();
-	const { status: signInStatus, data: signInCheckResult } = useSigninCheck();
-
 	let loginButton = <></>;
 
-	if (signInStatus === "loading") {
-		loginButton = <NavBarButtonsLoading />;
-	} else if (signInStatus === "error") {
-		loginButton = <Button color="error">Auth Error</Button>;
-	} else if (signInStatus === "success") {
-		if (signInCheckResult.signedIn) {
-			loginButton = (
-				<NavBarButtonsSignedIn displayName={user?.displayName ?? ""} logout={() => auth.signOut()} />
-			);
-		} else {
-			loginButton = (
-				<NavBarButtonsGuest
-					action={() => {
-						signInWithPopup(auth, googleAuthProvider);
-					}}
-				/>
-			);
-		}
+	if (localStorage.getItem("token")?.trim().length) {
+		loginButton = (
+			<NavBarButtonsSignedIn
+				displayName={jwtDecode(localStorage.getItem("token")!).exp + ""}
+				logout={() => {
+					localStorage.clear();
+					navigate("/");
+				}}
+			/>
+		);
+	} else {
+		loginButton = (
+			<NavBarButtonsGuest
+				action={() => {
+					navigate("/login");
+				}}
+			/>
+		);
 	}
 
 	return (
@@ -59,10 +50,6 @@ export default function NavBar() {
 			</Navbar>
 		</>
 	);
-}
-
-function NavBarButtonsLoading() {
-	return <CircleNotch className="spinning-slow" size={24} />;
 }
 
 function NavBarButtonsSignedIn({ displayName, logout }: { displayName: string; logout: () => void }) {

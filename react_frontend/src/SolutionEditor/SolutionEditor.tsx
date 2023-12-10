@@ -28,27 +28,28 @@ export default function SolutionEditor() {
 	}
 
 	async function submitSolution() {
-		try { 
-			
+		try {
 			setRunning(true);
-			const response = await axios.post("http://localhost:3001/solution/solve", {
-				"challengeId": "challenge-7ce170c5-b9c6-41f1-bc6c-ee27256de508",
-				"folderContents": [
-				  {
-					"name": "Solution.java",
-					"content": btoa(solution),
-				  }
-				]
-			},
-			{
-				headers:{
-					Authorization:`Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDIwNTM0MzYsImV4cCI6MTczMzYxMTAzNn0.WqM_eJflqKMTlkP9L3SNFYQzMK_UQAwqR30Utmwh16RjOlg1roYWAegMC619bEfp4Oh9QSDlVZtLFPRS7-O0esYeyBiLaioZ6pX25kYMXTfEdtKfRVmdlKFNIfNFJKn5P9srPNqOs-ObI8gtf2vZp8b1Ef1NanFry6zPhTtoTO3U7UkNoPAu9t7oTzji8RcprYDRg8t7NeNakK8oyHUZHqtzToONaM1de69uYGY-P8IFU5W1MK8vGB6GNYZIuxlYb0-SiiTXtwGXckHEiAup5bo0h3XhD56R2LHSsH8lDUcrgCZb5bTJehvzOp9WIC5-Y73Yoj_tjHM3bv2eZOYMMlQDxPpQxllGppRobLwnGQ9JlvotmSGC231rVmIffGIx3tK2rmLrESn1oUNy4nomhw8QvcaYC-PzBJFzL9RyveYHkJel6X3czEm-RIOchDlxbMQV5Wwkeu0BOMGo9KFVFd_lL73XW47ogtxhtbwX13pKQUv-jxT9xVjHWa0yUtxN`
+			await axios.post(
+				`/api/solution/solve`,
+				{
+					challengeId: "challenge-7ce170c5-b9c6-41f1-bc6c-ee27256de508",
+					folderContents: [
+						{
+							name: "Solution.java",
+							content: btoa(solution),
+						},
+					],
+				},
+				{
+					headers: {
+						Authorization: `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDIwNTM0MzYsImV4cCI6MTczMzYxMTAzNn0.WqM_eJflqKMTlkP9L3SNFYQzMK_UQAwqR30Utmwh16RjOlg1roYWAegMC619bEfp4Oh9QSDlVZtLFPRS7-O0esYeyBiLaioZ6pX25kYMXTfEdtKfRVmdlKFNIfNFJKn5P9srPNqOs-ObI8gtf2vZp8b1Ef1NanFry6zPhTtoTO3U7UkNoPAu9t7oTzji8RcprYDRg8t7NeNakK8oyHUZHqtzToONaM1de69uYGY-P8IFU5W1MK8vGB6GNYZIuxlYb0-SiiTXtwGXckHEiAup5bo0h3XhD56R2LHSsH8lDUcrgCZb5bTJehvzOp9WIC5-Y73Yoj_tjHM3bv2eZOYMMlQDxPpQxllGppRobLwnGQ9JlvotmSGC231rVmIffGIx3tK2rmLrESn1oUNy4nomhw8QvcaYC-PzBJFzL9RyveYHkJel6X3czEm-RIOchDlxbMQV5Wwkeu0BOMGo9KFVFd_lL73XW47ogtxhtbwX13pKQUv-jxT9xVjHWa0yUtxN`,
+					},
 				}
-			});
-			
-		} catch(e) {
-			console.log(e)
-		} finally { 
+			);
+		} catch (e) {
+			console.log(e);
+		} finally {
 			setRunning(false);
 		}
 		//alert(solution);
