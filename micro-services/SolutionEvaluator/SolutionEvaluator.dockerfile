@@ -1,8 +1,7 @@
 FROM alpine:latest
 
 RUN apk add curl && apk add python3 && apk add bash && apk add py3-pip
-RUN pip install --upgrade pip
-RUN pip install --upgrade firebase-admin
+RUN pip install --upgrade firebase-admin --break-system-packages
 COPY solutionevaluator.sh .
 COPY create_files.py .
 COPY evaluate_solution.py .

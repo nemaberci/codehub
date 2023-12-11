@@ -15,7 +15,9 @@ curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${INPUT_TXT_FOLDE
 python3 ./create_files_input_txt.py 
 
 curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${INPUT_PY_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_input_py.txt"
-python3 ./create_files_input_py.py 
+python3 ./create_files_input_py.py
+
+# Step 2: Generate input files, if needed
 
 TEST_CASES_GENERATED_ARR=(${TEST_CASES_GENERATED//;/ })
 TEST_CASES_LOCATION_ARR=(${TEST_CASES_LOCATION//;/ })
@@ -29,6 +31,7 @@ done
 
 adduser --system --shell /bin/bash --disabled-password runneruser
 
+# Step 3: Run the executable files
 for i in ${!TEST_CASES_GENERATED_ARR[@]}; do
     date +%s%N > /work/time/before_${i};
     INPUT_NAME=/work/input/input_${i}
@@ -37,6 +40,7 @@ for i in ${!TEST_CASES_GENERATED_ARR[@]}; do
     date +%s%N > /work/time/after_${i};
 done
 
+# Step 4: Upload the output files
 python3 ./encode_files.py 
 curl ${FILE_HANDLER_URL}/file_handling/upload_folder_content/${RESULTS_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -H "Content-Type: application/json" --data "@/work/files.txt"
 
