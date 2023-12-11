@@ -33,11 +33,25 @@ for i in range(len(test_cases)):
     print(test_case)
     millis = (int(open("after_" + str(i), "r").read()) - int(open("before_" + str(i), "r").read())) / 1_000_000
     print("Test case " + str(i) + " took " + str(millis) + " milliseconds")
+    kbytes = int(open("peak_" + str(i), "r").read())
+    print(f"Test case {i}'s peak memory consumption is {kbytes} KB")
     if millis > test_case["max_runtime"]:
         print("Test case " + str(i) + " failed: exceeded max runtime")
         sub_results_ref.document("Testcase_" + str(i)).set(
             {
                 "runtime": millis,
+                "memory": kbytes,
+                "points": 0,
+                "test_case_id": test_case_doc_refs[i].id
+            }
+        )
+        continue
+    if kbytes > test_case["max_memory"]:
+        print("Test case " + str(i) + " failed: exceeded max memory")
+        sub_results_ref.document("Testcase_" + str(i)).set(
+            {
+                "runtime": millis,
+                "memory": kbytes,
                 "points": 0,
                 "test_case_id": test_case_doc_refs[i].id
             }
@@ -52,6 +66,7 @@ for i in range(len(test_cases)):
             sub_results_ref.document("Testcase_" + str(i)).set(
                 {
                     "runtime": millis,
+                    "memory": kbytes,
                     "points": test_case["points"],
                     "test_case_id": test_case_doc_refs[i].id
                 }
@@ -61,6 +76,7 @@ for i in range(len(test_cases)):
             sub_results_ref.document("Testcase_" + str(i)).set(
                 {
                     "runtime": millis,
+                    "memory": kbytes,
                     "points": 0,
                     "test_case_id": test_case_doc_refs[i].id
                 }

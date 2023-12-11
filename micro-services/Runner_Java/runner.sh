@@ -8,6 +8,7 @@ python3 ./create_files_executable.py
 mkdir /work/input
 mkdir -m 777 /work/output
 mkdir /work/time
+mkdir /work/memory
 mkdir /work/input_txt
 mkdir /work/input_py
 
@@ -36,7 +37,7 @@ for i in ${!TEST_CASES_GENERATED_ARR[@]}; do
     date +%s%N > /work/time/before_${i};
     INPUT_NAME=/work/input/input_${i}
     OUTPUT_NAME=/work/output/output_${i}
-    timeout 10s su runneruser -c "cd /work && ${JAVA_HOME}/bin/java ${ENTRY_POINT} < ${INPUT_NAME} > ${OUTPUT_NAME}";
+    timeout 10s su runneruser -c "cd /work && time -o /work/memory/peak_$i -f '%M' ${JAVA_HOME}/bin/java ${ENTRY_POINT} < ${INPUT_NAME} > ${OUTPUT_NAME}";
     date +%s%N > /work/time/after_${i};
 done
 
