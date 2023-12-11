@@ -32,9 +32,9 @@ spec:
               memory: "256Mi"
           env:
             - name: FILE_HANDLING_URL
-              value: "34.118.238.41"
+              value: "34.118.236.182"
             - name: FILE_HANDLING_PORT
-              value: "3000"
+              value: "80"
             - name: FILE_HANDLING_API_KEY
               value: <TOKEN>
 
@@ -51,4 +51,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 3000
-  type: LoadBalancer
+  type: ClusterIP
