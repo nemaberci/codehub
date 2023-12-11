@@ -5,17 +5,17 @@ import * as model from "./index";
 */
 interface TestCase {
     /** 
-    * @description The constant input of the test case. Either this or inputGeneratorFileLocation must be provided.
+    * @description The constant input of the test case. Either this or inputGenerator must be provided.
     * @type string
     */
     input?: string;
     /** 
-    * @description The location of the input generator file of the test case. Either this or input must be provided.
-    * @type string
+    * @description The input generator python script file. Either this or input must be provided.
+    * @type model.File
     */
-    inputGeneratorFileLocation?: string;
+    inputGenerator?: model.File;
     /** 
-    * @description The constant output of the test case. Either this or outputVerifierFileLocation of the challenge must be provided.
+    * @description The constant output of the test case. Either this or outputVerifier of the challenge must be provided.
     * @type string
     */
     output?: string;
@@ -24,6 +24,26 @@ interface TestCase {
     * @type number
     */
     points: number;
+    /** 
+    * @description The description of the test case. Optional.
+    * @type string
+    */
+    description: string;
+    /** 
+    * @description The maximum memory that the test case is allowed to use (KB).
+    * @type number
+    */
+    maxMemory?: number;
+    /** 
+    * @description The maximum time that the test case is allowed to use (ms).
+    * @type number
+    */
+    maxTime?: number;
+    /** 
+    * @description The name of the test case.
+    * @type string
+    */
+    name: string;
 }
 
 export default TestCase

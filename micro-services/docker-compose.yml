@@ -1,25 +1,13 @@
 version: '3'
 services:
-  notificationpublisher:
-    build:
-      context: .
-      dockerfile: NotificationPublisher.dockerfile
-    environment:
-      - PORT=3000
-    ports:
-      - "3000:3000"
-    networks:
-      - default
-    volumes:
-      - ./keys/:/work/keys/
   user:
     build:
       context: .
       dockerfile: User.dockerfile
     environment:
-      - PORT=3001
+      - PORT=3000
     ports:
-      - "3001:3001"
+      - "3000:3000"
     networks:
       - default
     volumes:
@@ -29,9 +17,9 @@ services:
       context: .
       dockerfile: Challenge.dockerfile
     environment:
-      - PORT=3002
+      - PORT=3001
     ports:
-      - "3002:3002"
+      - "3001:3001"
     networks:
       - default
     volumes:
@@ -41,9 +29,9 @@ services:
       context: .
       dockerfile: Solution.dockerfile
     environment:
-      - PORT=3003
+      - PORT=3002
     ports:
-      - "3003:3003"
+      - "3002:3002"
     networks:
       - default
     volumes:
@@ -53,9 +41,9 @@ services:
       context: .
       dockerfile: FileHandling.dockerfile
     environment:
-      - PORT=3004
+      - PORT=3003
     ports:
-      - "3004:3004"
+      - "3003:3003"
     networks:
       - default
     volumes:

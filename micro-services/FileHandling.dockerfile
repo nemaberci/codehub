@@ -8,7 +8,10 @@ COPY FileHandling/types ./FileHandling/types
 COPY FileHandling/package.json ./FileHandling
 COPY FileHandling/tsconfig.json ./FileHandling
 COPY FileHandling/FileHandlingServer.ts ./FileHandling
+COPY package.json .
 COPY client ./client
+
+RUN ["npm", "install"]
 
 WORKDIR /work/FileHandling
 

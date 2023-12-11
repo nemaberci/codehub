@@ -107,6 +107,120 @@ app.post('/challenge/upload/',
     res.end();
   }
 )
+console.log("Registered endpoint on '/challenge/add_test_cases/:challenge_id/'");
+app.post('/challenge/add_test_cases/:challenge_id/',
+  (req, res, next) => {
+    console.log("Call to '/challenge/add_test_cases/:challenge_id/'");
+    next();
+  },
+  userAuthMiddleware,
+  async (req, res, next) => {
+    try {
+      let answer = await serviceImpl.addTestCases(
+        {
+          challengeId: req.params.challenge_id,
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
+      );
+      res.status(200).send(answer);
+    } catch (e: any) {
+      res.status(e.status ?? 500).send(typeof e.message === "string" ? `["${e.message}"]` : e.message);
+    }
+    res.end();
+  }
+)
+console.log("Registered endpoint on '/challenge/add_control_solution/:challenge_id/'");
+app.post('/challenge/add_control_solution/:challenge_id/',
+  (req, res, next) => {
+    console.log("Call to '/challenge/add_control_solution/:challenge_id/'");
+    next();
+  },
+  userAuthMiddleware,
+  async (req, res, next) => {
+    try {
+      let answer = await serviceImpl.addControlSolution(
+        {
+          challengeId: req.params.challenge_id,
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
+      );
+      res.status(200).send(answer);
+    } catch (e: any) {
+      res.status(e.status ?? 500).send(typeof e.message === "string" ? `["${e.message}"]` : e.message);
+    }
+    res.end();
+  }
+)
+console.log("Registered endpoint on '/challenge/get/:challenge_id/'");
+app.get('/challenge/get/:challenge_id/',
+  (req, res, next) => {
+    console.log("Call to '/challenge/get/:challenge_id/'");
+    next();
+  },
+  userAuthMiddleware,
+  async (req, res, next) => {
+    try {
+      let answer = await serviceImpl.get(
+        {
+          challengeId: req.params.challenge_id,
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
+      );
+      res.status(200).send(answer);
+    } catch (e: any) {
+      res.status(e.status ?? 500).send(typeof e.message === "string" ? `["${e.message}"]` : e.message);
+    }
+    res.end();
+  }
+)
+console.log("Registered endpoint on '/challenge/list/'");
+app.get('/challenge/list/',
+  (req, res, next) => {
+    console.log("Call to '/challenge/list/'");
+    next();
+  },
+  userAuthMiddleware,
+  async (req, res, next) => {
+    try {
+      let answer = await serviceImpl.list(
+        {
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
+      );
+      res.status(200).send(answer);
+    } catch (e: any) {
+      res.status(e.status ?? 500).send(typeof e.message === "string" ? `["${e.message}"]` : e.message);
+    }
+    res.end();
+  }
+)
+console.log("Registered endpoint on '/challenge/list_by_user/:user_id/'");
+app.get('/challenge/list_by_user/:user_id/',
+  (req, res, next) => {
+    console.log("Call to '/challenge/list_by_user/:user_id/'");
+    next();
+  },
+  userAuthMiddleware,
+  async (req, res, next) => {
+    try {
+      let answer = await serviceImpl.listByUser(
+        {
+          userId: req.params.user_id,
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
+      );
+      res.status(200).send(answer);
+    } catch (e: any) {
+      res.status(e.status ?? 500).send(typeof e.message === "string" ? `["${e.message}"]` : e.message);
+    }
+    res.end();
+  }
+)
 
 app.listen(parseInt(process.env.PORT ?? '3000'))
 console.log(`App started and listening on port ${process.env.PORT ?? 3000}`);

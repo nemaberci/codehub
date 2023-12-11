@@ -85,20 +85,17 @@ loadExternalKey();
 
 const app = express()
 app.use(express.json())
-console.log("Registered endpoint on '/user/by_email_address/'");
-app.get('/user/by_email_address/',
+console.log("Registered endpoint on '/user/login/'");
+app.post('/user/login/',
   (req, res, next) => {
-    console.log("Call to '/user/by_email_address/'");
+    console.log("Call to '/user/login/'");
     next();
   },
-  userAuthMiddleware,
   async (req, res, next) => {
     try {
-      let answer = await serviceImpl.byEmailAddress(
+      let answer = await serviceImpl.login(
         {
-          ...req.body,
-          authToken: req.headers.authorization!.substring("Bearer ".length)
-        }
+          ...req.body        }
       );
       res.status(200).send(answer);
     } catch (e: any) {
@@ -107,17 +104,20 @@ app.get('/user/by_email_address/',
     res.end();
   }
 )
-console.log("Registered endpoint on '/user/from_google_auth_token/'");
-app.get('/user/from_google_auth_token/',
+console.log("Registered endpoint on '/user/register/'");
+app.post('/user/register/',
   (req, res, next) => {
-    console.log("Call to '/user/from_google_auth_token/'");
+    console.log("Call to '/user/register/'");
     next();
   },
+  userAuthMiddleware,
   async (req, res, next) => {
     try {
-      let answer = await serviceImpl.fromGoogleAuthToken(
+      let answer = await serviceImpl.register(
         {
-          ...req.body        }
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
       );
       res.status(200).send(answer);
     } catch (e: any) {

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: solution
+  namespace: solution
+  labels:
+    app: solution
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: solution
+  template:
+    metadata:
+      labels:
+        app: solution
+      namespace: solution
+    spec:
+      serviceAccountName: solution
+      nodeSelector:
+        iam.gke.io/gke-metadata-server-enabled: "true"
+      containers:
+        - name: solution
+          image: europe-west4-docker.pkg.dev/codehub-400314/code-hub-main/solution:latest
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+            requests:
+              cpu: "500m"
+              memory: "256Mi"
+          env:
+            - name: FILE_HANDLING_URL
+              value: "34.118.236.182"
+            - name: FILE_HANDLING_PORT
+              value: "80"
+            - name: FILE_HANDLING_API_KEY
+              value: <TOKEN>
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: solution-service
+  namespace: solution
+spec:
+  selector:
+    app: solution
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: ClusterIP

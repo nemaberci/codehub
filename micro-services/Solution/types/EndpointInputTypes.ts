@@ -21,7 +21,39 @@ interface SolveBody {
     */
     entryPoint?: string;
 }
+/** 
+* @description List all solutions for a challenge
+*/
+interface ListBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string
+    /** 
+    * @description Id of the challenge to get the scoreboard of
+    */
+    challengeId: string;
+}
+/** 
+* @description Get the result of a solution of a challenge for a user
+*/
+interface ResultBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string
+    /** 
+    * @description Id of the challenge to get the results of
+    */
+    challengeId: string;
+    /** 
+    * @description Id of the user to get the results of
+    */
+    userId: string;
+}
 
 export {
-    SolveBody
+    SolveBody,
+    ListBody,
+    ResultBody
 }
