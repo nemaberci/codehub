@@ -49,10 +49,10 @@ export default function Highscores() {
 								<HighscoreRow
 									highscore={{
 										username: highscore.user,
-										points: highscore.testCaseResults.map((result) => result.points),
+										points: highscore.testCaseResults.map((result: any) => result.points),
 										timeSpent: 0,
-										runTime: highscore.testCaseResults.map((result) => Math.ceil(result.time)),
-										memory: highscore.testCaseResults.map((result) => 0),
+										runTime: highscore.testCaseResults.map((result: any) => Math.ceil(result.time)),
+										memory: highscore.testCaseResults.map(() => 0),
 									}}
 									index={index + 1}
 									key={index}

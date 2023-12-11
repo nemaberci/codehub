@@ -18,7 +18,7 @@ interface TestCase {
 }
 
 export default function EditTestCases() {
-	const [initialValues, setInitialValues] = useState({ testCases: [] });
+	const [initialValues, setInitialValues] = useState({ name: "", testCases: [] });
 	const { id } = useParams();
 
 	async function fetchInitialValues() {
@@ -42,7 +42,7 @@ export default function EditTestCases() {
 				<Formik
 					enableReinitialize
 					initialValues={initialValues}
-					onSubmit={async (values: { testCases: TestCase[] }, { setSubmitting }) => {
+					onSubmit={async (values: { name: string; testCases: TestCase[] }, { setSubmitting }) => {
 						try {
 							for (const testCase of values.testCases) {
 								if (testCase.inputType === "raw") {

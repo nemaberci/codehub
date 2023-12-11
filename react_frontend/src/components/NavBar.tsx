@@ -10,7 +10,7 @@ export default function NavBar() {
 	if (localStorage.getItem("token")?.trim().length) {
 		loginButton = (
 			<NavBarButtonsSignedIn
-				displayName={jwtDecode(localStorage.getItem("token")!).userId + ""}
+				displayName={(jwtDecode(localStorage.getItem("token")!) as any).userId + ""}
 				logout={() => {
 					localStorage.clear();
 					navigate("/");

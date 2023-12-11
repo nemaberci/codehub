@@ -14,7 +14,8 @@ export interface Challenge {
 }
 
 export default function ChallengeList() {
-	const [challenges, setChallenges] = useState([]);
+	const init: Challenge[] = [];
+	const [challenges, setChallenges] = useState(init);
 
 	async function fetchChallenges() {
 		try {

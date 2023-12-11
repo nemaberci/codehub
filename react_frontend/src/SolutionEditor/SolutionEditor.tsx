@@ -19,7 +19,7 @@ export default function SolutionEditor() {
 	const [solution, setSolution] = useState("");
 	const [running, setRunning] = useState(false);
 	const [results, setResults] = useState({ testCaseResults: [] });
-	const [intervalHandle, setIntervalHandle] = useState(null);
+	//const [intervalHandle, setIntervalHandle] = useState(null);
 
 	const { id: challengeId } = useParams();
 	const userId = (jwtDecode(localStorage.getItem("token")!) as any).userId;
@@ -44,9 +44,10 @@ export default function SolutionEditor() {
 			setResults(response.data);
 			if (response.data.testCaseResults?.length > 0) {
 				setRunning(false);
-				if (intervalHandle) {
+				/*if (intervalHandle) {
 					clearInterval(intervalHandle);
-				}
+					setIntervalHandle(null);
+				}*/
 			}
 		} catch (e) {
 			console.error(e);
@@ -65,7 +66,7 @@ export default function SolutionEditor() {
 					},
 				],
 			});
-			setIntervalHandle(setInterval(fetchResult, 15000));
+			//setIntervalHandle(setInterval(fetchResult, 15000));
 		} catch (error) {
 			console.error(error);
 			setRunning(false);
@@ -130,7 +131,7 @@ export default function SolutionEditor() {
 						</div>
 						<Divider />
 						<h4>{results.testCaseResults.length > 0 ? "Eredmények" : "Még nincsenek eredmények"}</h4>
-						{results.testCaseResults.map((result, index) => (
+						{results.testCaseResults.map((result: any, index) => (
 							<div>
 								<b>{index + 1}. részfeladat</b>
 								<br />

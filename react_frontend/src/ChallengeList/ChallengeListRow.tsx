@@ -1,13 +1,11 @@
-import { Button, Table, Tooltip } from "react-daisyui";
+import { Table } from "react-daisyui";
 import { useNavigate } from "react-router-dom";
 import { Challenge } from "./ChallengeList";
-import { jwtDecode } from "jwt-decode";
-import { NotePencil } from "@phosphor-icons/react";
 
 export default function ChallengeListRow({ challenge, index }: { challenge: Challenge; index: number }) {
 	const navigate = useNavigate();
 
-	const userId: string = jwtDecode(localStorage.getItem("token")!).userId;
+	//const userId: string = jwtDecode(localStorage.getItem("token")!).userId;
 
 	return (
 		<Table.Row
