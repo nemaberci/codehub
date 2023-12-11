@@ -8,8 +8,8 @@ export default function HighscoreRow({ highscore, index }: { highscore: Highscor
 			<span>{highscore.username}</span>
 			<span>{highscore.points.join("/")}</span>
 			<span>{Math.floor(highscore.timeSpent / 60) + ":" + (highscore.timeSpent % 60)}</span>
-			<span>{highscore.runTime} ms</span>
-			<span>{highscore.memory} MB</span>
+			<span>{highscore.runTime.join("/")} ms</span>
+			<span>{highscore.memory.join("/")} MB</span>
 		</Table.Row>
 	);
 }

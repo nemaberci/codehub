@@ -4,7 +4,7 @@ import { Button, Divider } from "react-daisyui";
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
 import TabView from "../components/Tabs";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 // @ts-expect-error demo file
 import demoTask from "../assets/DemoTask.md";
 // @ts-expect-error demo file
@@ -12,12 +12,16 @@ import demoSolution from "../assets/DemoSolution.java";
 import Markdown from "react-markdown";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 export default function SolutionEditor() {
 	const navigate = useNavigate();
 	const [text, setText] = useState("");
 	const [solution, setSolution] = useState("");
 	const [running, setRunning] = useState(false);
+
+	const { id: challengeId } = useParams();
+	const userId = (jwtDecode(localStorage.getItem("token")!) as any).userId;
 
 	async function fetchText() {
 		setText(await fetch(demoTask).then((res) => res.text()));
@@ -27,26 +31,27 @@ export default function SolutionEditor() {
 		setSolution(await fetch(demoSolution).then((res) => res.text()));
 	}
 
+	async function fetchResult() {
+		try {
+			const response = await axios.get(`/api/solution/result/${challengeId}/${userId}`);
+			console.log(response.data);
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
 	async function submitSolution() {
 		try {
 			setRunning(true);
-			await axios.post(
-				`/api/solution/solve`,
-				{
-					challengeId: "challenge-7ce170c5-b9c6-41f1-bc6c-ee27256de508",
-					folderContents: [
-						{
-							name: "Solution.java",
-							content: btoa(solution),
-						},
-					],
-				},
-				{
-					headers: {
-						Authorization: `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDIwNTM0MzYsImV4cCI6MTczMzYxMTAzNn0.WqM_eJflqKMTlkP9L3SNFYQzMK_UQAwqR30Utmwh16RjOlg1roYWAegMC619bEfp4Oh9QSDlVZtLFPRS7-O0esYeyBiLaioZ6pX25kYMXTfEdtKfRVmdlKFNIfNFJKn5P9srPNqOs-ObI8gtf2vZp8b1Ef1NanFry6zPhTtoTO3U7UkNoPAu9t7oTzji8RcprYDRg8t7NeNakK8oyHUZHqtzToONaM1de69uYGY-P8IFU5W1MK8vGB6GNYZIuxlYb0-SiiTXtwGXckHEiAup5bo0h3XhD56R2LHSsH8lDUcrgCZb5bTJehvzOp9WIC5-Y73Yoj_tjHM3bv2eZOYMMlQDxPpQxllGppRobLwnGQ9JlvotmSGC231rVmIffGIx3tK2rmLrESn1oUNy4nomhw8QvcaYC-PzBJFzL9RyveYHkJel6X3czEm-RIOchDlxbMQV5Wwkeu0BOMGo9KFVFd_lL73XW47ogtxhtbwX13pKQUv-jxT9xVjHWa0yUtxN`,
+			await axios.post(`/api/solution/solve`, {
+				challengeId: "challenge-7ce170c5-b9c6-41f1-bc6c-ee27256de508",
+				folderContents: [
+					{
+						name: "Solution.java",
+						content: btoa(solution),
 					},
-				}
-			);
+				],
+			});
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -111,6 +116,9 @@ export default function SolutionEditor() {
 							</Button>
 							<Button color="error" startIcon={<Trash size={24} />}>
 								Törlés
+							</Button>
+							<Button color="error" startIcon={<Trash size={24} />} onClick={fetchResult}>
+								Eredmény
 							</Button>
 						</div>
 						<Divider />

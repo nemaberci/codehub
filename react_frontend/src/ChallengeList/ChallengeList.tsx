@@ -1,67 +1,44 @@
 import { Table } from "react-daisyui";
 import ChallengeListRow from "./ChallengeListRow";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export interface Challenge {
 	id: string;
 	name: string;
 	shortDescription: string;
-	totalPoints: number;
+	points: number[];
 	uploader: string;
 	uploadTime: string;
 }
 
-const demoChallengeList: Challenge[] = [
-	{
-		id: "0",
-		name: "Punched Cards",
-		shortDescription: "Lyukkártyák szöveges generálása paraméterek alapján",
-		totalPoints: 5,
-		uploader: "Google",
-		uploadTime: "2010-01-04 27:02:03",
-	},
-	{
-		id: "1",
-		name: "Stream",
-		shortDescription: "Streamek streamelése videokártyába",
-		totalPoints: 100,
-		uploader: "JZ",
-		uploadTime: "2014-14-14 14:14:14",
-	},
-	{
-		id: "2",
-		name: "Zárójelek",
-		shortDescription: "Érvényes zárójelezés ellenőrzése",
-		totalPoints: 3,
-		uploader: "Prog1",
-		uploadTime: "2020-20-20 20:20:20",
-	},
-	{
-		id: "3",
-		name: "Bűvös négyzetek",
-		shortDescription: "Bűvös négyzet megoldó készítése",
-		totalPoints: 11,
-		uploader: "Prog2",
-		uploadTime: "2021-21-21 21:21:21",
-	},
-	{
-		id: "4",
-		name: "Zárójelek",
-		shortDescription: "Érvényes zárójelezés ellenőrzése",
-		totalPoints: 3,
-		uploader: "Prog1",
-		uploadTime: "2020-20-20 20:20:20",
-	},
-	{
-		id: "5",
-		name: "Feladat2",
-		shortDescription: "Még egy feladat",
-		totalPoints: 4,
-		uploader: "Prog3",
-		uploadTime: "2023-23-23 23:23:23",
-	},
-];
-
 export default function ChallengeList() {
+	const [challenges, setChallenges] = useState([]);
+
+	async function fetchChallenges() {
+		try {
+			const response = await axios.get("/api/challenge/list");
+			response.data.map((challenge: any) => {
+				const points: number[] = challenge.testCases.map((testCase: any) => testCase.score);
+				return {
+					id: challenge.id,
+					name: challenge.name,
+					shortDescription: challenge.description,
+					uploader: challenge.user,
+					points: points,
+					uploadTime: challenge.uploadedAt,
+				};
+			});
+			setChallenges(response.data);
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	useEffect(() => {
+		fetchChallenges();
+	}, []);
+
 	return (
 		<>
 			<div className="h-screen w-full flex flex-col items-center">
@@ -78,8 +55,8 @@ export default function ChallengeList() {
 						</Table.Head>
 
 						<Table.Body>
-							{demoChallengeList.map((challenge, index) => (
-								<ChallengeListRow challenge={challenge} index={index + 1} key={index} />
+							{challenges.map((challenge: any, index) => (
+								<ChallengeListRow challenge={challenge} index={index + 1} key={challenge.id} />
 							))}
 						</Table.Body>
 					</Table>

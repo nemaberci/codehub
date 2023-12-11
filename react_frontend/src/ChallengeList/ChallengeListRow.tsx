@@ -10,7 +10,7 @@ export default function ChallengeListRow({ challenge, index }: { challenge: Chal
 			<span>{index}</span>
 			<span>{challenge.name}</span>
 			<span>{challenge.shortDescription}</span>
-			<span>{challenge.totalPoints}</span>
+			<span>{challenge.points.join("/")}</span>
 			<span>{challenge.uploader}</span>
 			<span>{challenge.uploadTime}</span>
 		</Table.Row>
