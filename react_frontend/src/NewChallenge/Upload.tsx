@@ -64,7 +64,7 @@ export default function Upload() {
 										error={errors.shortDescription}
 									/>
 									<FormRow
-										name="longDescription"
+										name="description"
 										type="textarea"
 										title={
 											<>

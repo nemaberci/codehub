@@ -11,7 +11,6 @@ export default function CheckboxField({
 	value?: string;
 	disabled?: boolean;
 }) {
-	console.log("CheckboxField", disabled);
 	return (
 		<label className="label cursor-pointer justify-start gap-4">
 			<Field type="checkbox" className="checkbox" name={name} value={value} disabled={disabled} />

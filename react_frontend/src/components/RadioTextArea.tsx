@@ -1,6 +1,7 @@
 import { Field, useFormikContext } from "formik";
 import Radio from "./Radio";
 import { Textarea } from "react-daisyui";
+import _ from "lodash";
 
 export default function RadioTextArea({
 	radioName,
@@ -14,7 +15,7 @@ export default function RadioTextArea({
 	title: string;
 }) {
 	const context: any = useFormikContext();
-	const disabled = context.values[radioName] !== radioValue;
+	const disabled = _.get(context.values, radioName) !== radioValue;
 	return (
 		<>
 			<Radio name={radioName} value={radioValue} title={title} />

@@ -10,7 +10,7 @@ export default function NavBar() {
 	if (localStorage.getItem("token")?.trim().length) {
 		loginButton = (
 			<NavBarButtonsSignedIn
-				displayName={jwtDecode(localStorage.getItem("token")!).exp + ""}
+				displayName={jwtDecode(localStorage.getItem("token")!).userId + ""}
 				logout={() => {
 					localStorage.clear();
 					navigate("/");
@@ -21,7 +21,7 @@ export default function NavBar() {
 		loginButton = (
 			<NavBarButtonsGuest
 				action={() => {
-					navigate("/login");
+					navigate("/");
 				}}
 			/>
 		);
@@ -36,7 +36,12 @@ export default function NavBar() {
 					</Button>
         </div>*/}
 				<div className="flex-1">
-					<Button tag="a" color="ghost" className="normal-case text-xl" onClick={() => navigate("/")}>
+					<Button
+						tag="a"
+						color="ghost"
+						className="normal-case text-xl"
+						onClick={() => navigate("/challenges")}
+					>
 						codeHUB
 					</Button>
 				</div>

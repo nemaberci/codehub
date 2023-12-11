@@ -2,6 +2,7 @@ import { Table } from "react-daisyui";
 import ChallengeListRow from "./ChallengeListRow";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import _ from "lodash";
 
 export interface Challenge {
 	id: string;
@@ -18,18 +19,20 @@ export default function ChallengeList() {
 	async function fetchChallenges() {
 		try {
 			const response = await axios.get("/api/challenge/list");
-			response.data.map((challenge: any) => {
-				const points: number[] = challenge.testCases.map((testCase: any) => testCase.score);
+			const mapped = response.data.map((challenge: any) => {
+				const points: number[] = challenge.testCases.map((testCase: any) => testCase.points);
+				const uploadTime = new Date(challenge.createdAt?._seconds * 1000).toLocaleDateString();
 				return {
 					id: challenge.id,
 					name: challenge.name,
 					shortDescription: challenge.description,
 					uploader: challenge.user,
 					points: points,
-					uploadTime: challenge.uploadedAt,
+					uploadTime: uploadTime,
 				};
 			});
-			setChallenges(response.data);
+			const sorted: any[] = _.reverse(_.sortBy(mapped, "uploadTime"));
+			setChallenges(sorted);
 		} catch (error) {
 			console.error(error);
 		}

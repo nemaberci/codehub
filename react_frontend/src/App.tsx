@@ -27,7 +27,7 @@ axios.interceptors.response.use(
 	},
 	(error) => {
 		console.log(error);
-		if (error.status === 401 || error.status === 403) {
+		if (error.response.status === 401 || error.response.status === 403) {
 			alert("Session expired");
 			localStorage.clear();
 			window.location.href = "/";
@@ -38,11 +38,9 @@ axios.interceptors.response.use(
 
 async function authLoader() {
 	if (!localStorage.getItem("token")?.trim().length) {
-		console.log("not logged in");
 		alert("You need to log in");
 		return redirect("/");
 	}
-	console.log("logged in");
 	return null;
 }
 
@@ -67,7 +65,7 @@ const router = createBrowserRouter([
 				loader: authLoader,
 			},
 			{
-				path: "/login",
+				path: "/",
 				element: <Login />,
 				//loader:authLoader
 			},
@@ -77,9 +75,9 @@ const router = createBrowserRouter([
 				loader: authLoader,
 			},
 			{
-				path: "/",
+				path: "/challenges",
 				element: <ChallengeList />,
-				//loader:authLoader
+				loader: authLoader,
 			},
 		],
 	},

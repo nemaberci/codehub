@@ -12,8 +12,9 @@ interface TestCase {
 	maxMemory: number;
 	maxTime: number;
 	inputType: "raw" | "script";
-	input: string;
-	inputGenerator: string;
+	input?: string;
+	inputGenerator?: string;
+	output?: string;
 }
 
 export default function EditTestCases() {
@@ -23,7 +24,6 @@ export default function EditTestCases() {
 	async function fetchInitialValues() {
 		try {
 			const response = await axios.get("/api/challenge/get/" + id);
-			console.log(response.data);
 			setInitialValues(response.data);
 		} catch (error) {
 			console.error(error);
@@ -43,26 +43,31 @@ export default function EditTestCases() {
 					enableReinitialize
 					initialValues={initialValues}
 					onSubmit={async (values: { testCases: TestCase[] }, { setSubmitting }) => {
-						for (const testCase of values.testCases) {
-							if (testCase.inputType === "raw") {
-								testCase.inputGenerator = "";
-							} else {
-								testCase.input = "";
+						try {
+							for (const testCase of values.testCases) {
+								if (testCase.inputType === "raw") {
+									delete testCase.inputGenerator;
+								} else {
+									delete testCase.input;
+								}
 							}
-						}
-						await axios.post("/api/challenge/add_test_cases/" + id, {
-							testCases: values.testCases,
-						});
-						setTimeout(() => {
-							alert(JSON.stringify(values, null, 2));
+							await axios.post("/api/challenge/add_test_cases/" + id, {
+								testCases: values.testCases,
+							});
+							setTimeout(() => {
+								alert(JSON.stringify(values, null, 2));
 
-							setSubmitting(false);
-						}, 400);
+								setSubmitting(false);
+							}, 400);
+						} catch (error) {
+							console.error(error);
+							alert((error as any).response.data[0]);
+						}
 					}}
 				>
 					{({ values, isSubmitting }) => (
 						<FormikForm className="w-full max-w-5xl">
-							<h3>Tesztesetek</h3>
+							<h3 className="text-center">{values.name}</h3>
 							<FieldArray
 								name="testCases"
 								render={(arrayHelpers) => (
