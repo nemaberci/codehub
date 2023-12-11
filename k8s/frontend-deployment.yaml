@@ -32,11 +32,11 @@ spec:
               memory: "256Mi"
           env:
             - name: USER_HOST
-              value: "http://34.147.69.227"
+              value: "http://34.118.232.221"
             - name: SOLUTION_HOST
-              value: "http://34.141.129.174"
+              value: "http://34.118.232.116"
             - name: CHALLENGE_HOST
-              value: "http://34.141.168.140"
+              value: "http://34.118.233.209"
 
 ---
 apiVersion: v1

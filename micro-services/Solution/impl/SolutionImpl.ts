@@ -51,6 +51,17 @@ export default class SolutionImpl implements SolutionService {
 
         const pubsub = new PubSub();
         const topicName = "SolutionUploaded";
+
+        const userId = decode(body.authToken, {json: true})!["userId"];
+
+        if (
+            (await db.collection("Challenge").doc(body.challengeId).get()).data()!.user === userId
+        ) {
+            await db.collection("Challenge").doc(body.challengeId).update({
+                solution_id: db.collection("Solution").doc(solutionId)
+            });
+        }
+
         await pubsub.topic(topicName).publishMessage(
             {
                 attributes: {
@@ -62,8 +73,6 @@ export default class SolutionImpl implements SolutionService {
             }
         );
         console.log("Published message to pubsub topic: ", topicName);
-
-        const userId = decode(body.authToken, {json: true})!["userId"];
 
         return {
             id: folderName,

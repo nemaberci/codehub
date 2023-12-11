@@ -8,7 +8,7 @@ metadata:
   name: file-handling
   namespace: filehandling
   labels:
-    app: test
+    app: file-handling
   
 spec:
   replicas: 1
@@ -34,3 +34,18 @@ spec:
           requests:
             cpu: "500m"
             memory: "256Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: filehandling-service
+  namespace: filehandling
+spec:
+  selector:
+    app: file-handling
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: ClusterIP
