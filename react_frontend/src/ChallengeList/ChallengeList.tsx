@@ -22,7 +22,7 @@ export default function ChallengeList() {
 			const response = await axios.get("/api/challenge/list");
 			const mapped = response.data.map((challenge: any) => {
 				const points: number[] = challenge.testCases.map((testCase: any) => testCase.points);
-				const uploadTime = new Date(challenge.createdAt?._seconds * 1000).toLocaleDateString();
+				const uploadTime = new Date(challenge.createdAt?._seconds * 1000).toLocaleString();
 				return {
 					id: challenge.id,
 					name: challenge.name,

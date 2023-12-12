@@ -12,7 +12,7 @@ export default function HighscoreRow({ highscore, index }: { highscore: Highscor
 			<span>{highscore.points}</span>
 			{/*<span>{minutes + ":" + zeroSeconds}</span>*/}
 			<span>{highscore.runTime} ms</span>
-			<span>{highscore.memory} kB</span>
+			<span>{highscore.memory ?? "-"} kB</span>
 		</Table.Row>
 	);
 }
