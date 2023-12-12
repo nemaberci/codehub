@@ -1,5 +1,4 @@
 import CheckboxField from "@components/CheckboxField";
-import CheckboxTextArea from "@components/CheckboxTextArea";
 import FormRow from "@components/FormRow";
 import axios from "axios";
 import { Form as FormikForm, Formik } from "formik";

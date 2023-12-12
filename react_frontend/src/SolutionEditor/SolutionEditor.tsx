@@ -4,7 +4,6 @@ import {
 	CircleNotch,
 	CloudArrowDown,
 	TrendUp,
-	X,
 	XCircle,
 } from "@phosphor-icons/react";
 import { Editor } from "@monaco-editor/react";

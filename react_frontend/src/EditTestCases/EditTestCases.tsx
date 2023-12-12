@@ -1,6 +1,6 @@
 import { FieldArray, Formik, Form as FormikForm } from "formik";
 import { Button } from "react-daisyui";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import TestCase from "./TestCase";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -37,7 +37,6 @@ export default function EditTestCases() {
 		fetchInitialValues();
 	}, []);
 
-	const navigate = useNavigate();
 	return (
 		<>
 			<div className="w-full flex flex-col items-center">
@@ -46,9 +45,9 @@ export default function EditTestCases() {
 					enableReinitialize
 					initialValues={initialValues}
 					onSubmit={async (values: { name: string; testCases: TestCase[] }, { setSubmitting }) => {
-						const toBeUploaded: any = _.cloneDeep(values);
-
 						try {
+							setSubmitting(true);
+							const toBeUploaded: any = _.cloneDeep(values);
 							//values deepcopy és utána módosítani
 							let i = 0;
 							for (const testCase of toBeUploaded.testCases) {
@@ -80,6 +79,8 @@ export default function EditTestCases() {
 						} catch (error) {
 							console.error(error);
 							alert((error as any).response.data[0]);
+						} finally {
+							setSubmitting(false);
 						}
 					}}
 				>
