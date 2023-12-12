@@ -20,6 +20,11 @@ export default defineConfig({
 				//changeOrigin: true,
 				rewrite: (path) => path.replace(/^\/api/, ""),
 			},
+			"/api/challenge": {
+				target: hosts.CHALLENGE_HOST,
+				//changeOrigin: true,
+				rewrite: (path) => path.replace(/^\/api/, ""),
+			},
 		},
 	},
 });

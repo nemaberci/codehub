@@ -15,4 +15,8 @@ server {
     proxy_pass ${SOLUTION_HOST}/solution/;
   }
 
+  location /api/challenge/ {
+    proxy_pass ${CHALLENGE_HOST}/challenge/;
+  }
+
 }

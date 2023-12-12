@@ -20,7 +20,7 @@ export default function Login() {
 								password: values.password,
 							});
 							localStorage.setItem("token", response.data);
-							navigate(`/`);
+							navigate("/challenges");
 						} catch (error) {
 							console.error(error);
 							alert((error as any).response.data[0]);
