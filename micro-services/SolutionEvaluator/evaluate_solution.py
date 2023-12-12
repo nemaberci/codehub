@@ -84,6 +84,29 @@ for i in range(len(test_cases)):
     if "results_location" in doc:
         expected_output = open(test_case["output_file_location"], "r").readlines()
         produced_output = open("output_" + str(i), "r").readlines()
+        matches = True
         for i in range(len(expected_output)):
+            print(expected_output[i], produced_output[i])
+            matches = matches and (expected_output[i] == produced_output[i])
             print(expected_output[i] == produced_output[i])
+        if matches:
+            print("Test case " + str(i) + " passed")
+            sub_results_ref.document("Testcase_" + str(i)).set(
+                {
+                    "runtime": millis,
+                    "memory": kbytes,
+                    "points": test_case["points"],
+                    "test_case_id": test_case_doc_refs[i].id
+                }
+            )
+        else:
+            print("Test case " + str(i) + " failed: output did not match expected output")
+            sub_results_ref.document("Testcase_" + str(i)).set(
+                {
+                    "runtime": millis,
+                    "memory": kbytes,
+                    "points": 0,
+                    "test_case_id": test_case_doc_refs[i].id
+                }
+            )
 
