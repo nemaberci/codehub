@@ -1,4 +1,12 @@
-import { CaretCircleRight, CircleNotch, CloudArrowDown, TrendUp } from "@phosphor-icons/react";
+import {
+	CaretCircleRight,
+	CheckFat,
+	CircleNotch,
+	CloudArrowDown,
+	TrendUp,
+	X,
+	XCircle,
+} from "@phosphor-icons/react";
 import { Editor } from "@monaco-editor/react";
 import { Button, Divider } from "react-daisyui";
 import { Allotment } from "allotment";
@@ -11,14 +19,21 @@ import Markdown from "react-markdown";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import _ from "lodash";
 
 export default function SolutionEditor() {
 	const navigate = useNavigate();
 	const [text, setText] = useState("");
 	const [title, setTitle] = useState("");
+	const [totalPoints, setTotalPoints] = useState(0);
 	const [solution, setSolution] = useState("");
 	const [running, setRunning] = useState(false);
 	const [results, setResults] = useState({ testCaseResults: [] });
+	const [buildResult, setBuildResult] = useState({
+		done: false,
+		buildResultOk: false,
+		buildResultOutput: "",
+	});
 	//const [intervalHandle, setIntervalHandle] = useState(null);
 
 	const { id: challengeId } = useParams();
@@ -29,6 +44,7 @@ export default function SolutionEditor() {
 			const response = await axios.get("/api/challenge/get/" + challengeId);
 			setText(response.data.description);
 			setTitle(response.data.name);
+			setTotalPoints(_.sumBy(response.data.testCases, "points"));
 		} catch (error) {
 			console.error(error);
 		}
@@ -40,17 +56,29 @@ export default function SolutionEditor() {
 
 	async function fetchResult() {
 		try {
-			const response = await axios.get(`/api/solution/result/${challengeId}/${userId}`);
-			setResults(response.data);
-			if (response.data.testCaseResults?.length > 0) {
+			setResults({ testCaseResults: [] });
+			// fetch build result first
+			const buildResponse = await axios.get(`/api/solution/build_result/${challengeId}/${userId}`);
+			const buildResultOk = buildResponse.data.buildResult;
+			const buildResultOutput = buildResponse.data.buildOutput;
+
+			setBuildResult({ done: true, buildResultOk, buildResultOutput });
+			if (buildResultOk) {
+				// if build ok then fetch result
+				const response = await axios.get(`/api/solution/result/${challengeId}/${userId}`);
+				setResults(response.data);
 				setRunning(false);
-				/*if (intervalHandle) {
-					clearInterval(intervalHandle);
-					setIntervalHandle(null);
+				/*if (response.data.testCaseResults?.length > 0) {
+					
+					if (intervalHandle) {
+						clearInterval(intervalHandle);
+						setIntervalHandle(null);
+					}
 				}*/
 			}
 		} catch (e) {
 			console.error(e);
+			setBuildResult({ done: false, buildResultOk: false, buildResultOutput: "" });
 		}
 	}
 
@@ -67,6 +95,7 @@ export default function SolutionEditor() {
 				],
 			});
 			//setIntervalHandle(setInterval(fetchResult, 15000));
+			setTimeout(() => setRunning(false), 10000);
 		} catch (error) {
 			console.error(error);
 			setRunning(false);
@@ -84,6 +113,12 @@ export default function SolutionEditor() {
 		runIcon = <CircleNotch size={24} className="spinning-fast" />;
 	} else {
 		runIcon = <CaretCircleRight size={24} />;
+	}
+
+	let lastRunTitle = "";
+	if (results.testCaseResults.length > 0) {
+		const lastPoints = _.sumBy(results.testCaseResults, "points");
+		lastRunTitle = `Legutóbbi sikeres futtatás eredménye (${lastPoints}/${totalPoints})`;
 	}
 
 	return (
@@ -114,35 +149,50 @@ export default function SolutionEditor() {
 					</Allotment.Pane>
 
 					<Allotment.Pane minSize={326} preferredSize={326} className="p-4">
-						<div className="flex gap-2 flex-wrap">
-							<Button color="success" startIcon={runIcon} onClick={submitSolution} disabled={running}>
-								{running ? "Kiértékelés" : "Indítás"}
-							</Button>
-							<Button color="info" startIcon={<CloudArrowDown size={24} />} onClick={fetchResult}>
-								Eredmények
-							</Button>
-							<Button
-								color="neutral"
-								startIcon={<TrendUp size={24} />}
-								onClick={() => navigate("/highscores/" + challengeId)}
-							>
-								Toplista
-							</Button>
-						</div>
-						<Divider />
-						<h4>{results.testCaseResults.length > 0 ? "Eredmények" : "Még nincsenek eredmények"}</h4>
-						{results.testCaseResults.map((result: any, index) => (
-							<div>
-								<b>{index + 1}. részfeladat</b>
-								<br />
-								Futásidő: {result.time}
-								<br />
-								Max. memóriahasználat: {result.memory} kB
-								<br />
-								Pontok: {result.points}
-								<Divider />
+						<div className=" overflow-auto h-full block">
+							<div className="flex gap-2 flex-wrap">
+								<Button color="success" startIcon={runIcon} onClick={submitSolution} disabled={running}>
+									{running ? "Kiértékelés" : "Indítás"}
+								</Button>
+								<Button color="info" startIcon={<CloudArrowDown size={24} />} onClick={fetchResult}>
+									Eredmények
+								</Button>
+								<Button
+									color="neutral"
+									startIcon={<TrendUp size={24} />}
+									onClick={() => navigate("/highscores/" + challengeId)}
+								>
+									Toplista
+								</Button>
 							</div>
-						))}
+							<Divider />
+							{buildResult.done ? (
+								buildResult.buildResultOk ? (
+									<h4>Fordítás sikeres</h4>
+								) : (
+									<h4>Fordítási hiba:{buildResult.buildResultOutput}</h4>
+								)
+							) : (
+								<h4>Még nincsenek eredmények</h4>
+							)}
+							<Divider />
+							<h4>{lastRunTitle}</h4>
+							{results.testCaseResults.map((result: any, index) => (
+								<>
+									<b>
+										{index + 1}. részfeladat{" "}
+										{result.points > 0 ? <CheckFat color="green" /> : <XCircle color="red" />}
+									</b>
+									<br />
+									Futásidő: {Math.ceil(result.time)} ms
+									<br />
+									Max. memóriahasználat: {result.memory / 1000} MB
+									<br />
+									Pontok: <b>{result.points}</b>
+									<Divider />
+								</>
+							))}
+						</div>
 					</Allotment.Pane>
 				</Allotment>
 			</Allotment>
