@@ -26,7 +26,7 @@ export default function ChallengeList() {
 				return {
 					id: challenge.id,
 					name: challenge.name,
-					shortDescription: challenge.description,
+					shortDescription: challenge.shortDescription,
 					uploader: challenge.user,
 					points: points,
 					uploadTime: uploadTime,

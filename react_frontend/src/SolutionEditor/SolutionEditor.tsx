@@ -113,7 +113,7 @@ export default function SolutionEditor() {
 						/>
 					</Allotment.Pane>
 
-					<Allotment.Pane minSize={216} preferredSize={216} className="p-4">
+					<Allotment.Pane minSize={326} preferredSize={326} className="p-4">
 						<div className="flex gap-2 flex-wrap">
 							<Button color="success" startIcon={runIcon} onClick={submitSolution} disabled={running}>
 								{running ? "Kiértékelés" : "Indítás"}
@@ -138,6 +138,8 @@ export default function SolutionEditor() {
 								Futásidő: {result.time}
 								<br />
 								Max. memóriahasználat: {result.memory} kB
+								<br />
+								Pontok: {result.points}
 								<Divider />
 							</div>
 						))}
