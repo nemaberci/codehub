@@ -5,4 +5,5 @@ export default interface SolutionService {
     solve(body: EndpointInputTypes.SolveBody): Promise<EndpointReturnedTypes.SolveReturned>
     list(body: EndpointInputTypes.ListBody): Promise<EndpointReturnedTypes.ListReturned>
     result(body: EndpointInputTypes.ResultBody): Promise<EndpointReturnedTypes.ResultReturned>
+    buildResult(body: EndpointInputTypes.BuildResultBody): Promise<EndpointReturnedTypes.BuildResultReturned>
 }

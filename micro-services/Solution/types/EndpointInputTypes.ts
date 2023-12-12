@@ -51,9 +51,27 @@ interface ResultBody {
     */
     userId: string;
 }
+/** 
+* @description Get the build result of a solution of a challenge for a user
+*/
+interface BuildResultBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string
+    /** 
+    * @description Id of the challenge to get the results of
+    */
+    challengeId: string;
+    /** 
+    * @description Id of the user to get the results of
+    */
+    userId: string;
+}
 
 export {
     SolveBody,
     ListBody,
-    ResultBody
+    ResultBody,
+    BuildResultBody
 }

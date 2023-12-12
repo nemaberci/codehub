@@ -29,45 +29,95 @@ print(doc)
 test_case_doc_refs = list(test_cases_ref.list_documents())
 
 for i in range(len(test_cases)):
-    test_case = test_cases[i]
-    print(test_case)
-    millis = (int(open("after_" + str(i), "r").read()) - int(open("before_" + str(i), "r").read())) / 1_000_000
-    print("Test case " + str(i) + " took " + str(millis) + " milliseconds")
-    if millis > test_case["max_runtime"]:
-        print("Test case " + str(i) + " failed: exceeded max runtime")
-        sub_results_ref.document("Testcase_" + str(i)).set(
-            {
-                "runtime": millis,
-                "points": 0,
-                "test_case_id": test_case_doc_refs[i].id
-            }
-        )
-        continue
-    if "output_verifier_location" in doc:
-        from import_verifier import verify
-        testcase_input = open("input_" + str(i), "r").readlines()
-        produced_output = open("output_" + str(i), "r").readlines()
-        if verify(testcase_input, produced_output):
-            print("Test case " + str(i) + " passed")
+    try:
+        test_case = test_cases[i]
+        # print(test_case)
+        millis = (int(open("after_" + str(i), "r").read()) - int(open("before_" + str(i), "r").read())) / 1_000_000
+        print("Test case " + str(i) + " took " + str(millis) + " milliseconds")
+        kbytes = int(open("peak_" + str(i), "r").read())
+        print(f"Test case {i}'s peak memory consumption is {kbytes} KB")
+        if millis > test_case["max_runtime"]:
+            print("Test case " + str(i) + " failed: exceeded max runtime")
             sub_results_ref.document("Testcase_" + str(i)).set(
                 {
                     "runtime": millis,
-                    "points": test_case["points"],
-                    "test_case_id": test_case_doc_refs[i].id
-                }
-            )
-        else:
-            print("Test case " + str(i) + " failed: output did not match expected output")
-            sub_results_ref.document("Testcase_" + str(i)).set(
-                {
-                    "runtime": millis,
+                    "memory": kbytes,
                     "points": 0,
                     "test_case_id": test_case_doc_refs[i].id
                 }
             )
-    if "results_location" in doc:
-        expected_output = open(doc["results_location"] + "/" + test_case["output_file_location"], "r").readlines()
-        produced_output = open("output_" + str(i), "r").readlines()
-        for i in range(len(expected_output)):
-            print(expected_output[i] == produced_output[i])
+            continue
+        if kbytes > test_case["max_memory"]:
+            print("Test case " + str(i) + " failed: exceeded max memory")
+            sub_results_ref.document("Testcase_" + str(i)).set(
+                {
+                    "runtime": millis,
+                    "memory": kbytes,
+                    "points": 0,
+                    "test_case_id": test_case_doc_refs[i].id
+                }
+            )
+            continue
+        if "output_verifier_location" in doc:
+            from import_verifier import verify
+            testcase_input = open("input_" + str(i), "r").readlines()
+            produced_output = open("output_" + str(i), "r").readlines()
+            if verify(testcase_input, produced_output):
+                print("Test case " + str(i) + " passed")
+                sub_results_ref.document("Testcase_" + str(i)).set(
+                    {
+                        "runtime": millis,
+                        "memory": kbytes,
+                        "points": test_case["points"],
+                        "test_case_id": test_case_doc_refs[i].id
+                    }
+                )
+            else:
+                print("Test case " + str(i) + " failed: output did not match expected output")
+                sub_results_ref.document("Testcase_" + str(i)).set(
+                    {
+                        "runtime": millis,
+                        "memory": kbytes,
+                        "points": 0,
+                        "test_case_id": test_case_doc_refs[i].id
+                    }
+                )
+        if "results_location" in doc:
+            expected_output = open(test_case["output_file_location"], "r").readlines()
+            produced_output = open("output_" + str(i), "r").readlines()
+            matches = True
+            for j in range(len(expected_output)):
+                print(expected_output[j], produced_output[j])
+                matches = matches and (expected_output[j] == produced_output[j])
+                print(expected_output[j] == produced_output[j])
+            if matches:
+                print("Test case " + str(i) + " passed")
+                sub_results_ref.document("Testcase_" + str(i)).set(
+                    {
+                        "runtime": millis,
+                        "memory": kbytes,
+                        "points": test_case["points"],
+                        "test_case_id": test_case_doc_refs[i].id
+                    }
+                )
+            else:
+                print("Test case " + str(i) + " failed: output did not match expected output")
+                sub_results_ref.document("Testcase_" + str(i)).set(
+                    {
+                        "runtime": millis,
+                        "memory": kbytes,
+                        "points": 0,
+                        "test_case_id": test_case_doc_refs[i].id
+                    }
+                )
+    except:
+        print("Test case " + str(i) + " failed: exception occurred")
+        sub_results_ref.document("Testcase_" + str(i)).set(
+            {
+                "runtime": 0,
+                "memory": 0,
+                "points": 0,
+                "test_case_id": test_case_doc_refs[i].id
+            }
+        )
 
