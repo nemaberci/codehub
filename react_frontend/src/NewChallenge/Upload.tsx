@@ -25,9 +25,6 @@ export default function Upload() {
 						shortDescription: "",
 						description: "",
 						enabled: ["java"],
-						isOutputScript: false,
-						outputScript: "",
-						showTestNameDesc: false,
 					}}
 					onSubmit={async (values, { setSubmitting }) => {
 						try {
@@ -37,12 +34,6 @@ export default function Upload() {
 								shortDescription: values.shortDescription,
 								description: values.description,
 							};
-							if (values.isOutputScript) {
-								data.outputVerifier = {
-									content: btoa(values.outputScript),
-									name: "verifier.py",
-								};
-							}
 							const response = await axios.post("/api/challenge/upload", data);
 							const resultId = response.data.id;
 							navigate(`/edit/${resultId}/testcases`);
@@ -87,20 +78,6 @@ export default function Upload() {
 											<CheckboxField name="enabled" value="java" title="Java" disabled />
 											{/*<CheckboxField name="enabled" value="python" title="Python" />
 											<CheckboxField name="enabled" value="c++" title="C++" />*/}
-										</td>
-									</tr>
-									<tr>
-										<td>Tulajdonságok</td>
-										<td>
-											<CheckboxField
-												name="showTestNameDesc"
-												title="Tesztesetek nevének és leírásának mutatása megoldáskor"
-											/>
-											<CheckboxTextArea
-												checkboxName="isOutputScript"
-												textAreaName="outputScript"
-												title="Kimenet ellenőrzése scripttel"
-											/>
 										</td>
 									</tr>
 								</tbody>

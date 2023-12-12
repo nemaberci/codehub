@@ -1,7 +1,6 @@
-import { Divider, Textarea } from "react-daisyui";
+import { Checkbox, Divider, Textarea } from "react-daisyui";
 import { Field, useFormikContext } from "formik";
 import FormRow from "@components/FormRow";
-import CheckboxField from "@components/CheckboxField";
 import RadioTextArea from "@components/RadioTextArea";
 
 function OutputFields({ objectPath }: { objectPath: string }) {
@@ -9,16 +8,21 @@ function OutputFields({ objectPath }: { objectPath: string }) {
 	const disabled = context.values.isOutputScript;
 	return (
 		<>
-			<CheckboxField
+			<label className="label cursor-pointer justify-start gap-4">
+				<Checkbox checked={!disabled} disabled={true} />{" "}
+				<span className={"label-text text-zinc-600 cursor-not-allowed"}>Nyers adat szövegfájl</span>
+			</label>
+			{/*<CheckboxField
 				name={`${objectPath}.outputRaw`}
 				title="Nyers adat szövegfájl"
-				disabled={disabled}
-			/>
+				disabled={true}
+				checked={disabled}
+			/>*/}
 			<Field
 				as={Textarea}
 				bordered
 				disabled={disabled}
-				className="w-full h-64 font-mono"
+				className={"w-full h-64 font-mono " + (disabled ? "cursor-not-allowed" : "")}
 				name={`${objectPath}.output`}
 			/>
 		</>
@@ -35,7 +39,7 @@ export default function TestCase({ index }: { index: number }) {
 					<FormRow name={`testCases.${index}.description`} title="Leírás (opcionális)" />
 					<FormRow name={`testCases.${index}.points`} title="Pontszám" type="number" />
 					<FormRow name={`testCases.${index}.maxTime`} title="Max. futásidő (ms)" type="number" />
-					<FormRow name={`testCases.${index}.maxMemory`} title="Max. memória (MB)" type="number" />
+					<FormRow name={`testCases.${index}.maxMemory`} title="Max. memória (kB)" type="number" />
 					<tr>
 						<td>
 							<h4>Bemenet</h4>
@@ -61,6 +65,13 @@ export default function TestCase({ index }: { index: number }) {
 						</td>
 						<td>
 							<OutputFields objectPath={`testCases.${index}`} />
+							{/*Ha a feladathoz NEM tartozik kimenet ellenőrző script, itt tudsz megadni szöveges kimenetet
+							<Field
+								as={Textarea}
+								bordered
+								className="w-full h-64 font-mono"
+								name={`testCases.${index}.output`}
+							/>*/}
 						</td>
 					</tr>
 				</tbody>

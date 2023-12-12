@@ -3,23 +3,38 @@ import HighscoreRow from "./HighscoreRow";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import _ from "lodash";
 
 export interface Highscore {
 	username: string;
-	points: number[];
-	timeSpent: number;
-	runTime: number[];
-	memory: number[];
+	points: number;
+	//timeSpent: number;
+	runTime: number;
+	memory: number;
 }
 
 export default function Highscores() {
-	const [highscores, setHighscores] = useState([]);
+	const [highscores, setHighscores] = useState([] as Highscore[]);
 	const { id } = useParams();
 
 	async function fetchHighscores() {
 		try {
 			const response = await axios.get("/api/solution/list/" + id);
-			setHighscores(response.data);
+			const result: Highscore[] = [];
+			for (const element of response.data) {
+				result.push({
+					username: element.user,
+					points: _.sum(element.testCaseResults.map((result: any) => result.points)),
+					runTime: _.sum(element.testCaseResults.map((result: any) => result.time)),
+					memory: _.max(element.testCaseResults.map((result: any) => result.memory))!,
+				});
+			}
+			//const result = _.sortBy(response.data, []);
+			const sorted = _.sortBy(result, "runTime");
+			const reverse = _.reverse(sorted);
+			const points = _.sortBy(reverse, "points");
+			const reverse2 = _.reverse(points);
+			setHighscores(reverse2);
 		} catch (error) {
 			console.error(error);
 		}
@@ -38,25 +53,15 @@ export default function Highscores() {
 						<Table.Head>
 							<span />
 							<span>Név</span>
-							<span>Pontszámok</span>
-							<span>Eltelt idő</span>
-							<span>Futásidő</span>
-							<span>Memóriahasználat</span>
+							<span>Összpontszám</span>
+							{/*<span>Eltelt idő</span>*/}
+							<span>Összes futásidő</span>
+							<span>Max. memóriahasználat</span>
 						</Table.Head>
 
 						<Table.Body>
-							{highscores.map((highscore: any, index) => (
-								<HighscoreRow
-									highscore={{
-										username: highscore.user,
-										points: highscore.testCaseResults.map((result: any) => result.points),
-										timeSpent: 0,
-										runTime: highscore.testCaseResults.map((result: any) => Math.ceil(result.time)),
-										memory: highscore.testCaseResults.map(() => 0),
-									}}
-									index={index + 1}
-									key={index}
-								/>
+							{highscores.map((highscore, index) => (
+								<HighscoreRow highscore={highscore} index={index + 1} key={index} />
 							))}
 						</Table.Body>
 					</Table>

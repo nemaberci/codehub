@@ -4,6 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import TestCase from "./TestCase";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import _ from "lodash";
+import CheckboxField from "@components/CheckboxField";
+import CheckboxTextArea from "@components/CheckboxTextArea";
 
 interface TestCase {
 	name: string;
@@ -43,25 +46,37 @@ export default function EditTestCases() {
 					enableReinitialize
 					initialValues={initialValues}
 					onSubmit={async (values: { name: string; testCases: TestCase[] }, { setSubmitting }) => {
+						const toBeUploaded: any = _.cloneDeep(values);
+
 						try {
-							for (const testCase of values.testCases) {
+							//values deepcopy és utána módosítani
+							let i = 0;
+							for (const testCase of toBeUploaded.testCases) {
 								if (testCase.inputType === "raw") {
 									delete testCase.inputGenerator;
 									testCase.input = btoa(testCase.input!);
 								} else {
 									delete testCase.input;
-									testCase.inputGenerator = btoa(testCase.inputGenerator!);
+									testCase.inputGenerator = {
+										name: `generator_${i}.py`,
+										content: btoa(testCase.inputGenerator!),
+									};
 								}
-								testCase.output = btoa(testCase.output!);
-							}
-							await axios.post("/api/challenge/add_test_cases/" + id, {
-								testCases: values.testCases,
-							});
-							setTimeout(() => {
-								alert(JSON.stringify(values, null, 2));
+								if (toBeUploaded.isOutputScript) {
+									delete testCase.output;
+								}
 
-								setSubmitting(false);
-							}, 400);
+								i++;
+							}
+							if (toBeUploaded.isOutputScript) {
+								toBeUploaded.outputVerifier = {
+									name: "verifier.py",
+									content: btoa(toBeUploaded.outputScript),
+								};
+								delete toBeUploaded.outputScript;
+							}
+							await axios.post("/api/challenge/add_test_cases/" + id, toBeUploaded);
+							alert("Tesztesetek létrehozva");
 						} catch (error) {
 							console.error(error);
 							alert((error as any).response.data[0]);
@@ -70,6 +85,25 @@ export default function EditTestCases() {
 				>
 					{({ values, isSubmitting }) => (
 						<FormikForm className="w-full max-w-5xl">
+							<h3>Globális beállítások</h3>
+							<table className="table">
+								<tbody>
+									<tr>
+										<td>Tulajdonságok</td>
+										<td>
+											<CheckboxField
+												name="showTestNameDesc"
+												title="Tesztesetek nevének és leírásának mutatása megoldáskor"
+											/>
+											<CheckboxTextArea
+												checkboxName="isOutputScript"
+												textAreaName="outputScript"
+												title="Kimenet ellenőrzése Python scripttel"
+											/>
+										</td>
+									</tr>
+								</tbody>
+							</table>
 							<h3 className="text-center">{values.name}</h3>
 							<FieldArray
 								name="testCases"
@@ -106,13 +140,6 @@ export default function EditTestCases() {
 							<div className="flex justify-evenly">
 								<Button disabled={isSubmitting} className="w-1/4" type="submit">
 									Mentés
-								</Button>
-								<Button
-									disabled={isSubmitting}
-									className="w-1/2"
-									onClick={() => navigate("/editor/" + id)}
-								>
-									Mentés és etalon megoldás feltöltése
 								</Button>
 							</div>
 							<br />
