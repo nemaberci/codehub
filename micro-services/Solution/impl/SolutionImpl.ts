@@ -1,13 +1,13 @@
 import { Solution } from "../../client/returnedTypes";
 import SolutionService from "../api/SolutionService";
-import {ListBody, ResultBody, SolveBody} from "../types/EndpointInputTypes";
+import {BuildResultBody, ListBody, ResultBody, SolveBody} from "../types/EndpointInputTypes";
 import FileHandlingClient from '../../client/FileHandlingClient';
 import { decode } from "jsonwebtoken";
 import { randomUUID } from "crypto";
 import { PubSub } from "@google-cloud/pubsub";
 import { initializeApp, applicationDefault, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import {ListReturned, ResultReturned} from "../types/EndpointReturnedTypes";
+import {BuildResultReturned, ListReturned, ResultReturned} from "../types/EndpointReturnedTypes";
 
 // initializeApp({
 //     credential: applicationDefault()
@@ -161,6 +161,30 @@ export default class SolutionImpl implements SolutionService {
 
         return returned;
 
+    }
+
+    async buildResult(body: BuildResultBody): Promise<BuildResultReturned> {
+        const db = getFirestore()
+        let solution = (await db.collection("Solution")
+            .where(
+                "user",
+                "==",
+                body.userId
+            )
+            .where(
+                "challenge_name",
+                "==",
+                body.challengeId
+            )
+            .orderBy("time_submitted", "desc")
+            .get())
+            .docs[0];
+
+        return {
+            solutionId: solution.id,
+            buildResult: solution.data().build_status,
+            buildOutput: solution.data().build_output
+        };
     }
 
 }

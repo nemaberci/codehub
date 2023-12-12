@@ -62,6 +62,20 @@ class SolutionClient {
         );
         return await answer.json();
     }
+    static async buildResult(
+        authToken: string
+    ): Promise<returnValueModel.SolutionBuildResult> {
+        const answer = await fetch(
+            `${url}/solution/build_result`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "GET"            }
+        );
+        return await answer.json();
+    }
 }
 
 export default SolutionClient;

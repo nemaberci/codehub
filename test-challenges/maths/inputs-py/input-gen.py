@@ -1,3 +1,3 @@
 import random
-print(random.randint(20, 50))
-print(random.randint(20, 50))
+for i in range(100):
+    print(random.randint(-100, 100))
