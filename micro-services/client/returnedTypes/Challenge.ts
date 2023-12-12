@@ -20,6 +20,11 @@ interface Challenge {
     */
     description: string;
     /** 
+    * @description The short description of the challenge
+    * @type string
+    */
+    shortDescription: string;
+    /** 
     * @description The user that created the challenge
     * @type model.User
     */

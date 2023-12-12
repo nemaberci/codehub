@@ -225,6 +225,7 @@ export default class ChallengeImpl implements ChallengeService {
             id: challengeId,
             name: challenge.data()!.name,
             description: challenge.data()!.description,
+            shortDescription: challenge.data()!.short_description,
             user: challenge.data()!.created_by,
             createdAt: challenge.data()!.time_uploaded,
             testCases: (await db.collection("Challenge").doc(challengeId).collection("Testcases").get()).docs.map(
@@ -253,6 +254,7 @@ export default class ChallengeImpl implements ChallengeService {
                 name: challenge.data().name,
                 description: challenge.data().description,
                 user: challenge.data().created_by,
+                shortDescription: challenge.data().short_description,
                 createdAt: challenge.data()!.time_uploaded,
                 testCases: (await db.collection("Challenge").doc(challenge.id).collection("Testcases").get()).docs.map(
                     d => ({
@@ -284,6 +286,7 @@ export default class ChallengeImpl implements ChallengeService {
                 description: challenge.data().description,
                 user: challenge.data().created_by,
                 createdAt: challenge.data()!.time_uploaded,
+                shortDescription: challenge.data().short_description,
                 testCases: (await db.collection("Challenge").doc(challenge.id).collection("Testcases").get()).docs.map(
                     d => ({
                         id: d.id,
