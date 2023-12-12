@@ -47,12 +47,12 @@ export default function EditTestCases() {
 							for (const testCase of values.testCases) {
 								if (testCase.inputType === "raw") {
 									delete testCase.inputGenerator;
-									testCase.input = btoa(testCase.input);
+									testCase.input = btoa(testCase.input!);
 								} else {
 									delete testCase.input;
-									testCase.inputGenerator = btoa(testCase.inputGenerator);
+									testCase.inputGenerator = btoa(testCase.inputGenerator!);
 								}
-								testCase.output = btoa(testCase.output);
+								testCase.output = btoa(testCase.output!);
 							}
 							await axios.post("/api/challenge/add_test_cases/" + id, {
 								testCases: values.testCases,
