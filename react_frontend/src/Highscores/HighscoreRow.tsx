@@ -11,8 +11,8 @@ export default function HighscoreRow({ highscore, index }: { highscore: Highscor
 			<span>{highscore.username}</span>
 			<span>{highscore.points}</span>
 			{/*<span>{minutes + ":" + zeroSeconds}</span>*/}
-			<span>{highscore.runTime} ms</span>
-			<span>{highscore.memory ?? "-"} kB</span>
+			<span>{Math.ceil(highscore.runTime)} ms</span>
+			<span>{(highscore.memory ?? 0) / 1000} MB</span>
 		</Table.Row>
 	);
 }

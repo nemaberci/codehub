@@ -28,12 +28,7 @@ export default function Upload() {
 					onSubmit={async (values, { setSubmitting }) => {
 						try {
 							setSubmitting(true);
-							const data: any = {
-								name: values.name,
-								shortDescription: values.shortDescription,
-								description: values.description,
-							};
-							const response = await axios.post("/api/challenge/upload", data);
+							const response = await axios.post("/api/challenge/upload", values);
 							const resultId = response.data.id;
 							navigate(`/edit/${resultId}/testcases`);
 						} catch (error) {

@@ -1,11 +1,10 @@
 import { FieldArray, Formik, Form as FormikForm } from "formik";
-import { Button } from "react-daisyui";
+import { Button, Steps } from "react-daisyui";
 import { useParams } from "react-router-dom";
 import TestCase from "./TestCase";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import _ from "lodash";
-import CheckboxField from "@components/CheckboxField";
 import CheckboxTextArea from "@components/CheckboxTextArea";
 
 interface TestCase {
@@ -41,6 +40,11 @@ export default function EditTestCases() {
 		<>
 			<div className="w-full flex flex-col items-center">
 				<h2>Tesztesetek szerkesztése</h2>
+				<Steps className="w-1/2">
+					<Steps.Step color="primary">Alapadatok</Steps.Step>
+					<Steps.Step color="primary">Tesztesetek létrehozása</Steps.Step>
+					<Steps.Step>Etalon megoldás feltöltése</Steps.Step>
+				</Steps>
 				<Formik
 					enableReinitialize
 					initialValues={initialValues}
@@ -63,6 +67,8 @@ export default function EditTestCases() {
 								}
 								if (toBeUploaded.isOutputScript) {
 									delete testCase.output;
+								} else {
+									testCase.output = btoa(testCase.output);
 								}
 
 								i++;
@@ -92,10 +98,10 @@ export default function EditTestCases() {
 									<tr>
 										<td>Tulajdonságok</td>
 										<td>
-											<CheckboxField
+											{/*<CheckboxField
 												name="showTestNameDesc"
 												title="Tesztesetek nevének és leírásának mutatása megoldáskor"
-											/>
+											/>*/}
 											<CheckboxTextArea
 												checkboxName="isOutputScript"
 												textAreaName="outputScript"
@@ -105,7 +111,7 @@ export default function EditTestCases() {
 									</tr>
 								</tbody>
 							</table>
-							<h3 className="text-center">{values.name}</h3>
+							<h3 className="text-center">Tesztesetek</h3>
 							<FieldArray
 								name="testCases"
 								render={(arrayHelpers) => (

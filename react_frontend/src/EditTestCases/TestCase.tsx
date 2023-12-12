@@ -35,8 +35,8 @@ export default function TestCase({ index }: { index: number }) {
 			<Divider />
 			<table className="table">
 				<tbody>
-					<FormRow name={`testCases.${index}.name`} title="Név (opcionális)" />
-					<FormRow name={`testCases.${index}.description`} title="Leírás (opcionális)" />
+					<FormRow name={`testCases.${index}.name`} title="Név" />
+					<FormRow name={`testCases.${index}.description`} title="Leírás" />
 					<FormRow name={`testCases.${index}.points`} title="Pontszám" type="number" />
 					<FormRow name={`testCases.${index}.maxTime`} title="Max. futásidő (ms)" type="number" />
 					<FormRow name={`testCases.${index}.maxMemory`} title="Max. memória (kB)" type="number" />

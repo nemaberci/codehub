@@ -53,7 +53,7 @@ export default function ChallengeList() {
 							<span />
 							<span>Név</span>
 							<span>Leírás</span>
-							<span>Összpontszám</span>
+							<span>Pontszámok</span>
 							<span>Feltöltötte</span>
 							<span>Feltöltés ideje</span>
 						</Table.Head>
