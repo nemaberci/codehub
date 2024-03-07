@@ -1,0 +1,74 @@
+# start with kubectl apply -f <filename>
+# test of the repository connectivity
+# env variables are not passed, it doesn't run correctly
+# the goal was to have it start up
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: <JOB_NAME>
+  labels:
+    app: runner
+spec:
+  activeDeadlineSeconds: 600
+  backoffLimit: 1
+  completionMode: NonIndexed
+  completions: 1
+  parallelism: 1
+  ttlSecondsAfterFinished: 60
+  template:
+    metadata:
+      namespace: runner
+    spec:
+      serviceAccountName: runner
+      containers:
+      - name: micro-service-runner
+        image: europe-west4-docker.pkg.dev/codehub-400314/code-hub-main/micro-service-runner:latest
+        resources:
+          limits:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 128Mi
+          requests:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 128Mi
+        securityContext:
+          capabilities:
+            drop:
+            - NET_RAW
+        env:
+        # kubectl get pods --namespace filehandling -o=jsonpath="{range .items[*]}{.status.podIP}"
+        - name: FILE_HANDLER_URL
+          value: <FILE_HANDLER_URL>
+        - name: TOKEN
+          value: <TOKEN>
+        - name: ENTRY_POINT
+          value: <ENTRY_POINT>
+        - name: CHALLENGE_ID
+          value: <CHALLENGE_ID>
+        - name: SOLUTION_ID
+          value: <SOLUTION_ID>
+        - name: EXECUTABLE_FOLDER_NAME
+          value: <EXECUTABLE_FOLDER_NAME>
+        - name: INPUT_TXT_FOLDER_NAME
+          value: <INPUT_TXT_FOLDER_NAME>
+        - name: INPUT_PY_FOLDER_NAME
+          value: <INPUT_PY_FOLDER_NAME>
+        - name: TEST_CASES_GENERATED
+          value: <TEST_CASES_GENERATED>
+        - name: TEST_CASES_LOCATION
+          value: <TEST_CASES_LOCATION>
+        - name: RESULTS_FOLDER_NAME
+          value: <RESULTS_FOLDER_NAME>
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      schedulerName: default-scheduler
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: amd64

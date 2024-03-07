@@ -40,7 +40,8 @@ export default class UserImpl implements UserService {
         let buff = Buffer.from(file.content, 'base64');
         let text = buff.toString('ascii');
         return sign({
-            userId: user.docs[0].id
+            userId: user.docs[0].id,
+            roles: userData.roles
         }, text, { expiresIn: "1h", algorithm: "RS256" });
 
     }
@@ -58,10 +59,11 @@ export default class UserImpl implements UserService {
         }
         let salt = randomBytes(128).toString('base64');
         let hash = await pbkdf2Sync(body.password, salt, 1000, 64, 'sha512').toString('hex');
-        await db.collection("User").add({
+        let createdUser = await db.collection("User").add({
             username: body.username,
             passwordHash: hash,
-            salt: salt
+            salt: salt,
+            roles: []
         })
         let fileHandlingClient = FileHandlingClient;
         let file = await fileHandlingClient.downloadFile(
@@ -71,7 +73,10 @@ export default class UserImpl implements UserService {
         );
         let buff = Buffer.from(file.content, 'base64');
         let text = buff.toString('ascii');
-        return sign({}, text, { expiresIn: "1y", algorithm: "RS256" });
+        return sign({
+            userId: createdUser.id,
+            roles: []
+        }, text, { expiresIn: "1y", algorithm: "RS256" });
 
     }
 }

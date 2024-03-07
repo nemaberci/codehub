@@ -1,0 +1,63 @@
+# start with kubectl apply -f <filename>
+# test of the repository connectivity
+# env variables are not passed, it doesn't run correctly
+# the goal was to have it start up
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: <JOB_NAME>
+  labels:
+    app: builder
+spec:
+  activeDeadlineSeconds: 600
+  backoffLimit: 1
+  completionMode: NonIndexed
+  completions: 1
+  parallelism: 1
+  ttlSecondsAfterFinished: 60
+  template:
+    spec:
+      serviceAccountName: builder
+      containers:
+      - name: micro-service-builder
+        image: europe-west4-docker.pkg.dev/codehub-400314/code-hub-main/micro-service-builder:latest
+        resources:
+          limits:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 2Gi
+          requests:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 2Gi
+        securityContext:
+          capabilities:
+            drop:
+            - NET_RAW
+        env:
+        - name: FILE_HANDLER_URL
+          value: <FILE_HANDLER_URL>
+        - name: TOKEN
+          value: <TOKEN>
+        - name: ENTRY_POINT
+          value: <ENTRY_POINT>
+        - name: SOURCE_FOLDER_NAME
+          value: <SOURCE_FOLDER_NAME>
+        - name: EXECUTABLE_FOLDER_NAME
+          value: <UPLOAD_FOLDER_NAME>
+        - name: CHALLENGE_ID
+          value: <CHALLENGE_ID>
+        - name: SOLUTION_ID
+          value: <SOLUTION_ID>
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      schedulerName: default-scheduler
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: amd64
