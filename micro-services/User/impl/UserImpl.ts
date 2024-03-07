@@ -1,6 +1,6 @@
 import UserService from "../api/UserService";
-import {LoginBody, RegisterBody} from "../types/EndpointInputTypes";
-import {LoginReturned, RegisterReturned} from "../types/EndpointReturnedTypes";
+import {AddRolesBody, LoginBody, RegisterBody, RemoveRolesBody} from "../types/EndpointInputTypes";
+import {AddRolesReturned, LoginReturned, RegisterReturned, RemoveRolesReturned} from "../types/EndpointReturnedTypes";
 import { initializeApp, applicationDefault, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import FileHandlingClient from "../../client/FileHandlingClient";
@@ -63,7 +63,7 @@ export default class UserImpl implements UserService {
             username: body.username,
             passwordHash: hash,
             salt: salt,
-            roles: []
+            roles: ["challenge_reader", "solution_reader", "file_reader"]
         })
         let fileHandlingClient = FileHandlingClient;
         let file = await fileHandlingClient.downloadFile(
@@ -78,5 +78,80 @@ export default class UserImpl implements UserService {
             roles: []
         }, text, { expiresIn: "1y", algorithm: "RS256" });
 
+    }
+
+    async addRoles(body: AddRolesBody): Promise<AddRolesReturned> {
+        const db = getFirestore();
+        let user = await db.collection("User").select("roles").where(
+            "username",
+            "==",
+            body.username
+        ).get();
+        if (user.empty) {
+            throw {
+                message: "User not found",
+                status: 404
+            };
+        }
+        const rolesToAdd = body.roles.filter(role => !user.docs[0].data().roles.includes(role));
+        if (rolesToAdd.length === 0) {
+            return true;
+        }
+        await db.collection("User").doc(user.docs[0].id).update({
+            roles: user.docs[0].data().roles.concat(rolesToAdd)
+        })
+        return true;
+    }
+
+    async removeRoles(body: RemoveRolesBody): Promise<RemoveRolesReturned> {
+        const db = getFirestore();
+        let user = await db.collection("User").select("roles").where(
+            "username",
+            "==",
+            body.username
+        ).get();
+        if (user.empty) {
+            throw {
+                message: "User not found",
+                status: 404
+            };
+        }
+        const rolesToRemove = body.roles.filter(role => user.docs[0].data().roles.includes(role));
+        if (rolesToRemove.length === 0) {
+            return true;
+        }
+        await db.collection("User").doc(user.docs[0].id).update({
+            roles: user.docs[0].data().roles.filter((role: string) => !rolesToRemove.includes(role))
+        })
+        return true;
+    }
+
+    async registerAdmin() {
+        const db = getFirestore();
+        let user = await db.collection("User").select("username", "passwordHash", "salt").where(
+            "username",
+            "==",
+            "admin"
+        ).get();
+        let salt = randomBytes(128).toString('base64');
+        let hash = await pbkdf2Sync("admin", salt, 1000, 64, 'sha512').toString('hex');
+        if (!user.empty) {
+            await db.collection("User").doc(user.docs[0].id).update({
+                passwordHash: hash,
+                salt: salt,
+                roles: ["admin"]
+            })
+        } else {
+            await db.collection("User").add({
+                username: "admin",
+                passwordHash: hash,
+                salt: salt,
+                roles: ["admin"]
+            })
+        }
+    }
+
+    constructor() {
+        this.registerAdmin();
     }
 }

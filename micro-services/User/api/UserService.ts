@@ -4,4 +4,6 @@ import * as EndpointReturnedTypes from "../types/EndpointReturnedTypes";
 export default interface UserService {
     login(body: EndpointInputTypes.LoginBody): Promise<EndpointReturnedTypes.LoginReturned>
     register(body: EndpointInputTypes.RegisterBody): Promise<EndpointReturnedTypes.RegisterReturned>
+    addRoles(body: EndpointInputTypes.AddRolesBody): Promise<EndpointReturnedTypes.AddRolesReturned>
+    removeRoles(body: EndpointInputTypes.RemoveRolesBody): Promise<EndpointReturnedTypes.RemoveRolesReturned>
 }

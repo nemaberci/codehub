@@ -31,12 +31,32 @@ class UserClient {
         return await answer.json();
     }
     static async register(
-        authToken: string,
         username: string,
         password: string
     ): Promise<> {
         const answer = await fetch(
             `${url}/user/register`,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method: "POST",
+                body: JSON.stringify(
+                    {
+                        username, 
+                        password, 
+                    }
+                )
+            }
+        );
+        return await answer.json();
+    }
+    static async addRoles(
+        authToken: string,
+        roles: string[]
+    ): Promise<> {
+        const answer = await fetch(
+            `${url}/user/add_roles`,
             {
                 headers: {
                     'Content-Type': 'application/json', 
@@ -45,8 +65,28 @@ class UserClient {
                 method: "POST",
                 body: JSON.stringify(
                     {
-                        username, 
-                        password, 
+                        roles, 
+                    }
+                )
+            }
+        );
+        return await answer.json();
+    }
+    static async removeRoles(
+        authToken: string,
+        roles: string[]
+    ): Promise<> {
+        const answer = await fetch(
+            `${url}/user/remove_roles`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "POST",
+                body: JSON.stringify(
+                    {
+                        roles, 
                     }
                 )
             }

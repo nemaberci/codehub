@@ -17,10 +17,6 @@ interface LoginBody {
 * @description Register a new user
 */
 interface RegisterBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string,
     /** 
     * @description The username of the user
     */
@@ -30,8 +26,44 @@ interface RegisterBody {
     */
     password: string;
 }
+/** 
+* @description Add roles to a user
+*/
+interface AddRolesBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string,
+    /** 
+    * @description Roles to add to the user
+    */
+    roles: string[];
+    /** 
+    * @description Id of the user to add roles to
+    */
+    username: string;
+}
+/** 
+* @description Remove roles from a user
+*/
+interface RemoveRolesBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string,
+    /** 
+    * @description Roles to remove from the user
+    */
+    roles: string[];
+    /** 
+    * @description Id of the user to remove roles from
+    */
+    username: string;
+}
 
 export {
     LoginBody,
-    RegisterBody
+    RegisterBody,
+    AddRolesBody,
+    RemoveRolesBody
 }

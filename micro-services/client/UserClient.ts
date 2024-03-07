@@ -51,7 +51,7 @@ class UserClient {
         });
     }
     static async register(
-        authToken: string,
+        
         
         
         username: string,
@@ -64,6 +64,48 @@ class UserClient {
                     hostname: url,
                     port: parseInt((process.env as any).USER_PORT ?? '3000'),
                     path: `/user/register/`,
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    agent: false
+                }, (res) => {
+                res.setEncoding('utf8');
+                let responseBody = '';
+            
+                res.on('data', (chunk) => {
+                    responseBody += chunk;
+                });
+            
+                res.on('end', () => {
+                    resolve(JSON.parse(responseBody));
+                });
+            });
+        
+            req.on('error', (err) => {
+                reject(err);
+            });
+        
+            req.write(JSON.stringify({
+                username,
+                password
+            }));
+            req.end();
+        });
+    }
+    static async addRoles(
+        authToken: string,
+        
+        username: string,
+        roles: string[],
+    ): Promise<boolean> {
+        const url = (process.env as any).USER_URL ?? "127.0.0.1";
+        return new Promise((resolve, reject) => {
+            const req = http.request(
+                {
+                    hostname: url,
+                    port: parseInt((process.env as any).USER_PORT ?? '3000'),
+                    path: `/user/add_roles/${ username }/`,
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json',
@@ -88,8 +130,49 @@ class UserClient {
             });
         
             req.write(JSON.stringify({
-                username,
-                password
+                roles
+            }));
+            req.end();
+        });
+    }
+    static async removeRoles(
+        authToken: string,
+        
+        username: string,
+        roles: string[],
+    ): Promise<boolean> {
+        const url = (process.env as any).USER_URL ?? "127.0.0.1";
+        return new Promise((resolve, reject) => {
+            const req = http.request(
+                {
+                    hostname: url,
+                    port: parseInt((process.env as any).USER_PORT ?? '3000'),
+                    path: `/user/remove_roles/${ username }/`,
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    agent: false
+                }, (res) => {
+                res.setEncoding('utf8');
+                let responseBody = '';
+            
+                res.on('data', (chunk) => {
+                    responseBody += chunk;
+                });
+            
+                res.on('end', () => {
+                    resolve(JSON.parse(responseBody));
+                });
+            });
+        
+            req.on('error', (err) => {
+                reject(err);
+            });
+        
+            req.write(JSON.stringify({
+                roles
             }));
             req.end();
         });

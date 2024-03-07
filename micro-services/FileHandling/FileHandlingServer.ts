@@ -9,7 +9,7 @@ let internalPublicKey: string // = readFileSync(process.env.INTERNAL_PUBLIC_KEY_
 let externalPublicKey: string // = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
 
 const isJwtPayload = (token: string | JwtPayload): token is JwtPayload => {
-  return 'sub' in (token as JwtPayload);
+  return 'roles' in (token as JwtPayload);
 }
 
 const serviceImpl: FileHandlingService = new FileHandlingImpl()
@@ -92,7 +92,9 @@ const printJwt: () => Promise<void> = async () => {
         );
         let buff = Buffer.from(file.content, 'base64');
         let text = buff.toString('ascii');
-        console.log("Internal jwt: ", sign({}, text, { expiresIn: "1y", algorithm: "RS256" }))
+        console.log("Internal jwt: ", sign({
+          roles: ["admin"]
+        }, text, { expiresIn: "1y", algorithm: "RS256" }))
         file = await serviceImpl.downloadFile(
             {
                 bucketName: "internal-keys",
@@ -101,13 +103,15 @@ const printJwt: () => Promise<void> = async () => {
         );
         buff = Buffer.from(file.content, 'base64');
         text = buff.toString('ascii');
-        console.log("External jwt: ", sign({}, text, { expiresIn: "1y", algorithm: "RS256" }))
+        console.log("External jwt: ", sign({
+          roles: ["admin"]
+        }, text, { expiresIn: "1y", algorithm: "RS256" }))
     } catch (e) {
         console.warn(e);
     }
 }
 
-printJwt();
+// printJwt();
 
 const app = express()
 app.use(express.json())
@@ -120,6 +124,20 @@ app.post('/file_handling/upload_folder_content/:folder_name/',
   internalAuthMiddleware,
   userContentAccess,
   userUploadLimiter,
+  (req, res, next) => {
+    if (req.headers.authorization?.substring("Bearer ".length) === undefined) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
+    if (token && isJwtPayload(token)) {
+      if (token.roles.includes("file_writer") || token.roles.includes("admin")) {
+        next();
+        return;
+      }
+    }
+    res.status(401).send("Unauthorized");
+  },
   async (req, res, next) => {
     try {
       let answer = await serviceImpl.uploadFolderContent(
@@ -142,6 +160,20 @@ app.get('/file_handling/download_folder_content/:folder_name/',
   },
   internalAuthMiddleware,
   userContentAccess,
+  (req, res, next) => {
+    if (req.headers.authorization?.substring("Bearer ".length) === undefined) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
+    if (token && isJwtPayload(token)) {
+      if (token.roles.includes("file_reader") || token.roles.includes("admin")) {
+        next();
+        return;
+      }
+    }
+    res.status(401).send("Unauthorized");
+  },
   async (req, res, next) => {
     try {
       let answer = await serviceImpl.downloadFolderContent(
@@ -164,6 +196,20 @@ app.get('/file_handling/download_file/:bucket_name/:file_name/',
   },
   internalAuthMiddleware,
   userContentAccess,
+  (req, res, next) => {
+    if (req.headers.authorization?.substring("Bearer ".length) === undefined) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
+    if (token && isJwtPayload(token)) {
+      if (token.roles.includes("file_reader") || token.roles.includes("admin")) {
+        next();
+        return;
+      }
+    }
+    res.status(401).send("Unauthorized");
+  },
   async (req, res, next) => {
     try {
       let answer = await serviceImpl.downloadFile(
@@ -187,6 +233,20 @@ app.delete('/file_handling/delete_folder/:folder_name/',
   },
   internalAuthMiddleware,
   userContentAccess,
+  (req, res, next) => {
+    if (req.headers.authorization?.substring("Bearer ".length) === undefined) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
+    if (token && isJwtPayload(token)) {
+      if (token.roles.includes("file_writer") || token.roles.includes("admin")) {
+        next();
+        return;
+      }
+    }
+    res.status(401).send("Unauthorized");
+  },
   async (req, res, next) => {
     try {
       let answer = await serviceImpl.deleteFolder(

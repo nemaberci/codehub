@@ -9,7 +9,7 @@ let internalPublicKey: string // = readFileSync(process.env.INTERNAL_PUBLIC_KEY_
 let externalPublicKey: string // = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
 
 const isJwtPayload = (token: string | JwtPayload): token is JwtPayload => {
-  return 'sub' in (token as JwtPayload);
+  return 'roles' in (token as JwtPayload);
 }
 
 const serviceImpl: UserService = new UserImpl()
@@ -110,13 +110,84 @@ app.post('/user/register/',
     console.log("Call to '/user/register/'");
     next();
   },
-  // userAuthMiddleware,
   async (req, res, next) => {
     try {
       let answer = await serviceImpl.register(
         {
+          ...req.body        }
+      );
+      res.status(200).send(answer);
+    } catch (e: any) {
+      res.status(e.status ?? 500).send(typeof e.message === "string" ? `["${e.message}"]` : e.message);
+    }
+    res.end();
+  }
+)
+console.log("Registered endpoint on '/user/add_roles/:username/'");
+app.post('/user/add_roles/:username/',
+  (req, res, next) => {
+    console.log("Call to '/user/add_roles/:username/'");
+    next();
+  },
+  userAuthMiddleware,
+  (req, res, next) => {
+    if (req.headers.authorization?.substring("Bearer ".length) === undefined) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
+    if (token && isJwtPayload(token)) {
+      if (token.roles.includes("admin") || token.roles.includes("admin")) {
+        next();
+        return;
+      }
+    }
+    res.status(401).send("Unauthorized");
+  },
+  async (req, res, next) => {
+    try {
+      let answer = await serviceImpl.addRoles(
+        {
+          username: req.params.username,
           ...req.body,
-          // authToken: req.headers.authorization!.substring("Bearer ".length)
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
+      );
+      res.status(200).send(answer);
+    } catch (e: any) {
+      res.status(e.status ?? 500).send(typeof e.message === "string" ? `["${e.message}"]` : e.message);
+    }
+    res.end();
+  }
+)
+console.log("Registered endpoint on '/user/remove_roles/:username/'");
+app.post('/user/remove_roles/:username/',
+  (req, res, next) => {
+    console.log("Call to '/user/remove_roles/:username/'");
+    next();
+  },
+  userAuthMiddleware,
+  (req, res, next) => {
+    if (req.headers.authorization?.substring("Bearer ".length) === undefined) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
+    if (token && isJwtPayload(token)) {
+      if (token.roles.includes("admin") || token.roles.includes("admin")) {
+        next();
+        return;
+      }
+    }
+    res.status(401).send("Unauthorized");
+  },
+  async (req, res, next) => {
+    try {
+      let answer = await serviceImpl.removeRoles(
+        {
+          username: req.params.username,
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
         }
       );
       res.status(200).send(answer);

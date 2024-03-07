@@ -9,7 +9,7 @@ let internalPublicKey: string // = readFileSync(process.env.INTERNAL_PUBLIC_KEY_
 let externalPublicKey: string // = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
 
 const isJwtPayload = (token: string | JwtPayload): token is JwtPayload => {
-  return 'sub' in (token as JwtPayload);
+  return 'roles' in (token as JwtPayload);
 }
 
 const serviceImpl: SolutionService = new SolutionImpl()
@@ -92,6 +92,20 @@ app.post('/solution/solve/',
     next();
   },
   userAuthMiddleware,
+  (req, res, next) => {
+    if (req.headers.authorization?.substring("Bearer ".length) === undefined) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
+    if (token && isJwtPayload(token)) {
+      if (token.roles.includes("solution_writer") || token.roles.includes("admin")) {
+        next();
+        return;
+      }
+    }
+    res.status(401).send("Unauthorized");
+  },
   async (req, res, next) => {
     try {
       let answer = await serviceImpl.solve(
@@ -114,6 +128,20 @@ app.get('/solution/list/:challenge_id/',
     next();
   },
   userAuthMiddleware,
+  (req, res, next) => {
+    if (req.headers.authorization?.substring("Bearer ".length) === undefined) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
+    if (token && isJwtPayload(token)) {
+      if (token.roles.includes("solution_reader") || token.roles.includes("admin")) {
+        next();
+        return;
+      }
+    }
+    res.status(401).send("Unauthorized");
+  },
   async (req, res, next) => {
     try {
       let answer = await serviceImpl.list(
@@ -137,6 +165,20 @@ app.get('/solution/result/:challenge_id/:user_id/',
     next();
   },
   userAuthMiddleware,
+  (req, res, next) => {
+    if (req.headers.authorization?.substring("Bearer ".length) === undefined) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
+    if (token && isJwtPayload(token)) {
+      if (token.roles.includes("solution_reader") || token.roles.includes("admin")) {
+        next();
+        return;
+      }
+    }
+    res.status(401).send("Unauthorized");
+  },
   async (req, res, next) => {
     try {
       let answer = await serviceImpl.result(
@@ -161,6 +203,20 @@ app.get('/solution/build_result/:challenge_id/:user_id/',
     next();
   },
   userAuthMiddleware,
+  (req, res, next) => {
+    if (req.headers.authorization?.substring("Bearer ".length) === undefined) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
+    if (token && isJwtPayload(token)) {
+      if (token.roles.includes("solution_reader") || token.roles.includes("admin")) {
+        next();
+        return;
+      }
+    }
+    res.status(401).send("Unauthorized");
+  },
   async (req, res, next) => {
     try {
       let answer = await serviceImpl.buildResult(

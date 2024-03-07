@@ -60,11 +60,11 @@ interface BuildResultBody {
     */
     authToken: string
     /** 
-    * @description Id of the challenge to get the results of
+    * @description Id of the challenge to get the build results of
     */
     challengeId: string;
     /** 
-    * @description Id of the user to get the results of
+    * @description Id of the user to get the build results of
     */
     userId: string;
 }
