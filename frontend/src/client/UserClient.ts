@@ -9,40 +9,44 @@ import * as inputValueModel from "./inputTypes";
 * @description Stores and handles users from external or internal sources
 */
 class UserClient {
-    static async byEmailAddress(
-        authToken: string,
-        emailAddress: string
-    ): Promise<returnValueModel.User> {
+    static async login(
+        username: string,
+        password: string
+    ): Promise<> {
         const answer = await fetch(
-            `${url}/user/by_email_address`,
+            `${url}/user/login`,
             {
                 headers: {
-                    'Content-Type': 'application/json', 
-                    'Authorization': `Bearer ${authToken}`
+                    'Content-Type': 'application/json'
                 },
-                method: "GET",
+                method: "POST",
                 body: JSON.stringify(
                     {
-                        emailAddress, 
+                        username, 
+                        password, 
                     }
                 )
             }
         );
         return await answer.json();
     }
-    static async fromGoogleAuthToken(
-        token: string
-    ): Promise<returnValueModel.User> {
+    static async register(
+        authToken: string,
+        username: string,
+        password: string
+    ): Promise<> {
         const answer = await fetch(
-            `${url}/user/from_google_auth_token`,
+            `${url}/user/register`,
             {
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
                 },
-                method: "GET",
+                method: "POST",
                 body: JSON.stringify(
                     {
-                        token, 
+                        username, 
+                        password, 
                     }
                 )
             }

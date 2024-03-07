@@ -1,9 +1,32 @@
-import { DotsThree } from "@phosphor-icons/react";
-import { Button, Navbar } from "react-daisyui";
+import { jwtDecode } from "jwt-decode";
+import { Button, Navbar, Tooltip } from "react-daisyui";
 import { useNavigate } from "react-router-dom";
 
 export default function NavBar() {
 	const navigate = useNavigate();
+
+	let loginButton = <></>;
+
+	if (localStorage.getItem("token")?.trim().length) {
+		loginButton = (
+			<NavBarButtonsSignedIn
+				displayName={(jwtDecode(localStorage.getItem("token")!) as any).userId + ""}
+				logout={() => {
+					localStorage.clear();
+					navigate("/");
+				}}
+			/>
+		);
+	} else {
+		loginButton = (
+			<NavBarButtonsGuest
+				action={() => {
+					navigate("/");
+				}}
+			/>
+		);
+	}
+
 	return (
 		<>
 			<Navbar className="fixed z-20 bg-base-100">
@@ -13,20 +36,48 @@ export default function NavBar() {
 					</Button>
         </div>*/}
 				<div className="flex-1">
-					<Button tag="a" color="ghost" className="normal-case text-xl" onClick={() => navigate("/")}>
+					<Button
+						tag="a"
+						color="ghost"
+						className="normal-case text-xl"
+						onClick={() => navigate("/challenges")}
+					>
 						codeHUB
 					</Button>
 				</div>
 				<div className="flex-none gap-2">
-					<Button color="primary" onClick={() => navigate("/upload")}>
-						Új feladat feltöltése
-					</Button>
-					<Button color="primary">BEJELENTKEZÉS</Button>
+					{loginButton}
+					{/*
 					<Button shape="square" color="ghost">
 						<DotsThree size={24} />
-					</Button>
+					</Button>*/}
 				</div>
 			</Navbar>
 		</>
+	);
+}
+
+function NavBarButtonsSignedIn({ displayName, logout }: { displayName: string; logout: () => void }) {
+	const navigate = useNavigate();
+
+	return (
+		<>
+			<Button color="primary" onClick={() => navigate("/upload")}>
+				Új feladat feltöltése
+			</Button>
+			<Tooltip message="Kijelentkezés" position="bottom">
+				<Button color="info" onClick={logout}>
+					{displayName}
+				</Button>
+			</Tooltip>
+		</>
+	);
+}
+
+function NavBarButtonsGuest({ action }: { action: () => void }) {
+	return (
+		<Button color="primary" onClick={action}>
+			BEJELENTKEZÉS
+		</Button>
 	);
 }

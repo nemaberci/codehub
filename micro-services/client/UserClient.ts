@@ -1,4 +1,3 @@
-const url = "127.0.0.1";
 import http from "node:http";
 
 import * as returnValueModel from "./returnedTypes";
@@ -8,19 +7,64 @@ import * as inputValueModel from "./inputTypes";
 * @description Stores and handles users from external or internal sources
 */
 class UserClient {
-    static async byEmailAddress(
-        authToken: string
+    static async login(
         
         
-        ,emailAddress: string
-    ): Promise<returnValueModel.User> {
+        
+        username: string,
+        password: string,
+    ): Promise<string> {
+        const url = (process.env as any).USER_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
-                    port: 3000,
-                    path: `/user/by_email_address/`,
-                    method: "GET",
+                    port: parseInt((process.env as any).USER_PORT ?? '3000'),
+                    path: `/user/login/`,
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    agent: false
+                }, (res) => {
+                res.setEncoding('utf8');
+                let responseBody = '';
+            
+                res.on('data', (chunk) => {
+                    responseBody += chunk;
+                });
+            
+                res.on('end', () => {
+                    resolve(JSON.parse(responseBody));
+                });
+            });
+        
+            req.on('error', (err) => {
+                reject(err);
+            });
+        
+            req.write(JSON.stringify({
+                username,
+                password
+            }));
+            req.end();
+        });
+    }
+    static async register(
+        authToken: string,
+        
+        
+        username: string,
+        password: string,
+    ): Promise<string> {
+        const url = (process.env as any).USER_URL ?? "127.0.0.1";
+        return new Promise((resolve, reject) => {
+            const req = http.request(
+                {
+                    hostname: url,
+                    port: parseInt((process.env as any).USER_PORT ?? '3000'),
+                    path: `/user/register/`,
+                    method: "POST",
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${authToken}`
@@ -43,49 +87,10 @@ class UserClient {
                 reject(err);
             });
         
-            req.write({
-                emailAddress
-            });
-            req.end();
-        });
-    }
-    static async fromGoogleAuthToken(
-        
-        
-        
-        ,token: string
-    ): Promise<returnValueModel.User> {
-        return new Promise((resolve, reject) => {
-            const req = http.request(
-                {
-                    hostname: url,
-                    port: 3000,
-                    path: `/user/from_google_auth_token/`,
-                    method: "GET",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    agent: false
-                }, (res) => {
-                res.setEncoding('utf8');
-                let responseBody = '';
-            
-                res.on('data', (chunk) => {
-                    responseBody += chunk;
-                });
-            
-                res.on('end', () => {
-                    resolve(JSON.parse(responseBody));
-                });
-            });
-        
-            req.on('error', (err) => {
-                reject(err);
-            });
-        
-            req.write({
-                token
-            });
+            req.write(JSON.stringify({
+                username,
+                password
+            }));
             req.end();
         });
     }

@@ -1,4 +1,3 @@
-const url = "127.0.0.1";
 import http from "node:http";
 
 import * as returnValueModel from "./returnedTypes";
@@ -11,14 +10,15 @@ class FileHandlingClient {
     static async uploadFolderContent(
         
         authToken: string,
-        folderName: string
-        ,files: inputValueModel.File[]
+        folderName: string,
+        files: inputValueModel.File[],
     ): Promise<boolean> {
+        const url = (process.env as any).FILE_HANDLING_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
-                    port: 3000,
+                    port: parseInt((process.env as any).FILE_HANDLING_PORT ?? '3000'),
                     path: `/file_handling/upload_folder_content/${ folderName }/`,
                     method: "POST",
                     headers: {
@@ -43,9 +43,9 @@ class FileHandlingClient {
                 reject(err);
             });
         
-            req.write({
+            req.write(JSON.stringify({
                 files
-            });
+            }));
             req.end();
         });
     }
@@ -54,11 +54,12 @@ class FileHandlingClient {
         authToken: string,
         folderName: string
     ): Promise<returnValueModel.File[]> {
+        const url = (process.env as any).FILE_HANDLING_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
-                    port: 3000,
+                    port: parseInt((process.env as any).FILE_HANDLING_PORT ?? '3000'),
                     path: `/file_handling/download_folder_content/${ folderName }/`,
                     method: "GET",
                     headers: {
@@ -91,11 +92,12 @@ class FileHandlingClient {
         authToken: string,
         bucketName: string,fileName: string
     ): Promise<returnValueModel.File> {
+        const url = (process.env as any).FILE_HANDLING_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
-                    port: 3000,
+                    port: parseInt((process.env as any).FILE_HANDLING_PORT ?? '3000'),
                     path: `/file_handling/download_file/${ bucketName }/${ fileName }/`,
                     method: "GET",
                     headers: {
@@ -128,11 +130,12 @@ class FileHandlingClient {
         authToken: string,
         folderName: string
     ): Promise<boolean> {
+        const url = (process.env as any).FILE_HANDLING_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 {
                     hostname: url,
-                    port: 3000,
+                    port: parseInt((process.env as any).FILE_HANDLING_PORT ?? '3000'),
                     path: `/file_handling/delete_folder/${ folderName }/`,
                     method: "DELETE",
                     headers: {

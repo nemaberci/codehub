@@ -1,0 +1,39 @@
+{
+  "name": "testChallenge",
+  "description": "A test challenge that is really not there to be used in practice, but to test whether the API works at all",
+  "shortDescription": "Test Challenge",
+  "controlSolution": {
+    "language": "java",
+    "folderContents": [
+      {
+        "content": "aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOw0KDQpwdWJsaWMgY2xhc3MgU29sdXRpb24gew0KDQogICAgcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncykgew0KICAgICAgICBTeXN0ZW0ub3V0LnByaW50bG4oMTAxKTsNCiAgICAgICAgU3lzdGVtLm91dC5wcmludGxuKDI1MjApOw0KICAgIH0NCg0KfQ==",
+        "name": "Solution.java"
+      }
+    ]
+  },
+  "outputVerifier": {
+    "content": "CgpkZWYgdmVyaWZ5KGlucHV0X2ZpbGVfY29udGVudHMsIG91dHB1dF9maWxlX2NvbnRlbnRzKToKICAgIHByaW50KGludChvdXRwdXRfZmlsZV9jb250ZW50c1swXSksIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzBdKSArIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzFdKSkKICAgIHByaW50KGludChvdXRwdXRfZmlsZV9jb250ZW50c1sxXSksIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzBdKSAqIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzFdKSkKICAgIHJldHVybiBpbnQob3V0cHV0X2ZpbGVfY29udGVudHNbMF0pID09IGludChpbnB1dF9maWxlX2NvbnRlbnRzWzBdKSArIGludChpbnB1dF9maWxlX2NvbnRlbnRzWzFdKSBhbmQgaW50KG91dHB1dF9maWxlX2NvbnRlbnRzWzFdKSA9PSBpbnQoaW5wdXRfZmlsZV9jb250ZW50c1swXSkgKiBpbnQoaW5wdXRfZmlsZV9jb250ZW50c1sxXSkK",
+    "name": "verifier.py"
+  },
+  "testCases": [
+    {
+      "input": "NTYKNDUK",
+      "points": 2,
+      "description": "Simple test case",
+      "maxMemory": 1500,
+      "maxTime": 2500,
+      "name": "test case 1"
+    },
+    {
+      "inputGenerator": {
+        "content": "aW1wb3J0IHJhbmRvbQpwcmludChyYW5kb20ucmFuZGludCgyMCwgNTApKQpwcmludChyYW5kb20ucmFuZGludCgyMCwgNTApKQ==",
+        "name": "qwe.py"
+      },
+      "points": 5,
+      "description": "Simple generated test case",
+      "maxMemory": 1500,
+      "maxTime": 2500,
+      "name": "test case 2"
+    }
+  ]
+}

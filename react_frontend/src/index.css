@@ -14,10 +14,36 @@ h3 {
 	@apply text-2xl;
 }
 
+h4 {
+	@apply my-1;
+	@apply font-semibold;
+	@apply text-xl;
+}
+
 .carousel {
 	scrollbar-width: auto !important;
 }
 
 .test-case {
 	box-shadow: rgba(1, 1, 1, 0.5) 0px 0px 1rem 0px;
+}
+
+@keyframes spin {
+	100% {
+		-webkit-transform: rotate(360deg);
+		-moz-transform: rotate(360deg);
+		transform: rotate(360deg);
+	}
+}
+
+.spinning-fast {
+	animation: spin 0.5s linear infinite;
+	-webkit-animation: spin 0.5s linear infinite;
+	-moz-animation: spin 0.5s linear infinite;
+}
+
+.spinning-slow {
+	animation: spin 1s linear infinite;
+	-webkit-animation: spin 1s linear infinite;
+	-moz-animation: spin 1s linear infinite;
 }

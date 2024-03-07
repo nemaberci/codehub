@@ -17,19 +17,101 @@ interface UploadBody {
     */
     description: string;
     /** 
+    * @description A shorter description of the challenge
+    */
+    shortDescription: string;
+    /** 
     * @description Control solutions of the challenge
     */
-    controlSolutions: model.SolutionSource[];
+    controlSolution?: model.SolutionSource;
+    /** 
+    * @description Test cases of the challenge
+    */
+    testCases?: model.TestCase[];
+    /** 
+    * @description Output verifier of the challenge
+    */
+    outputVerifier?: model.File;
+}
+/** 
+* @description Add test cases to a challenge
+*/
+interface AddTestCasesBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string,
     /** 
     * @description Test cases of the challenge
     */
     testCases: model.TestCase[];
     /** 
-    * @description Location of the output verifier source
+    * @description Output verifier of the challenge
     */
-    outputVerifierLocation?: string;
+    outputVerifier: model.File;
+    /** 
+    * @description Id of the challenge to add test cases to
+    */
+    challengeId: string;
+}
+/** 
+* @description Add a control solution to a challenge
+*/
+interface AddControlSolutionBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string,
+    /** 
+    * @description Control solutions of the challenge
+    */
+    controlSolution: model.SolutionSource;
+    /** 
+    * @description Id of the challenge to add test cases to
+    */
+    challengeId: string;
+}
+/** 
+* @description Get a challenge
+*/
+interface GetBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string
+    /** 
+    * @description Id of the challenge to get
+    */
+    challengeId: string;
+}
+/** 
+* @description List all challenges
+*/
+interface ListBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string
+}
+/** 
+* @description List all challenges of a user
+*/
+interface ListByUserBody {
+    /**
+    * @description The user's access token
+    */
+    authToken: string
+    /** 
+    * @description Id of the user to get the challenges of
+    */
+    userId: string;
 }
 
 export {
-    UploadBody
+    UploadBody,
+    AddTestCasesBody,
+    AddControlSolutionBody,
+    GetBody,
+    ListBody,
+    ListByUserBody
 }

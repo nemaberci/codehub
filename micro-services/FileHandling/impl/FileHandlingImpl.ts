@@ -73,6 +73,7 @@ export default class FileHandlingImpl implements FileHandlingService {
                     (resolve, reject) => {
                         file.download().then(
                             fileContents => {
+                                console.log(fileContents[0].toString())
                                 resolve({
                                     content: fileContents[0].toString('base64'),
                                     name: file.name

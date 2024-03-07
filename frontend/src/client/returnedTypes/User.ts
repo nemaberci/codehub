@@ -10,10 +10,10 @@ interface User {
     */
     id: string;
     /** 
-    * @description The email address of the user
+    * @description The username of the user
     * @type string
     */
-    emailAddress: string;
+    username: string;
 }
 
 export default User

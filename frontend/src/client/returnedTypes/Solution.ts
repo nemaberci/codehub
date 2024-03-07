@@ -9,6 +9,21 @@ interface Solution {
     * @type string
     */
     id: string;
+    /** 
+    * @description The user that created the solution
+    * @type model.User
+    */
+    user: model.User;
+    /** 
+    * @description The id of the challenge
+    * @type string
+    */
+    challengeId: string;
+    /** 
+    * @description The results of the test cases
+    * @type model.TestCaseResult[]
+    */
+    testCaseResults: model.TestCaseResult[];
 }
 
 export default Solution

@@ -12,7 +12,8 @@ class SolutionClient {
     static async solve(
         authToken: string,
         challengeId: string,
-        solutionSource: inputValueModel.SolutionSource
+        folderContents: inputValueModel.File[],
+        entryPoint?: string
     ): Promise<returnValueModel.Solution> {
         const answer = await fetch(
             `${url}/solution/solve`,
@@ -25,10 +26,53 @@ class SolutionClient {
                 body: JSON.stringify(
                     {
                         challengeId, 
-                        solutionSource, 
+                        folderContents, 
+                        entryPoint, 
                     }
                 )
             }
+        );
+        return await answer.json();
+    }
+    static async list(
+        authToken: string
+    ): Promise<returnValueModel.Solution> {
+        const answer = await fetch(
+            `${url}/solution/list`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "GET"            }
+        );
+        return await answer.json();
+    }
+    static async result(
+        authToken: string
+    ): Promise<returnValueModel.Solution> {
+        const answer = await fetch(
+            `${url}/solution/result`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "GET"            }
+        );
+        return await answer.json();
+    }
+    static async buildResult(
+        authToken: string
+    ): Promise<returnValueModel.SolutionBuildResult> {
+        const answer = await fetch(
+            `${url}/solution/build_result`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "GET"            }
         );
         return await answer.json();
     }

@@ -1,29 +1,37 @@
 import * as model from '../../client/inputTypes';
 
 /** 
-* @description Get user by email address
+* @description Login using username and password. Returns a JWT that can be used to access other services.
 */
-interface ByEmailAddressBody {
+interface LoginBody {
+    /** 
+    * @description The username of the user
+    */
+    username: string;
+    /** 
+    * @description The password of the user
+    */
+    password: string;
+}
+/** 
+* @description Register a new user
+*/
+interface RegisterBody {
     /**
     * @description The user's access token
     */
     authToken: string,
     /** 
-    * @description Email address of the user
+    * @description The username of the user
     */
-    emailAddress: string;
-}
-/** 
-* @description Get user by Google auth token
-*/
-interface FromGoogleAuthTokenBody {
+    username: string;
     /** 
-    * @description Google auth token
+    * @description The password of the user
     */
-    token: string;
+    password: string;
 }
 
 export {
-    ByEmailAddressBody,
-    FromGoogleAuthTokenBody
+    LoginBody,
+    RegisterBody
 }

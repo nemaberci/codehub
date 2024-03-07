@@ -8,7 +8,10 @@ COPY User/types ./User/types
 COPY User/package.json ./User
 COPY User/tsconfig.json ./User
 COPY User/UserServer.ts ./User
+COPY package.json .
 COPY client ./client
+
+RUN ["npm", "install"]
 
 WORKDIR /work/User
 

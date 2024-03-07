@@ -10,15 +10,15 @@ interface SolutionSource {
     */
     language: string;
     /** 
-    * @description The locations of the source files of the solution
-    * @type string[]
+    * @description The contents of the source code folder
+    * @type model.File[]
     */
-    sourceFileLocations: string[];
+    folderContents: model.File[];
     /** 
-    * @description The location of the entry point file of the solution
+    * @description The entry point of the solution (by default: Solution.java)
     * @type string
     */
-    entryPointFileLocation: string;
+    entryPoint?: string;
 }
 
 export default SolutionSource

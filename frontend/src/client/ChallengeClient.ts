@@ -13,9 +13,10 @@ class ChallengeClient {
         authToken: string,
         name: string,
         description: string,
-        controlSolutions: inputValueModel.SolutionSource[],
-        testCases: inputValueModel.TestCase[],
-        outputVerifierLocation?: string
+        shortDescription: string,
+        controlSolution?: inputValueModel.SolutionSource,
+        testCases?: inputValueModel.TestCase[],
+        outputVerifier?: inputValueModel.File
     ): Promise<returnValueModel.Challenge> {
         const answer = await fetch(
             `${url}/challenge/upload`,
@@ -29,12 +30,99 @@ class ChallengeClient {
                     {
                         name, 
                         description, 
-                        controlSolutions, 
+                        shortDescription, 
+                        controlSolution, 
                         testCases, 
-                        outputVerifierLocation, 
+                        outputVerifier, 
                     }
                 )
             }
+        );
+        return await answer.json();
+    }
+    static async addTestCases(
+        authToken: string,
+        testCases: inputValueModel.TestCase[],
+        outputVerifier: inputValueModel.File
+    ): Promise<returnValueModel.Challenge> {
+        const answer = await fetch(
+            `${url}/challenge/add_test_cases`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "POST",
+                body: JSON.stringify(
+                    {
+                        testCases, 
+                        outputVerifier, 
+                    }
+                )
+            }
+        );
+        return await answer.json();
+    }
+    static async addControlSolution(
+        authToken: string,
+        controlSolution: inputValueModel.SolutionSource
+    ): Promise<returnValueModel.Challenge> {
+        const answer = await fetch(
+            `${url}/challenge/add_control_solution`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "POST",
+                body: JSON.stringify(
+                    {
+                        controlSolution, 
+                    }
+                )
+            }
+        );
+        return await answer.json();
+    }
+    static async get(
+        authToken: string
+    ): Promise<returnValueModel.Challenge> {
+        const answer = await fetch(
+            `${url}/challenge/get`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "GET"            }
+        );
+        return await answer.json();
+    }
+    static async list(
+        authToken: string
+    ): Promise<returnValueModel.Challenge> {
+        const answer = await fetch(
+            `${url}/challenge/list`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "GET"            }
+        );
+        return await answer.json();
+    }
+    static async listByUser(
+        authToken: string
+    ): Promise<returnValueModel.Challenge> {
+        const answer = await fetch(
+            `${url}/challenge/list_by_user`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
+                },
+                method: "GET"            }
         );
         return await answer.json();
     }
