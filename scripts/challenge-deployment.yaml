@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: challenge
+  namespace: challenge
+  labels:
+    app: challenge
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: challenge
+  template:
+    metadata:
+      labels:
+        app: challenge
+      namespace: challenge
+    spec:
+      serviceAccountName: challenge
+      nodeSelector:
+        iam.gke.io/gke-metadata-server-enabled: "true"
+      containers:
+        - name: solution
+          image: europe-west4-docker.pkg.dev/codehub-400314/code-hub-main/challenge:latest
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+
+            requests:
+              cpu: "500m"
+              memory: "256Mi"
+          env:
+            - name: FILE_HANDLING_URL
+              value: <FILE_HANDLING_URL>
+            - name: FILE_HANDLING_PORT
+              value: <FILE_HANDLING_PORT>
+            - name: SOLUTION_URL
+              value: <SOLUTION_URL>
+            - name: SOLUTION_PORT
+              value: <SOLUTION_PORT>
+            - name: USER_URL
+              value: <USER_URL>
+            - name: USER_PORT
+              value: <USER_PORT>
+            # - name: CHALLENGE_URL
+            #   value: <CHALLENGE_URL>
+            # - name: CHALLENGE_PORT
+            #   value: <CHALLENGE_PORT>

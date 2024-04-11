@@ -5,7 +5,7 @@ import * as model from '../../client/inputTypes';
 */
 interface UploadBody {
     /**
-    * @description The user's access token
+    * @description The user's custom access token
     */
     authToken: string,
     /** 
@@ -37,10 +37,6 @@ interface UploadBody {
 * @description Add test cases to a challenge
 */
 interface AddTestCasesBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string,
     /** 
     * @description Test cases of the challenge
     */
@@ -59,7 +55,7 @@ interface AddTestCasesBody {
 */
 interface AddControlSolutionBody {
     /**
-    * @description The user's access token
+    * @description The user's custom access token
     */
     authToken: string,
     /** 
@@ -75,10 +71,6 @@ interface AddControlSolutionBody {
 * @description Get a challenge
 */
 interface GetBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string
     /** 
     * @description Id of the challenge to get
     */
@@ -88,19 +80,11 @@ interface GetBody {
 * @description List all challenges
 */
 interface ListBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string
 }
 /** 
 * @description List all challenges of a user
 */
 interface ListByUserBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string
     /** 
     * @description Id of the user to get the challenges of
     */

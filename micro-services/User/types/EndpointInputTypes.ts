@@ -30,10 +30,6 @@ interface RegisterBody {
 * @description Add roles to a user
 */
 interface AddRolesBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string,
     /** 
     * @description Roles to add to the user
     */
@@ -47,10 +43,6 @@ interface AddRolesBody {
 * @description Remove roles from a user
 */
 interface RemoveRolesBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string,
     /** 
     * @description Roles to remove from the user
     */
@@ -60,10 +52,24 @@ interface RemoveRolesBody {
     */
     username: string;
 }
+/** 
+* @description Check if a user has certain roles
+*/
+interface HasRolesBody {
+    /**
+    * @description The user's custom access token
+    */
+    authToken: string,
+    /** 
+    * @description Roles to check
+    */
+    roles: string[];
+}
 
 export {
     LoginBody,
     RegisterBody,
     AddRolesBody,
-    RemoveRolesBody
+    RemoveRolesBody,
+    HasRolesBody
 }

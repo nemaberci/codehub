@@ -8,8 +8,8 @@ import * as inputValueModel from "./inputTypes";
 */
 class FileHandlingClient {
     static async uploadFolderContent(
-        
         authToken: string,
+        
         folderName: string,
         files: inputValueModel.File[],
     ): Promise<boolean> {
@@ -22,8 +22,7 @@ class FileHandlingClient {
                     path: `/file_handling/upload_folder_content/${ folderName }/`,
                     method: "POST",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
+                        'Content-Type': 'application/json'
                     },
                     agent: false
                 }, (res) => {
@@ -50,8 +49,8 @@ class FileHandlingClient {
         });
     }
     static async downloadFolderContent(
-        
         authToken: string,
+        
         folderName: string
     ): Promise<returnValueModel.File[]> {
         const url = (process.env as any).FILE_HANDLING_URL ?? "127.0.0.1";
@@ -63,8 +62,7 @@ class FileHandlingClient {
                     path: `/file_handling/download_folder_content/${ folderName }/`,
                     method: "GET",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
+                        'Content-Type': 'application/json'
                     },
                     agent: false
                 }, (res) => {
@@ -88,9 +86,9 @@ class FileHandlingClient {
         });
     }
     static async downloadFile(
-        
         authToken: string,
-        bucketName: string,fileName: string
+        
+        fileName: string
     ): Promise<returnValueModel.File> {
         const url = (process.env as any).FILE_HANDLING_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
@@ -98,11 +96,10 @@ class FileHandlingClient {
                 {
                     hostname: url,
                     port: parseInt((process.env as any).FILE_HANDLING_PORT ?? '3000'),
-                    path: `/file_handling/download_file/${ bucketName }/${ fileName }/`,
+                    path: `/file_handling/download_file/${ fileName }/`,
                     method: "GET",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
+                        'Content-Type': 'application/json'
                     },
                     agent: false
                 }, (res) => {
@@ -126,8 +123,8 @@ class FileHandlingClient {
         });
     }
     static async deleteFolder(
-        
         authToken: string,
+        
         folderName: string
     ): Promise<boolean> {
         const url = (process.env as any).FILE_HANDLING_URL ?? "127.0.0.1";
@@ -139,8 +136,7 @@ class FileHandlingClient {
                     path: `/file_handling/delete_folder/${ folderName }/`,
                     method: "DELETE",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
+                        'Content-Type': 'application/json'
                     },
                     agent: false
                 }, (res) => {

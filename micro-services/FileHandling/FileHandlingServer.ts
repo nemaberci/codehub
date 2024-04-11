@@ -1,117 +1,13 @@
 import FileHandlingImpl from './impl/FileHandlingImpl'
 import FileHandlingService from './api/FileHandlingService'
 import express, { RequestHandler } from 'express'
-import { readFileSync } from 'fs'
-import { verify, JwtPayload, sign } from "jsonwebtoken";
-import { userContentAccess, userUploadLimiter,  } from "./impl/FileHandlingMiddlewares"
-
-let internalPublicKey: string // = readFileSync(process.env.INTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/internalPublic.pem").toString()
-let externalPublicKey: string // = readFileSync(process.env.EXTERNAL_PUBLIC_KEY_FILE_LOCATION ?? "../keys/public.pem").toString()
-
-const isJwtPayload = (token: string | JwtPayload): token is JwtPayload => {
-  return 'roles' in (token as JwtPayload);
-}
+import { readFileSync, writeFileSync } from 'fs'
+import { verify, JwtPayload, sign, decode } from "jsonwebtoken";
+import { userContentAccess, userUploadLimiter, keyAccess,  } from "./impl/FileHandlingMiddlewares"
+import UserClient from '../client/UserClient';
+import { randomBytes } from "crypto";
 
 const serviceImpl: FileHandlingService = new FileHandlingImpl()
-
-const userAuthMiddleware: RequestHandler = async (req, res, next) => {
-  try {
-    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", externalPublicKey, { complete: false });
-    if (token) {
-      // todo: check if user is allowed to access this endpoint
-      next();
-      return;
-    } else {
-      console.warn("No Authorization token, or invalid Authorization token");
-      res.status(401).send("Unauthorized");
-    }
-  } catch (e: any) {
-    console.error(e);
-    res.status(401).send(e.message ?? "Unauthorized");
-  }
-};
-
-const internalAuthMiddleware: RequestHandler = async (req, res, next) => {
-  try {
-    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
-    if (token) {
-      next();
-      return;
-    } else {
-      console.warn("No Authorization token, or invalid Authorization token");
-    }
-  } catch (e: any) {
-    console.error(e);
-    res.status(401).send(e.message ?? "Unauthorized");
-  }
-};
-
-const loadInternalKey: () => Promise<void> = async () => {
-    try {
-        let file = await serviceImpl.downloadFile(
-            {
-                bucketName: (process.env as any).PUBLIC_KEY_BUCKET ?? "internal-keys",
-                fileName: (process.env as any).PUBLIC_KEY_LOCATION ?? "public2.pem"
-            }
-        );
-        let buff = Buffer.from(file.content, 'base64');
-        let text = buff.toString('ascii');
-        internalPublicKey = text;
-    } catch (e) {
-        console.warn(e);
-    }
-}
-
-loadInternalKey();
-
-const loadExternalKey: () => Promise<void> = async () => {
-    try {
-        let file = await serviceImpl.downloadFile(
-            {
-                bucketName: (process.env as any).PUBLIC_KEY_BUCKET ?? "internal-keys",
-                fileName: (process.env as any).PUBLIC_KEY_LOCATION ?? "public1.pem"
-            }
-        );
-        let buff = Buffer.from(file.content, 'base64');
-        let text = buff.toString('ascii');
-        externalPublicKey = text;
-    } catch (e) {
-        console.warn(e);
-    }
-}
-
-loadExternalKey();
-
-const printJwt: () => Promise<void> = async () => {
-    try {
-        let file = await serviceImpl.downloadFile(
-            {
-                bucketName: "internal-keys",
-                fileName: "private2.pem"
-            }
-        );
-        let buff = Buffer.from(file.content, 'base64');
-        let text = buff.toString('ascii');
-        console.log("Internal jwt: ", sign({
-          roles: ["admin"]
-        }, text, { expiresIn: "1y", algorithm: "RS256" }))
-        file = await serviceImpl.downloadFile(
-            {
-                bucketName: "internal-keys",
-                fileName: "private1.pem"
-            }
-        );
-        buff = Buffer.from(file.content, 'base64');
-        text = buff.toString('ascii');
-        console.log("External jwt: ", sign({
-          roles: ["admin"]
-        }, text, { expiresIn: "1y", algorithm: "RS256" }))
-    } catch (e) {
-        console.warn(e);
-    }
-}
-
-// printJwt();
 
 const app = express()
 app.use(express.json())
@@ -121,22 +17,25 @@ app.post('/file_handling/upload_folder_content/:folder_name/',
     console.log("Call to '/file_handling/upload_folder_content/:folder_name/'");
     next();
   },
-  internalAuthMiddleware,
   userContentAccess,
   userUploadLimiter,
-  (req, res, next) => {
-    if (req.headers.authorization?.substring("Bearer ".length) === undefined) {
+  async (req, res, next) => {
+    const payload = decode(req.headers.authorization!) as JwtPayload;
+    let requiredRoles = ["file_writer",];
+    let userClient = UserClient;
+    if (!req.headers.authorization) {
       res.status(401).send("Unauthorized");
       return;
     }
-    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
-    if (token && isJwtPayload(token)) {
-      if (token.roles.includes("file_writer") || token.roles.includes("admin")) {
-        next();
-        return;
-      }
+    let hasRoles = await userClient.hasRoles(
+      req.headers.authorization!.substring("Bearer ".length),
+      requiredRoles
+    );
+    if (hasRoles) {
+      next();
+    } else {
+      res.status(401).send("Unauthorized");
     }
-    res.status(401).send("Unauthorized");
   },
   async (req, res, next) => {
     try {
@@ -158,21 +57,24 @@ app.get('/file_handling/download_folder_content/:folder_name/',
     console.log("Call to '/file_handling/download_folder_content/:folder_name/'");
     next();
   },
-  internalAuthMiddleware,
   userContentAccess,
-  (req, res, next) => {
-    if (req.headers.authorization?.substring("Bearer ".length) === undefined) {
+  async (req, res, next) => {
+    const payload = decode(req.headers.authorization!) as JwtPayload;
+    let requiredRoles = ["file_reader",];
+    let userClient = UserClient;
+    if (!req.headers.authorization) {
       res.status(401).send("Unauthorized");
       return;
     }
-    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
-    if (token && isJwtPayload(token)) {
-      if (token.roles.includes("file_reader") || token.roles.includes("admin")) {
-        next();
-        return;
-      }
+    let hasRoles = await userClient.hasRoles(
+      req.headers.authorization!.substring("Bearer ".length),
+      requiredRoles
+    );
+    if (hasRoles) {
+      next();
+    } else {
+      res.status(401).send("Unauthorized");
     }
-    res.status(401).send("Unauthorized");
   },
   async (req, res, next) => {
     try {
@@ -188,33 +90,35 @@ app.get('/file_handling/download_folder_content/:folder_name/',
     res.end();
   }
 )
-console.log("Registered endpoint on '/file_handling/download_file/:bucket_name/:file_name/'");
-app.get('/file_handling/download_file/:bucket_name/:file_name/',
+console.log("Registered endpoint on '/file_handling/download_file/:file_name/'");
+app.get('/file_handling/download_file/:file_name/',
   (req, res, next) => {
-    console.log("Call to '/file_handling/download_file/:bucket_name/:file_name/'");
+    console.log("Call to '/file_handling/download_file/:file_name/'");
     next();
   },
-  internalAuthMiddleware,
   userContentAccess,
-  (req, res, next) => {
-    if (req.headers.authorization?.substring("Bearer ".length) === undefined) {
+  async (req, res, next) => {
+    const payload = decode(req.headers.authorization!) as JwtPayload;
+    let requiredRoles = ["file_reader",];
+    let userClient = UserClient;
+    if (!req.headers.authorization) {
       res.status(401).send("Unauthorized");
       return;
     }
-    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
-    if (token && isJwtPayload(token)) {
-      if (token.roles.includes("file_reader") || token.roles.includes("admin")) {
-        next();
-        return;
-      }
+    let hasRoles = await userClient.hasRoles(
+      req.headers.authorization!.substring("Bearer ".length),
+      requiredRoles
+    );
+    if (hasRoles) {
+      next();
+    } else {
+      res.status(401).send("Unauthorized");
     }
-    res.status(401).send("Unauthorized");
   },
   async (req, res, next) => {
     try {
       let answer = await serviceImpl.downloadFile(
         {
-          bucketName: req.params.bucket_name,
           fileName: req.params.file_name,
           ...req.body        }
       );
@@ -231,21 +135,24 @@ app.delete('/file_handling/delete_folder/:folder_name/',
     console.log("Call to '/file_handling/delete_folder/:folder_name/'");
     next();
   },
-  internalAuthMiddleware,
   userContentAccess,
-  (req, res, next) => {
-    if (req.headers.authorization?.substring("Bearer ".length) === undefined) {
+  async (req, res, next) => {
+    const payload = decode(req.headers.authorization!) as JwtPayload;
+    let requiredRoles = ["file_writer",];
+    let userClient = UserClient;
+    if (!req.headers.authorization) {
       res.status(401).send("Unauthorized");
       return;
     }
-    let token = verify(req.headers.authorization?.substring("Bearer ".length) ?? "", internalPublicKey, { complete: false });
-    if (token && isJwtPayload(token)) {
-      if (token.roles.includes("file_writer") || token.roles.includes("admin")) {
-        next();
-        return;
-      }
+    let hasRoles = await userClient.hasRoles(
+      req.headers.authorization!.substring("Bearer ".length),
+      requiredRoles
+    );
+    if (hasRoles) {
+      next();
+    } else {
+      res.status(401).send("Unauthorized");
     }
-    res.status(401).send("Unauthorized");
   },
   async (req, res, next) => {
     try {

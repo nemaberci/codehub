@@ -75,8 +75,7 @@ class ChallengeClient {
                     path: `/challenge/add_test_cases/${ challengeId }/`,
                     method: "POST",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
+                        'Content-Type': 'application/json'
                     },
                     agent: false
                 }, (res) => {
@@ -159,8 +158,7 @@ class ChallengeClient {
                     path: `/challenge/get/${ challengeId }/`,
                     method: "GET",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
+                        'Content-Type': 'application/json'
                     },
                     agent: false
                 }, (res) => {
@@ -197,8 +195,7 @@ class ChallengeClient {
                     path: `/challenge/list/`,
                     method: "GET",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
+                        'Content-Type': 'application/json'
                     },
                     agent: false
                 }, (res) => {
@@ -235,8 +232,7 @@ class ChallengeClient {
                     path: `/challenge/list_by_user/${ userId }/`,
                     method: "GET",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
+                        'Content-Type': 'application/json'
                     },
                     agent: false
                 }, (res) => {

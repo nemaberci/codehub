@@ -52,15 +52,13 @@ class UserClient {
         return await answer.json();
     }
     static async addRoles(
-        authToken: string,
         roles: string[]
     ): Promise<> {
         const answer = await fetch(
             `${url}/user/add_roles`,
             {
                 headers: {
-                    'Content-Type': 'application/json', 
-                    'Authorization': `Bearer ${authToken}`
+                    'Content-Type': 'application/json'
                 },
                 method: "POST",
                 body: JSON.stringify(
@@ -73,17 +71,36 @@ class UserClient {
         return await answer.json();
     }
     static async removeRoles(
-        authToken: string,
         roles: string[]
     ): Promise<> {
         const answer = await fetch(
             `${url}/user/remove_roles`,
             {
                 headers: {
+                    'Content-Type': 'application/json'
+                },
+                method: "POST",
+                body: JSON.stringify(
+                    {
+                        roles, 
+                    }
+                )
+            }
+        );
+        return await answer.json();
+    }
+    static async hasRoles(
+        authToken: string,
+        roles: string[]
+    ): Promise<> {
+        const answer = await fetch(
+            `${url}/user/has_roles`,
+            {
+                headers: {
                     'Content-Type': 'application/json', 
                     'Authorization': `Bearer ${authToken}`
                 },
-                method: "POST",
+                method: "GET",
                 body: JSON.stringify(
                     {
                         roles, 

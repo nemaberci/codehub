@@ -24,8 +24,7 @@ class SolutionClient {
                     path: `/solution/solve/`,
                     method: "POST",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
+                        'Content-Type': 'application/json'
                     },
                     agent: false
                 }, (res) => {
@@ -67,8 +66,7 @@ class SolutionClient {
                     path: `/solution/list/${ challengeId }/`,
                     method: "GET",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
+                        'Content-Type': 'application/json'
                     },
                     agent: false
                 }, (res) => {
@@ -105,8 +103,7 @@ class SolutionClient {
                     path: `/solution/result/${ challengeId }/${ userId }/`,
                     method: "GET",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
+                        'Content-Type': 'application/json'
                     },
                     agent: false
                 }, (res) => {
@@ -143,8 +140,7 @@ class SolutionClient {
                     path: `/solution/build_result/${ challengeId }/${ userId }/`,
                     method: "GET",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
+                        'Content-Type': 'application/json'
                     },
                     agent: false
                 }, (res) => {

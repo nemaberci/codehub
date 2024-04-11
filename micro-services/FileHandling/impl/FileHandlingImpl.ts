@@ -1,13 +1,19 @@
 import {File} from "../../client/returnedTypes";
 import FileHandlingService from "../api/FileHandlingService";
-import {DeleteFolderBody, DownloadFileBody, DownloadFolderContentBody, UploadFolderContentBody} from "../types/EndpointInputTypes";
+import {
+    DeleteFolderBody,
+    DownloadFileBody,
+    DownloadFolderContentBody,
+    UploadFolderContentBody
+} from "../types/EndpointInputTypes";
 import {Storage} from "@google-cloud/storage";
+
 
 export default class FileHandlingImpl implements FileHandlingService {
     async downloadFile(body: DownloadFileBody): Promise<File> {
         const storage = new Storage();
         try {
-            const bucket = storage.bucket(body.bucketName);
+            const bucket = storage.bucket(process.env.STORAGE_BUCKET_NAME ?? "code-hub-sources");
             const file = await bucket.file(body.fileName).download();
             return {
                 content: file[0].toString('base64'),

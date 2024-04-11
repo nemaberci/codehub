@@ -10,7 +10,6 @@ import * as inputValueModel from "./inputTypes";
 */
 class SolutionClient {
     static async solve(
-        authToken: string,
         challengeId: string,
         folderContents: inputValueModel.File[],
         entryPoint?: string
@@ -19,8 +18,7 @@ class SolutionClient {
             `${url}/solution/solve`,
             {
                 headers: {
-                    'Content-Type': 'application/json', 
-                    'Authorization': `Bearer ${authToken}`
+                    'Content-Type': 'application/json'
                 },
                 method: "POST",
                 body: JSON.stringify(
@@ -35,42 +33,36 @@ class SolutionClient {
         return await answer.json();
     }
     static async list(
-        authToken: string
     ): Promise<returnValueModel.Solution> {
         const answer = await fetch(
             `${url}/solution/list`,
             {
                 headers: {
-                    'Content-Type': 'application/json', 
-                    'Authorization': `Bearer ${authToken}`
+                    'Content-Type': 'application/json'
                 },
                 method: "GET"            }
         );
         return await answer.json();
     }
     static async result(
-        authToken: string
     ): Promise<returnValueModel.Solution> {
         const answer = await fetch(
             `${url}/solution/result`,
             {
                 headers: {
-                    'Content-Type': 'application/json', 
-                    'Authorization': `Bearer ${authToken}`
+                    'Content-Type': 'application/json'
                 },
                 method: "GET"            }
         );
         return await answer.json();
     }
     static async buildResult(
-        authToken: string
     ): Promise<returnValueModel.SolutionBuildResult> {
         const answer = await fetch(
             `${url}/solution/build_result`,
             {
                 headers: {
-                    'Content-Type': 'application/json', 
-                    'Authorization': `Bearer ${authToken}`
+                    'Content-Type': 'application/json'
                 },
                 method: "GET"            }
         );

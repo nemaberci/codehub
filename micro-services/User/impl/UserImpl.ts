@@ -4,15 +4,17 @@ import {AddRolesReturned, LoginReturned, RegisterReturned, RemoveRolesReturned} 
 import { initializeApp, applicationDefault, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import FileHandlingClient from "../../client/FileHandlingClient";
-import {sign} from "jsonwebtoken";
+import {decode, JwtPayload, sign, verify} from "jsonwebtoken";
 import {pbkdf2Sync, randomBytes} from "crypto";
+import * as EndpointInputTypes from "../types/EndpointInputTypes";
+import * as EndpointReturnedTypes from "../types/EndpointReturnedTypes";
+import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
+import {Storage} from "@google-cloud/storage";
 
-// initializeApp({
-//     credential: applicationDefault()
-// });
 initializeApp();
 
 export default class UserImpl implements UserService {
+
     async login(body: LoginBody): Promise<LoginReturned> {
 
         const db = getFirestore();
@@ -31,18 +33,15 @@ export default class UserImpl implements UserService {
         if (hash !== passwordHash) {
             throw new Error("Password incorrect");
         }
-        let fileHandlingClient = FileHandlingClient;
-        let file = await fileHandlingClient.downloadFile(
-            (process.env as any).FILE_HANDLING_API_KEY,
-            "internal-keys",
-            "private1.pem"
-        );
-        let buff = Buffer.from(file.content, 'base64');
-        let text = buff.toString('ascii');
+        const client = new SecretManagerServiceClient();
+        const privateKeyAccess = await client.accessSecretVersion({
+            name: `projects/${process.env.PROJECT_ID ?? '656565803311'}/secrets/${process.env.SECRET_FILE_NAME ?? 'private_key.pem'}/versions/latest`
+        })
+        const privateKey = privateKeyAccess[0].payload?.data?.toString() ?? "";
         return sign({
             userId: user.docs[0].id,
             roles: userData.roles
-        }, text, { expiresIn: "1h", algorithm: "RS256" });
+        }, privateKey, { expiresIn: "1h", algorithm: "RS256" });
 
     }
 
@@ -65,18 +64,15 @@ export default class UserImpl implements UserService {
             salt: salt,
             roles: ["challenge_reader", "solution_reader", "file_reader"]
         })
-        let fileHandlingClient = FileHandlingClient;
-        let file = await fileHandlingClient.downloadFile(
-            (process.env as any).FILE_HANDLING_API_KEY,
-            "internal-keys",
-            "private1.pem"
-        );
-        let buff = Buffer.from(file.content, 'base64');
-        let text = buff.toString('ascii');
+        const client = new SecretManagerServiceClient();
+        const privateKeyAccess = await client.accessSecretVersion({
+            name: `projects/${process.env.PROJECT_ID ?? '656565803311'}/secrets/${process.env.SECRET_FILE_NAME ?? 'private_key.pem'}/versions/latest`
+        })
+        const privateKey = privateKeyAccess[0].payload?.data?.toString() ?? "";
         return sign({
             userId: createdUser.id,
             roles: []
-        }, text, { expiresIn: "1y", algorithm: "RS256" });
+        }, privateKey, { expiresIn: "1y", algorithm: "RS256" });
 
     }
 
@@ -149,6 +145,35 @@ export default class UserImpl implements UserService {
                 roles: ["admin"]
             })
         }
+    }
+
+    async hasRoles(body: EndpointInputTypes.HasRolesBody): Promise<EndpointReturnedTypes.HasRolesReturned> {
+        const db = getFirestore();
+
+        const storage = new Storage();
+        let publicKey: string;
+        try {
+            const bucket = storage.bucket(process.env.STORAGE_BUCKET_NAME ?? "codehub-public-keys");
+            const file = await bucket.file(process.env.PUBLIC_KEY_FILENAME ?? 'public_key.pem').download();
+            publicKey = file[0].toString();
+        } catch (e) {
+            console.error(e);
+            throw {
+                message: "Error while downloading public key",
+                code: 500
+            };
+        }
+        const token = body.authToken;
+        let payload = verify(token, publicKey) as JwtPayload;
+        let user = await db.collection("User").doc(payload.userId).get();
+        if (!user.exists) {
+            throw {
+                message: "User not found",
+                status: 404
+            };
+        }
+        const rolesOfUser = ((user.data()!.roles as (string[] | undefined | null)) ?? []);
+        return body.roles.every(role => rolesOfUser.includes(role));
     }
 
     constructor() {

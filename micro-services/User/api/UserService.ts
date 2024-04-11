@@ -6,4 +6,5 @@ export default interface UserService {
     register(body: EndpointInputTypes.RegisterBody): Promise<EndpointReturnedTypes.RegisterReturned>
     addRoles(body: EndpointInputTypes.AddRolesBody): Promise<EndpointReturnedTypes.AddRolesReturned>
     removeRoles(body: EndpointInputTypes.RemoveRolesBody): Promise<EndpointReturnedTypes.RemoveRolesReturned>
+    hasRoles(body: EndpointInputTypes.HasRolesBody): Promise<EndpointReturnedTypes.HasRolesReturned>
 }

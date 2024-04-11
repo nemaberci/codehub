@@ -4,10 +4,6 @@ import * as model from '../../client/inputTypes';
 * @description Solve a challenge
 */
 interface SolveBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string,
     /** 
     * @description Id of the challenge to solve
     */
@@ -25,10 +21,6 @@ interface SolveBody {
 * @description List all solutions for a challenge
 */
 interface ListBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string
     /** 
     * @description Id of the challenge to get the scoreboard of
     */
@@ -38,10 +30,6 @@ interface ListBody {
 * @description Get the result of a solution of a challenge for a user
 */
 interface ResultBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string
     /** 
     * @description Id of the challenge to get the results of
     */
@@ -55,10 +43,6 @@ interface ResultBody {
 * @description Get the build result of a solution of a challenge for a user
 */
 interface BuildResultBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string
     /** 
     * @description Id of the challenge to get the build results of
     */
