@@ -39,7 +39,9 @@ app.post('/solution/solve/',
     try {
       let answer = await serviceImpl.solve(
         {
-          ...req.body        }
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
       );
       res.status(200).send(answer);
     } catch (e: any) {

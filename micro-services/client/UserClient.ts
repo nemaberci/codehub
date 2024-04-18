@@ -17,10 +17,8 @@ class UserClient {
         const url = (process.env as any).USER_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/login/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).USER_PORT ?? '3000'),
-                    path: `/user/login/`,
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
@@ -60,10 +58,8 @@ class UserClient {
         const url = (process.env as any).USER_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/register/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).USER_PORT ?? '3000'),
-                    path: `/user/register/`,
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
@@ -102,10 +98,8 @@ class UserClient {
         const url = (process.env as any).USER_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/add_roles/${ username }/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).USER_PORT ?? '3000'),
-                    path: `/user/add_roles/${ username }/`,
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
@@ -143,10 +137,8 @@ class UserClient {
         const url = (process.env as any).USER_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/remove_roles/${ username }/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).USER_PORT ?? '3000'),
-                    path: `/user/remove_roles/${ username }/`,
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
@@ -184,10 +176,8 @@ class UserClient {
         const url = (process.env as any).USER_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/has_roles/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).USER_PORT ?? '3000'),
-                    path: `/user/has_roles/`,
                     method: "GET",
                     headers: {
                         'Content-Type': 'application/json',

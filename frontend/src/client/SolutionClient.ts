@@ -10,6 +10,7 @@ import * as inputValueModel from "./inputTypes";
 */
 class SolutionClient {
     static async solve(
+        authToken: string,
         challengeId: string,
         folderContents: inputValueModel.File[],
         entryPoint?: string
@@ -18,7 +19,8 @@ class SolutionClient {
             `${url}/solution/solve`,
             {
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
                 },
                 method: "POST",
                 body: JSON.stringify(

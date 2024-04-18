@@ -4,6 +4,10 @@ import * as model from '../../client/inputTypes';
 * @description Solve a challenge
 */
 interface SolveBody {
+    /**
+    * @description The user's custom access token
+    */
+    authToken: string,
     /** 
     * @description Id of the challenge to solve
     */

@@ -18,13 +18,12 @@ class SolutionClient {
         const url = (process.env as any).SOLUTION_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).SOLUTION_PORT ?? '3000'}/solution/solve/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).SOLUTION_PORT ?? '3000'),
-                    path: `/solution/solve/`,
                     method: "POST",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {
@@ -60,10 +59,8 @@ class SolutionClient {
         const url = (process.env as any).SOLUTION_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).SOLUTION_PORT ?? '3000'}/solution/list/${ challengeId }/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).SOLUTION_PORT ?? '3000'),
-                    path: `/solution/list/${ challengeId }/`,
                     method: "GET",
                     headers: {
                         'Content-Type': 'application/json'
@@ -97,10 +94,8 @@ class SolutionClient {
         const url = (process.env as any).SOLUTION_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).SOLUTION_PORT ?? '3000'}/solution/result/${ challengeId }/${ userId }/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).SOLUTION_PORT ?? '3000'),
-                    path: `/solution/result/${ challengeId }/${ userId }/`,
                     method: "GET",
                     headers: {
                         'Content-Type': 'application/json'
@@ -134,10 +129,8 @@ class SolutionClient {
         const url = (process.env as any).SOLUTION_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).SOLUTION_PORT ?? '3000'}/solution/build_result/${ challengeId }/${ userId }/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).SOLUTION_PORT ?? '3000'),
-                    path: `/solution/build_result/${ challengeId }/${ userId }/`,
                     method: "GET",
                     headers: {
                         'Content-Type': 'application/json'

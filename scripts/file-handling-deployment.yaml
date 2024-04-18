@@ -35,10 +35,6 @@ spec:
             cpu: "500m"
             memory: "256Mi"
         env:
-          # - name: FILE_HANDLING_URL
-          #   value: <FILE_HANDLING_URL>
-          # - name: FILE_HANDLING_PORT
-          #   value: <FILE_HANDLING_PORT>
           - name: SOLUTION_URL
             value: <SOLUTION_URL>
           - name: SOLUTION_PORT

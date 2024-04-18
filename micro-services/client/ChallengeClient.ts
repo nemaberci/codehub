@@ -21,10 +21,8 @@ class ChallengeClient {
         const url = (process.env as any).CHALLENGE_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3000'}/challenge/upload/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).CHALLENGE_PORT ?? '3000'),
-                    path: `/challenge/upload/`,
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json',
@@ -69,10 +67,8 @@ class ChallengeClient {
         const url = (process.env as any).CHALLENGE_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3000'}/challenge/add_test_cases/${ challengeId }/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).CHALLENGE_PORT ?? '3000'),
-                    path: `/challenge/add_test_cases/${ challengeId }/`,
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
@@ -111,10 +107,8 @@ class ChallengeClient {
         const url = (process.env as any).CHALLENGE_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3000'}/challenge/add_control_solution/${ challengeId }/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).CHALLENGE_PORT ?? '3000'),
-                    path: `/challenge/add_control_solution/${ challengeId }/`,
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json',
@@ -152,10 +146,8 @@ class ChallengeClient {
         const url = (process.env as any).CHALLENGE_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3000'}/challenge/get/${ challengeId }/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).CHALLENGE_PORT ?? '3000'),
-                    path: `/challenge/get/${ challengeId }/`,
                     method: "GET",
                     headers: {
                         'Content-Type': 'application/json'
@@ -189,10 +181,8 @@ class ChallengeClient {
         const url = (process.env as any).CHALLENGE_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3000'}/challenge/list/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).CHALLENGE_PORT ?? '3000'),
-                    path: `/challenge/list/`,
                     method: "GET",
                     headers: {
                         'Content-Type': 'application/json'
@@ -226,10 +216,8 @@ class ChallengeClient {
         const url = (process.env as any).CHALLENGE_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
+                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3000'}/challenge/list_by_user/${ userId }/`,
                 {
-                    hostname: url,
-                    port: parseInt((process.env as any).CHALLENGE_PORT ?? '3000'),
-                    path: `/challenge/list_by_user/${ userId }/`,
                     method: "GET",
                     headers: {
                         'Content-Type': 'application/json'

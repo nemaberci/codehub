@@ -32,22 +32,22 @@ spec:
               memory: "256Mi"
           env:
             - name: PROJECT_ID
-              value: <PROJECT_ID>
+              value: codehub-400314
             - name: SECRET_FILE_NAME
-              value: <SECRET_FILE_NAME>
+              value: oxuxxuomhc
             - name: STORAGE_BUCKET_NAME
-              value: <STORAGE_BUCKET_NAME>
+              value: codehub-public-keys
             - name: PUBLIC_KEY_FILENAME
-              value: <PUBLIC_KEY_FILENAME>
+              value: public_key_YUQWEF7UFJ.pem
             - name: FILE_HANDLING_URL
-              value: <FILE_HANDLING_URL>
+              value: "http://filehandling-service.filehandling.svc.cluster.local"
             - name: FILE_HANDLING_PORT
-              value: <FILE_HANDLING_PORT>
+              value: 80
             - name: SOLUTION_URL
-              value: <SOLUTION_URL>
+              value: "http://solution-service.solution.svc.cluster.local"
             - name: SOLUTION_PORT
-              value: <SOLUTION_PORT>
+              value: 80
             - name: CHALLENGE_URL
-              value: <CHALLENGE_URL>
+              value: "http://challenge-service.challenge.svc.cluster.local"
             - name: CHALLENGE_PORT
-              value: <CHALLENGE_PORT>
+              value: 80

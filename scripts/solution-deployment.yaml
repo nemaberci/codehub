@@ -35,10 +35,6 @@ spec:
               value: <FILE_HANDLING_URL>
             - name: FILE_HANDLING_PORT
               value: <FILE_HANDLING_PORT>
-            # - name: SOLUTION_URL
-            #   value: <SOLUTION_URL>
-            # - name: SOLUTION_PORT
-            #   value: <SOLUTION_PORT>
             - name: USER_URL
               value: <USER_URL>
             - name: USER_PORT
