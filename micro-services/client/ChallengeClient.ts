@@ -71,7 +71,8 @@ class ChallengeClient {
                 {
                     method: "POST",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {
@@ -150,7 +151,8 @@ class ChallengeClient {
                 {
                     method: "GET",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {
@@ -185,7 +187,8 @@ class ChallengeClient {
                 {
                     method: "GET",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {
@@ -220,7 +223,8 @@ class ChallengeClient {
                 {
                     method: "GET",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {

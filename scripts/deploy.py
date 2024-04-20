@@ -40,6 +40,8 @@ challenge_namespace = "challenge"
 challenge_service_name = "challenge-service"
 solution_namespace = "solution"
 solution_service_name = "solution-service"
+frontend_namespace = "frontend"
+frontend_service_name = "frontend-service"
 
 # Write the private key to a file.
 with open(private_key_filename, 'wb') as file:
@@ -229,3 +231,5 @@ create_deployment(global_cluster_name, global_zone, "solution-deployment.yaml", 
 create_service(global_cluster_name, global_zone, "solution-service.yaml", solution_namespace)
 create_deployment(global_cluster_name, global_zone, "file-handling-deployment.yaml", filehandling_namespace)
 create_service(global_cluster_name, global_zone, "file-handling-service.yaml", filehandling_namespace)
+create_deployment(global_cluster_name, global_zone, "frontend-deployment.yaml", frontend_namespace)
+create_service(global_cluster_name, global_zone, "frontend-service.yaml", frontend_namespace)

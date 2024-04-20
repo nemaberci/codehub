@@ -33,7 +33,7 @@ export default class SolutionImpl implements SolutionService {
         let fileHandlingClient = FileHandlingClient;
         let folderName = "solution-source-" + randomUUID().toString();
         await fileHandlingClient.uploadFolderContent(
-            (process.env as any).FILE_HANDLING_API_KEY,
+            body.authToken,
             folderName,
             body.folderContents
         );
@@ -68,7 +68,8 @@ export default class SolutionImpl implements SolutionService {
                     sourceFolderName: folderName,
                     challengeId: body.challengeId,
                     entryPoint: body.entryPoint ?? "Solution.java",
-                    solutionId: solutionId
+                    solutionId: solutionId,
+
                 }
             }
         );

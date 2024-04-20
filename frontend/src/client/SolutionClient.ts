@@ -13,7 +13,8 @@ class SolutionClient {
         authToken: string,
         challengeId: string,
         folderContents: inputValueModel.File[],
-        entryPoint?: string
+        entryPoint?: string,
+        language?: string
     ): Promise<returnValueModel.Solution> {
         const answer = await fetch(
             `${url}/solution/solve`,
@@ -28,6 +29,7 @@ class SolutionClient {
                         challengeId, 
                         folderContents, 
                         entryPoint, 
+                        language, 
                     }
                 )
             }

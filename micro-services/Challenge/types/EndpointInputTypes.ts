@@ -37,6 +37,10 @@ interface UploadBody {
 * @description Add test cases to a challenge
 */
 interface AddTestCasesBody {
+    /**
+    * @description The user's custom access token
+    */
+    authToken: string,
     /** 
     * @description Test cases of the challenge
     */

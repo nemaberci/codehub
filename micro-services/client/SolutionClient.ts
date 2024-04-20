@@ -14,6 +14,7 @@ class SolutionClient {
         challengeId: string,
         folderContents: inputValueModel.File[],
         entryPoint?: string,
+        language?: string,
     ): Promise<returnValueModel.Solution> {
         const url = (process.env as any).SOLUTION_URL ?? "127.0.0.1";
         return new Promise((resolve, reject) => {
@@ -46,7 +47,8 @@ class SolutionClient {
             req.write(JSON.stringify({
                 challengeId,
                 folderContents,
-                entryPoint
+                entryPoint,
+                language
             }));
             req.end();
         });
@@ -63,7 +65,8 @@ class SolutionClient {
                 {
                     method: "GET",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {
@@ -98,7 +101,8 @@ class SolutionClient {
                 {
                     method: "GET",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {
@@ -133,7 +137,8 @@ class SolutionClient {
                 {
                     method: "GET",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {

@@ -41,6 +41,7 @@ class ChallengeClient {
         return await answer.json();
     }
     static async addTestCases(
+        authToken: string,
         testCases: inputValueModel.TestCase[],
         outputVerifier: inputValueModel.File
     ): Promise<returnValueModel.Challenge> {
@@ -48,7 +49,8 @@ class ChallengeClient {
             `${url}/challenge/add_test_cases`,
             {
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${authToken}`
                 },
                 method: "POST",
                 body: JSON.stringify(

@@ -102,7 +102,8 @@ class UserClient {
                 {
                     method: "POST",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {
@@ -141,7 +142,8 @@ class UserClient {
                 {
                     method: "POST",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {

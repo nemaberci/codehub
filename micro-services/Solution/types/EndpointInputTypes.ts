@@ -20,6 +20,10 @@ interface SolveBody {
     * @description The entry point of the solution (by default: Solution.java)
     */
     entryPoint?: string;
+    /** 
+    * @description The language of the solution (by default: Java)
+    */
+    language?: string;
 }
 /** 
 * @description List all solutions for a challenge

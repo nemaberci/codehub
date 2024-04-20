@@ -79,7 +79,9 @@ app.post('/challenge/add_test_cases/:challenge_id/',
       let answer = await serviceImpl.addTestCases(
         {
           challengeId: req.params.challenge_id,
-          ...req.body        }
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
       );
       res.status(200).send(answer);
     } catch (e: any) {

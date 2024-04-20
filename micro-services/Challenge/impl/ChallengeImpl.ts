@@ -54,7 +54,7 @@ export default class ChallengeImpl implements ChallengeService {
         let folderName = "solution-source-" + randomUUID().toString();
 
         await fileHandlingClient.uploadFolderContent(
-            (process.env as any).FILE_HANDLING_API_KEY,
+            body.authToken,
             folderName,
             body.controlSolution.folderContents
         );
@@ -104,7 +104,7 @@ export default class ChallengeImpl implements ChallengeService {
 
         if (body.outputVerifier) {
             await fileHandlingClient.uploadFolderContent(
-                (process.env as any).FILE_HANDLING_API_KEY,
+                body.authToken,
                 outputVerifierLocation,
                 [body.outputVerifier]
             );
@@ -154,7 +154,7 @@ export default class ChallengeImpl implements ChallengeService {
 
         if (inputFiles.length > 0) {
             await fileHandlingClient.uploadFolderContent(
-                (process.env as any).FILE_HANDLING_API_KEY,
+                body.authToken,
                 textLocation,
                 inputFiles
             );
@@ -166,7 +166,7 @@ export default class ChallengeImpl implements ChallengeService {
 
         if (inputGeneratorFiles.length > 0) {
             await fileHandlingClient.uploadFolderContent(
-                (process.env as any).FILE_HANDLING_API_KEY,
+                body.authToken,
                 scriptLocation,
                 inputGeneratorFiles
             );
@@ -178,7 +178,7 @@ export default class ChallengeImpl implements ChallengeService {
 
         if (outputFiles.length > 0) {
             await fileHandlingClient.uploadFolderContent(
-                (process.env as any).FILE_HANDLING_API_KEY,
+                body.authToken,
                 resultsLocation,
                 outputFiles
             );

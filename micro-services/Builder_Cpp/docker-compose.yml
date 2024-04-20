@@ -1,0 +1,11 @@
+version: '3'
+services:
+  builder:
+    image: builder-cpp:latest
+    environment:
+      - "FILE_HANDLER_URL=host.docker.internal:3001"
+      - "TOKEN=token"
+      - "ENTRY_POINT=test.cpp"
+      - "SOURCE_FOLDER_NAME=test-cpp"
+      - "EXECUTABLE_FOLDER_NAME=test-solution-executable"
+    network_mode: "bridge"
