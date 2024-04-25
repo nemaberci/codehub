@@ -31,6 +31,8 @@ spec:
               cpu: "500m"
               memory: "256Mi"
           env:
+            - name: SECRET_FILE_NAME
+              value: <SECRET_FILE_NAME>
             - name: FILE_HANDLING_URL
               value: <FILE_HANDLING_URL>
             - name: FILE_HANDLING_PORT

@@ -39,7 +39,8 @@ export default class ChallengeImpl implements ChallengeService {
             language_name: body.controlSolution?.language ?? "",
             name: body.name,
             short_description: body.shortDescription,
-            time_uploaded: new Date()
+            time_uploaded: new Date(),
+            enabled_languages: body.enabledLanguages
         });
 
         return await this.freshDTO(challengeId);
@@ -235,7 +236,8 @@ export default class ChallengeImpl implements ChallengeService {
                     description: d.data().description,
                     points: d.data().points
                 })
-            )
+            ),
+            enabledLanguages: challenge.data()!.enabled_languages
         };
     }
 
@@ -263,7 +265,8 @@ export default class ChallengeImpl implements ChallengeService {
                         description: d.data().description,
                         points: d.data().points
                     })
-                )
+                ),
+                enabledLanguages: challenge.data().enabled_languages
             });
         }
 
@@ -294,7 +297,8 @@ export default class ChallengeImpl implements ChallengeService {
                         description: d.data().description,
                         points: d.data().points
                     })
-                )
+                ),
+                enabledLanguages: challenge.data().enabled_languages
             });
         }
 

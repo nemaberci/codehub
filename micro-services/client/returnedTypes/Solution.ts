@@ -20,10 +20,20 @@ interface Solution {
     */
     challengeId: string;
     /** 
+    * @description The language of the solution
+    * @type string
+    */
+    language: string;
+    /** 
     * @description The results of the test cases
     * @type model.TestCaseResult[]
     */
     testCaseResults: model.TestCaseResult[];
+    /** 
+    * @description The files of the solution
+    * @type model.File[]
+    */
+    files: model.File[] | null;
 }
 
 export default Solution

@@ -21,5 +21,5 @@ print(
     "Allowed permissions for topic {}: {}".format(topic_path, allowed_permissions)
 )
 
-future = publisher.publish(topic_name, b'', entryPoint=sys.argv[1].replace(".java", ""), targetFolderName=sys.argv[2], challengeId=sys.argv[3], solutionId=sys.argv[4])
+future = publisher.publish(topic_name, b'', entryPoint=sys.argv[1].replace(".java", ""), targetFolderName=sys.argv[2], challengeId=sys.argv[3], solutionId=sys.argv[4], imageName='java-runner', secretName=sys.argv[5])
 print(future.result())

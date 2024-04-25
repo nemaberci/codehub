@@ -79,7 +79,9 @@ app.get('/solution/list/:challenge_id/',
       let answer = await serviceImpl.list(
         {
           challengeId: req.params.challenge_id,
-          ...req.body        }
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
       );
       res.status(200).send(answer);
     } catch (e: any) {
@@ -118,7 +120,9 @@ app.get('/solution/result/:challenge_id/:user_id/',
         {
           challengeId: req.params.challenge_id,
           userId: req.params.user_id,
-          ...req.body        }
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
       );
       res.status(200).send(answer);
     } catch (e: any) {

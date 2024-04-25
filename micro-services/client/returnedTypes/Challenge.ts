@@ -39,6 +39,11 @@ interface Challenge {
     * @type string
     */
     createdAt: string;
+    /** 
+    * @description The enabled languages for the challenge
+    * @type string[]
+    */
+    enabledLanguages: string[];
 }
 
 export default Challenge

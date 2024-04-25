@@ -16,7 +16,7 @@ class SolutionClient {
         entryPoint?: string,
         language?: string,
     ): Promise<returnValueModel.Solution> {
-        const url = (process.env as any).SOLUTION_URL ?? "127.0.0.1";
+        const url = (process.env as any).SOLUTION_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 `${url}:${(process.env as any).SOLUTION_PORT ?? '3000'}/solution/solve/`,
@@ -58,7 +58,7 @@ class SolutionClient {
         
         challengeId: string
     ): Promise<returnValueModel.Solution[]> {
-        const url = (process.env as any).SOLUTION_URL ?? "127.0.0.1";
+        const url = (process.env as any).SOLUTION_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 `${url}:${(process.env as any).SOLUTION_PORT ?? '3000'}/solution/list/${ challengeId }/`,
@@ -94,7 +94,7 @@ class SolutionClient {
         
         challengeId: string,userId: string
     ): Promise<returnValueModel.Solution> {
-        const url = (process.env as any).SOLUTION_URL ?? "127.0.0.1";
+        const url = (process.env as any).SOLUTION_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 `${url}:${(process.env as any).SOLUTION_PORT ?? '3000'}/solution/result/${ challengeId }/${ userId }/`,
@@ -130,7 +130,7 @@ class SolutionClient {
         
         challengeId: string,userId: string
     ): Promise<returnValueModel.SolutionBuildResult> {
-        const url = (process.env as any).SOLUTION_URL ?? "127.0.0.1";
+        const url = (process.env as any).SOLUTION_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 `${url}:${(process.env as any).SOLUTION_PORT ?? '3000'}/solution/build_result/${ challengeId }/${ userId }/`,

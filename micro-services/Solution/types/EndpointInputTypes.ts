@@ -29,6 +29,10 @@ interface SolveBody {
 * @description List all solutions for a challenge
 */
 interface ListBody {
+    /**
+    * @description The user's custom access token
+    */
+    authToken: string
     /** 
     * @description Id of the challenge to get the scoreboard of
     */
@@ -38,6 +42,10 @@ interface ListBody {
 * @description Get the result of a solution of a challenge for a user
 */
 interface ResultBody {
+    /**
+    * @description The user's custom access token
+    */
+    authToken: string
     /** 
     * @description Id of the challenge to get the results of
     */

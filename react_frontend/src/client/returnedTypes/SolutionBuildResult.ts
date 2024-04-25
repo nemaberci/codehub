@@ -1,3 +1,4 @@
+// @ts-ignore
 import * as model from "./index";
 
 /** 
@@ -11,9 +12,9 @@ interface SolutionBuildResult {
     solutionId: string;
     /** 
     * @description The result of the build
-    * @type string
+    * @type boolean
     */
-    buildResult: string;
+    buildResult: boolean;
     /** 
     * @description The output of the build
     * @type string

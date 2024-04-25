@@ -13,7 +13,7 @@ class FileHandlingClient {
         folderName: string,
         files: inputValueModel.File[],
     ): Promise<boolean> {
-        const url = (process.env as any).FILE_HANDLING_URL ?? "127.0.0.1";
+        const url = (process.env as any).FILE_HANDLING_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 `${url}:${(process.env as any).FILE_HANDLING_PORT ?? '3000'}/file_handling/upload_folder_content/${ folderName }/`,
@@ -52,7 +52,7 @@ class FileHandlingClient {
         
         folderName: string
     ): Promise<returnValueModel.File[]> {
-        const url = (process.env as any).FILE_HANDLING_URL ?? "127.0.0.1";
+        const url = (process.env as any).FILE_HANDLING_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 `${url}:${(process.env as any).FILE_HANDLING_PORT ?? '3000'}/file_handling/download_folder_content/${ folderName }/`,
@@ -88,7 +88,7 @@ class FileHandlingClient {
         
         fileName: string
     ): Promise<returnValueModel.File> {
-        const url = (process.env as any).FILE_HANDLING_URL ?? "127.0.0.1";
+        const url = (process.env as any).FILE_HANDLING_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 `${url}:${(process.env as any).FILE_HANDLING_PORT ?? '3000'}/file_handling/download_file/${ fileName }/`,
@@ -124,7 +124,7 @@ class FileHandlingClient {
         
         folderName: string
     ): Promise<boolean> {
-        const url = (process.env as any).FILE_HANDLING_URL ?? "127.0.0.1";
+        const url = (process.env as any).FILE_HANDLING_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 `${url}:${(process.env as any).FILE_HANDLING_PORT ?? '3000'}/file_handling/delete_folder/${ folderName }/`,

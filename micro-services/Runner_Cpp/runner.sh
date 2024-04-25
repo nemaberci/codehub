@@ -37,7 +37,6 @@ for i in ${!TEST_CASES_GENERATED_ARR[@]}; do
     date +%s%N > /work/time/before_${i};
     INPUT_NAME=/work/input/input_${i}
     OUTPUT_NAME=/work/output/output_${i}
-    su runneruser -c "ls -la /work"
     /usr/bin/time -o /work/memory/peak_$i -f '%M' timeout 10s su runneruser -c "cd /work && /work/${ENTRY_POINT} < ${INPUT_NAME} > ${OUTPUT_NAME}";
     date +%s%N > /work/time/after_${i};
 done

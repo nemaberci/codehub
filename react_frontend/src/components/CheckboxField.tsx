@@ -4,7 +4,7 @@ export default function CheckboxField({
 	title,
 	name,
 	value,
-	disabled,
+	disabled
 }: {
 	title: string;
 	name: string;

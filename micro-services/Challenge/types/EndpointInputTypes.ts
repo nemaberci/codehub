@@ -21,6 +21,10 @@ interface UploadBody {
     */
     shortDescription: string;
     /** 
+    * @description The enabled languages for the challenge
+    */
+    enabledLanguages: string[];
+    /** 
     * @description Control solutions of the challenge
     */
     controlSolution?: model.SolutionSource;

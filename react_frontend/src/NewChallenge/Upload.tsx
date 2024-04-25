@@ -23,7 +23,7 @@ export default function Upload() {
 						name: "",
 						shortDescription: "",
 						description: "",
-						enabled: ["java"],
+						enabledLanguages: ["java", "cpp"],
 					}}
 					onSubmit={async (values, { setSubmitting }) => {
 						try {
@@ -69,9 +69,9 @@ export default function Upload() {
 									<tr>
 										<td>Elfogadott programozási nyelvek</td>
 										<td>
-											<CheckboxField name="enabled" value="java" title="Java" disabled />
-											{/*<CheckboxField name="enabled" value="python" title="Python" />
-											<CheckboxField name="enabled" value="c++" title="C++" />*/}
+											<CheckboxField name="enabledLanguages" value="java" title="Java" />
+											<CheckboxField name="enabledLanguages" value="cpp" title="C++" />
+											{/*<CheckboxField name="enabledLanguages" value="python" title="Python" />*/}
 										</td>
 									</tr>
 								</tbody>

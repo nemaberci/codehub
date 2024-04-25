@@ -14,7 +14,7 @@ class UserClient {
         username: string,
         password: string,
     ): Promise<string> {
-        const url = (process.env as any).USER_URL ?? "127.0.0.1";
+        const url = (process.env as any).USER_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/login/`,
@@ -55,7 +55,7 @@ class UserClient {
         username: string,
         password: string,
     ): Promise<string> {
-        const url = (process.env as any).USER_URL ?? "127.0.0.1";
+        const url = (process.env as any).USER_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/register/`,
@@ -95,7 +95,7 @@ class UserClient {
         username: string,
         roles: string[],
     ): Promise<boolean> {
-        const url = (process.env as any).USER_URL ?? "127.0.0.1";
+        const url = (process.env as any).USER_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/add_roles/${ username }/`,
@@ -135,7 +135,7 @@ class UserClient {
         username: string,
         roles: string[],
     ): Promise<boolean> {
-        const url = (process.env as any).USER_URL ?? "127.0.0.1";
+        const url = (process.env as any).USER_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/remove_roles/${ username }/`,
@@ -175,7 +175,7 @@ class UserClient {
         
         roles: string[],
     ): Promise<boolean> {
-        const url = (process.env as any).USER_URL ?? "127.0.0.1";
+        const url = (process.env as any).USER_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
                 `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/has_roles/`,

@@ -15,6 +15,7 @@ print("secrets before: ", secrets)
 
 for secret in secrets:
     # Delete secret
+    print(f"Deleting secret {secret.name}")
     secret_client.delete_secret(
         name=secret.name
     )
