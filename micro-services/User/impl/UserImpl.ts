@@ -176,6 +176,23 @@ export default class UserImpl implements UserService {
         return body.roles.every(role => rolesOfUser.includes(role));
     }
 
+    async byId(body: EndpointInputTypes.ByIdBody): Promise<EndpointReturnedTypes.ByIdReturned> {
+        const db = getFirestore();
+
+        let user = await db.collection("User").doc(body.userId).get();
+        if (!user.exists) {
+            throw {
+                message: "User not found",
+                status: 404
+            };
+        }
+
+        return {
+            username: user.data()!.username,
+            id: user.id,
+        };
+    }
+
     constructor() {
         this.registerAdmin();
     }

@@ -36,9 +36,9 @@ interface Challenge {
     testCases: model.Testcase[];
     /** 
     * @description The date the challenge was created
-    * @type string
+    * @type model.CreatedAt
     */
-    createdAt: string;
+    createdAt: model.CreatedAt;
     /** 
     * @description The enabled languages for the challenge
     * @type string[]

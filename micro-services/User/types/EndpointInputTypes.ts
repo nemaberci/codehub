@@ -14,6 +14,15 @@ interface LoginBody {
     password: string;
 }
 /** 
+* @description Get a user by id
+*/
+interface ByIdBody {
+    /** 
+    * @description Id of the user to get
+    */
+    userId: string;
+}
+/** 
 * @description Register a new user
 */
 interface RegisterBody {
@@ -68,6 +77,7 @@ interface HasRolesBody {
 
 export {
     LoginBody,
+    ByIdBody,
     RegisterBody,
     AddRolesBody,
     RemoveRolesBody,

@@ -48,6 +48,42 @@ class UserClient {
             req.end();
         });
     }
+    static async byId(
+        authToken: string,
+        
+        userId: string
+    ): Promise<returnValueModel.User> {
+        const url = (process.env as any).USER_URL ?? "http://127.0.0.1";
+        return new Promise((resolve, reject) => {
+            const req = http.request(
+                `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/by_id/${ userId }/`,
+                {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    agent: false
+                }, (res) => {
+                res.setEncoding('utf8');
+                let responseBody = '';
+            
+                res.on('data', (chunk) => {
+                    responseBody += chunk;
+                });
+            
+                res.on('end', () => {
+                    resolve(JSON.parse(responseBody));
+                });
+            });
+        
+            req.on('error', (err) => {
+                reject(err);
+            });
+        
+            req.end();
+        });
+    }
     static async register(
         
         
