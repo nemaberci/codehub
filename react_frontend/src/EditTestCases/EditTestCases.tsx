@@ -1,6 +1,6 @@
 import { FieldArray, Formik, Form as FormikForm } from "formik";
 import { Button, Steps } from "react-daisyui";
-import { useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import TestCase from "./TestCase";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -22,6 +22,7 @@ interface TestCase {
 export default function EditTestCases() {
 	const [initialValues, setInitialValues] = useState({ name: "", testCases: [] });
 	const { id } = useParams();
+	const navigate = useNavigate();
 
 	async function fetchInitialValues() {
 		try {
@@ -81,7 +82,8 @@ export default function EditTestCases() {
 								delete toBeUploaded.outputScript;
 							}
 							await axios.post("/api/challenge/add_test_cases/" + id, toBeUploaded);
-							alert("Tesztesetek létrehozva");
+							// alert("Tesztesetek létrehozva");
+							navigate(`/edit/${id}/solution`);
 						} catch (error) {
 							console.error(error);
 							alert((error as any).response.data[0]);
@@ -124,6 +126,7 @@ export default function EditTestCases() {
 														arrayHelpers.remove(index);
 													}}
 													color="error"
+													type="button"
 												>
 													Törlés
 												</Button>
@@ -133,7 +136,10 @@ export default function EditTestCases() {
 											<Button
 												className="w-1/4 btn-outline"
 												onClick={() => {
-													arrayHelpers.push({});
+													arrayHelpers.push({
+														maxTime: 1_000 * 5_000, // 5 sec
+														maxMemory: 256 * 1024, // 256 mB
+													});
 												}}
 												type="button"
 											>

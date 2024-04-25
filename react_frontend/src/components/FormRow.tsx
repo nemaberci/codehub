@@ -6,15 +6,16 @@ interface FormFieldProps {
 	type?: string;
 	title: string | React.ReactElement;
 	error?: string | boolean;
+	disabled?: boolean;
 }
 
-export default function FormRow({ name, type, title, error }: FormFieldProps) {
+export default function FormRow({ name, type, title, error, disabled }: FormFieldProps) {
 	let input;
 	if (type === "textarea") {
-		input = <Field as={Textarea} bordered className="w-full h-64 font-mono" name={name} />;
+		input = <Field as={Textarea} bordered className="w-full h-64 font-mono" name={name} disabled={disabled} />;
 	} else {
 		input = (
-			<Field as={Input} type={type} name={name} className="w-full" color={error ? "error" : "neutral"} />
+			<Field as={Input} type={type} name={name} className="w-full" color={error ? "error" : "neutral"} disabled={disabled} />
 		);
 	}
 

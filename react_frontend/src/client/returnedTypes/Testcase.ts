@@ -25,6 +25,16 @@ interface Testcase {
     * @type number
     */
     points: number;
+    /** 
+    * @description The max time of the testcase (ms)
+    * @type number
+    */
+    maxTime: number;
+    /** 
+    * @description The max memory of the testcase (kB)
+    * @type number
+    */
+    maxMemory: number;
 }
 
 export default Testcase

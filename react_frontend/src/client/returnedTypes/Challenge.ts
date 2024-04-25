@@ -27,9 +27,9 @@ interface Challenge {
     shortDescription: string;
     /** 
     * @description The user that created the challenge
-    * @type model.User
+    * @type string
     */
-    user: model.User;
+    userId: string;
     /** 
     * @description The test cases of the challenge
     * @type model.Testcase[]

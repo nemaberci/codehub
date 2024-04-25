@@ -68,12 +68,18 @@ export default class ChallengeImpl implements ChallengeService {
             time_submitted: new Date(),
             source_folder: folderName,
             user: decode(body.authToken, {json: true})!.userId,
+            language: body.controlSolution.language,
         });
 
         await db.collection("Challenge").doc(body.challengeId).update({
             solution_id: db.collection("Solution").doc(solutionId)
         });
         console.log("Uploaded solution to firestore: ", solutionId);
+
+        // todo: normal language handling
+        if (!["java", "cpp"].includes(body.controlSolution.language ?? "java")) {
+            throw new Error("Language not supported");
+        }
 
         const pubsub = new PubSub();
         const topicName = "SolutionUploaded";
@@ -83,10 +89,62 @@ export default class ChallengeImpl implements ChallengeService {
                     sourceFolderName: folderName,
                     challengeId: body.challengeId,
                     entryPoint: body.controlSolution.entryPoint ?? "Solution.java",
-                    solutionId: solutionId
+                    solutionId: solutionId,
+                    secretName: (process.env as any)["SECRET_FILE_NAME"],
+                    imageName: `${body.controlSolution.language ?? 'java'}-builder`
                 }
             }
         );
+        const subscriptionName = `control-solution-uploaded-${randomUUID().toString()}`;
+        const [subscription] = await pubsub.topic("SolutionResultsUploaded").createSubscription(
+            subscriptionName,
+            {
+                filter: `attributes.solutionId = "${solutionId}"`
+            }
+        )
+        subscription.on("message", async (message) => {
+            console.log("Received message: ", message.data.toString());
+            const solutionResultsSnapshot = await db
+                .collection("Solution")
+                .doc(solutionId)
+                .collection("Result")
+                .doc("Result")
+                .collection("SubResults")
+                .get();
+            const testCaseTimes = solutionResultsSnapshot.docs
+                .map(d => d.data())
+                .map(
+                    d => ({
+                        id: d.test_case_id as string,
+                        time: d.runtime as number
+                    })
+                );
+            const testCaseMemories = solutionResultsSnapshot.docs
+                .map(d => d.data())
+                .map(
+                    d => ({
+                        id: d.test_case_id as string,
+                        memory: d.memory as number
+                    })
+                );
+            testCaseTimes.forEach(
+                async (testCaseTime) => {
+                    await db.collection("Challenge").doc(body.challengeId).collection("Testcases").doc(testCaseTime.id).update({
+                        max_runtime: testCaseTime.time * 2
+                    })
+                }
+            )
+            testCaseMemories.forEach(
+                async (testCaseMemory) => {
+                    await db.collection("Challenge").doc(body.challengeId).collection("Testcases").doc(testCaseMemory.id).update({
+                        max_memory: testCaseMemory.memory * 2
+                    })
+                }
+            )
+            console.log("Updated challenge with control solution: ", body.challengeId);
+            message.ack();
+            await subscription.close();
+        })
         console.log("Published message to pubsub topic: ", topicName);
 
         return await this.freshDTO(body.challengeId);
@@ -189,6 +247,12 @@ export default class ChallengeImpl implements ChallengeService {
             console.log("Uploaded output files to: ", resultsLocation)
         }
 
+        const testCases = await db.collection("Challenge").doc(body.challengeId).collection("Testcases").get()
+        for (let doc of testCases.docs) {
+            await doc.ref.delete();
+        }
+        console.log("Deleted previous test cases from firestore");
+
         for (let i in (body.testCases ?? [])) {
             let testCase = (body.testCases ?? [])[i];
             let testCaseId = "test-case-" + randomUUID().toString();
@@ -218,7 +282,7 @@ export default class ChallengeImpl implements ChallengeService {
         return await this.freshDTO(body.challengeId);
     }
 
-    private async freshDTO(challengeId: string) {
+    private async freshDTO(challengeId: string): Promise<Challenge> {
         const db = getFirestore();
         const challenge = await db.collection("Challenge").doc(challengeId).get();
 
@@ -227,14 +291,16 @@ export default class ChallengeImpl implements ChallengeService {
             name: challenge.data()!.name,
             description: challenge.data()!.description,
             shortDescription: challenge.data()!.short_description,
-            user: challenge.data()!.created_by,
+            userId: challenge.data()!.created_by,
             createdAt: challenge.data()!.time_uploaded,
             testCases: (await db.collection("Challenge").doc(challengeId).collection("Testcases").get()).docs.map(
                 d => ({
                     id: d.id,
                     name: d.data().name,
                     description: d.data().description,
-                    points: d.data().points
+                    points: d.data().points,
+                    maxMemory: d.data().max_memory,
+                    maxTime: d.data().max_runtime
                 })
             ),
             enabledLanguages: challenge.data()!.enabled_languages
@@ -255,7 +321,7 @@ export default class ChallengeImpl implements ChallengeService {
                 id: challenge.id,
                 name: challenge.data().name,
                 description: challenge.data().description,
-                user: challenge.data().created_by,
+                userId: challenge.data().created_by,
                 shortDescription: challenge.data().short_description,
                 createdAt: challenge.data()!.time_uploaded,
                 testCases: (await db.collection("Challenge").doc(challenge.id).collection("Testcases").get()).docs.map(
@@ -263,7 +329,9 @@ export default class ChallengeImpl implements ChallengeService {
                         id: d.id,
                         name: d.data().name,
                         description: d.data().description,
-                        points: d.data().points
+                        points: d.data().points,
+                        maxMemory: d.data().max_memory,
+                        maxTime: d.data().max_runtime
                     })
                 ),
                 enabledLanguages: challenge.data().enabled_languages
@@ -287,7 +355,7 @@ export default class ChallengeImpl implements ChallengeService {
                 id: challenge.id,
                 name: challenge.data().name,
                 description: challenge.data().description,
-                user: challenge.data().created_by,
+                userId: challenge.data().created_by,
                 createdAt: challenge.data()!.time_uploaded,
                 shortDescription: challenge.data().short_description,
                 testCases: (await db.collection("Challenge").doc(challenge.id).collection("Testcases").get()).docs.map(
@@ -295,7 +363,9 @@ export default class ChallengeImpl implements ChallengeService {
                         id: d.id,
                         name: d.data().name,
                         description: d.data().description,
-                        points: d.data().points
+                        points: d.data().points,
+                        maxMemory: d.data().max_memory,
+                        maxTime: d.data().max_runtime
                     })
                 ),
                 enabledLanguages: challenge.data().enabled_languages

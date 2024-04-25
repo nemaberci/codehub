@@ -2,7 +2,7 @@ import {
 	CaretCircleRight,
 	CheckFat,
 	CircleNotch,
-	CloudArrowDown,
+	CloudArrowDown, GearSix,
 	TrendUp,
 	XCircle,
 } from "@phosphor-icons/react";
@@ -20,10 +20,15 @@ import _ from "lodash";
 import {Challenge, Solution, SolutionBuildResult} from "../client/returnedTypes";
 import TestCaseResult from "../client/returnedTypes/TestCaseResult.ts";
 
-export default function SolutionEditor() {
+export default function SolutionEditor({
+	reference
+}: {
+	reference: boolean;
+}) {
 	const navigate = useNavigate();
 	const [text, setText] = useState("");
 	const [title, setTitle] = useState("");
+	const [creatorUserId, setCreatorUserId] = useState("");
 	const [totalPoints, setTotalPoints] = useState(0);
 	const [solution, setSolution] = useState("");
 	const [running, setRunning] = useState(false);
@@ -45,6 +50,7 @@ export default function SolutionEditor() {
 			const response = await axios.get<Challenge>("/api/challenge/get/" + challengeId);
 			setText(response.data.description);
 			setTitle(response.data.name);
+			setCreatorUserId(response.data.userId);
 			setEnabledLanguages(response.data.enabledLanguages);
 			setTotalPoints(_.sumBy(response.data.testCases, "points"));
 		} catch (error) {
@@ -101,8 +107,12 @@ export default function SolutionEditor() {
 			const buildResponse = await axios.get<SolutionBuildResult>(`/api/solution/build_result/${challengeId}/${userId}`);
 			const buildResultOk = buildResponse.data.buildResult;
 			const buildResultOutput = buildResponse.data.buildOutput;
+			const done = buildResponse.data.buildResult !== null
+				&& typeof buildResponse.data.buildResult !== "undefined"
+				&& buildResponse.data.buildOutput !== undefined
+				&& buildResponse.data.buildOutput !== null;
 
-			setBuildResult({ done: true, buildResultOk, buildResultOutput });
+			setBuildResult({ done, buildResultOk, buildResultOutput });
 			if (buildResultOk) {
 				// if build ok then fetch result
 				const response = await axios.get<Solution>(`/api/solution/result/${challengeId}/${userId}`);
@@ -125,20 +135,35 @@ export default function SolutionEditor() {
 	async function submitSolution() {
 		try {
 			setRunning(true);
-			await axios.post(`/api/solution/solve`, {
-				challengeId,
-				folderContents: [
-					{
-						// todo: replace with normal file name
-						name: `Solution.${selectedLanguage}`,
-						content: btoa(solution),
+			if (reference) {
+				await axios.post(`/api/challenge/add_control_solution/${challengeId}`, {
+					controlSolution: {
+						language: selectedLanguage,
+						folderContents: [
+							{
+								name: `Solution.${selectedLanguage}`,
+								content: btoa(solution),
+							}
+						],
+						entryPoint: `Solution.${selectedLanguage}`
 					},
-				],
-				language: selectedLanguage,
-				entryPoint: `Solution.${selectedLanguage}`
-			});
+				})
+			} else {
+				await axios.post(`/api/solution/solve`, {
+					challengeId,
+					folderContents: [
+						{
+							// todo: replace with normal file name
+							name: `Solution.${selectedLanguage}`,
+							content: btoa(solution),
+						},
+					],
+					language: selectedLanguage,
+					entryPoint: `Solution.${selectedLanguage}`
+				});
+			}
 			//setIntervalHandle(setInterval(fetchResult, 15000));
-			setTimeout(() => setRunning(false), 10000);
+			setRunning(false);
 		} catch (error) {
 			console.error(error);
 			setRunning(false);
@@ -149,6 +174,7 @@ export default function SolutionEditor() {
 	useEffect(() => {
 		fetchText();
 		fetchInitialSolution();
+		fetchResult();
 	}, []);
 
 	let runIcon: React.JSX.Element;
@@ -216,13 +242,28 @@ export default function SolutionEditor() {
 								<Button color="info" startIcon={<CloudArrowDown size={24} />} onClick={fetchResult}>
 									Eredmények
 								</Button>
-								<Button
-									color="neutral"
-									startIcon={<TrendUp size={24} />}
-									onClick={() => navigate("/highscores/" + challengeId)}
-								>
-									Toplista
-								</Button>
+								{
+									!reference &&
+									<>
+										<Button
+											color="neutral"
+											startIcon={<TrendUp size={24} />}
+											onClick={() => navigate("/highscores/" + challengeId)}
+										>
+											Toplista
+										</Button>
+										{
+											userId === creatorUserId &&
+											<Button
+												color="warning"
+												startIcon={<GearSix size={24} />}
+												onClick={() => navigate(`/edit/${challengeId}/testcases`)}
+											>
+												Szerkesztés
+											</Button>
+										}
+									</>
+								}
 							</div>
 							<Divider />
 							{buildResult.done ? (

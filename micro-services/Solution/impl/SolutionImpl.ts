@@ -53,16 +53,6 @@ export default class SolutionImpl implements SolutionService {
         const pubsub = new PubSub();
         const topicName = "SolutionUploaded";
 
-        const userId = decode(body.authToken, {json: true})!["userId"];
-
-        if (
-            (await db.collection("Challenge").doc(body.challengeId).get()).data()!.user === userId
-        ) {
-            await db.collection("Challenge").doc(body.challengeId).update({
-                solution_id: db.collection("Solution").doc(solutionId)
-            });
-        }
-
         // todo: normal language handling
         if (!["java", "cpp"].includes(body.language ?? "java")) {
             throw new Error("Language not supported");
@@ -85,7 +75,7 @@ export default class SolutionImpl implements SolutionService {
         return {
             id: folderName,
             challengeId: body.challengeId,
-            user: userId,
+            user: decode(body.authToken, {json: true})!.userId,
             testCaseResults: [],
             language: body.language ?? "java",
             files: body.folderContents

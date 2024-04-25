@@ -38,8 +38,8 @@ export default function TestCase({ index }: { index: number }) {
 					<FormRow name={`testCases.${index}.name`} title="Név" />
 					<FormRow name={`testCases.${index}.description`} title="Leírás" />
 					<FormRow name={`testCases.${index}.points`} title="Pontszám" type="number" />
-					<FormRow name={`testCases.${index}.maxTime`} title="Max. futásidő (ms)" type="number" />
-					<FormRow name={`testCases.${index}.maxMemory`} title="Max. memória (kB)" type="number" />
+					<FormRow name={`testCases.${index}.maxTime`} title="Max. futásidő (ms)" type="number" disabled />
+					<FormRow name={`testCases.${index}.maxMemory`} title="Max. memória (kB)" type="number" disabled />
 					<tr>
 						<td>
 							<h4>Bemenet</h4>

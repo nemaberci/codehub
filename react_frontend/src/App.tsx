@@ -51,7 +51,7 @@ const router = createBrowserRouter([
 		children: [
 			{
 				path: "/editor/:id",
-				element: <SolutionEditor />,
+				element: <SolutionEditor reference={false} />,
 				loader: authLoader,
 			},
 			{
@@ -77,6 +77,11 @@ const router = createBrowserRouter([
 			{
 				path: "/challenges",
 				element: <ChallengeList />,
+				loader: authLoader,
+			},
+			{
+				path: "/edit/:id/solution",
+				element: <SolutionEditor reference={true} />,
 				loader: authLoader,
 			},
 		],

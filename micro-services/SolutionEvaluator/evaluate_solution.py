@@ -2,6 +2,7 @@ import firebase_admin
 import os
 from firebase_admin import credentials
 from firebase_admin import firestore
+from google.cloud import pubsub_v1
 
 # Use this in development
 # cred = credentials.ApplicationDefault()
@@ -120,4 +121,12 @@ for i in range(len(test_cases)):
                 "test_case_id": test_case_doc_refs[i].id
             }
         )
+
+publisher = pubsub_v1.PublisherClient()
+topic_name = 'projects/{project_id}/topics/{topic}'.format(
+    project_id='codehub-400314',
+    topic='SolutionResultsUploaded',
+)
+future = publisher.publish(topic_name, b'', challengeId=os.getenv('CHALLENGE_ID'), solutionId=os.getenv('SOLUTION_ID'))
+print(future.result())
 
