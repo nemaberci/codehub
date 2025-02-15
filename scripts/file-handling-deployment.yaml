@@ -47,3 +47,7 @@ spec:
             value: <CHALLENGE_URL>
           - name: CHALLENGE_PORT
             value: <CHALLENGE_PORT>
+          - name: FILE_HANDLING_URL
+            value: http://localhost
+          - name: FILE_HANDLING_PORT
+            value: "3000"

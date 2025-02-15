@@ -51,3 +51,7 @@ spec:
               value: <CHALLENGE_URL>
             - name: CHALLENGE_PORT
               value: <CHALLENGE_PORT>
+            - name: USER_URL
+              value: http://localhost
+            - name: USER_PORT
+              value: "3000"
