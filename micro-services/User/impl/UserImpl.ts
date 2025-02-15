@@ -10,6 +10,7 @@ import * as EndpointInputTypes from "../types/EndpointInputTypes";
 import * as EndpointReturnedTypes from "../types/EndpointReturnedTypes";
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import {Storage} from "@google-cloud/storage";
+import {readFileSync} from "fs";
 
 initializeApp();
 
@@ -33,15 +34,23 @@ export default class UserImpl implements UserService {
         if (hash !== passwordHash) {
             throw new Error("Password incorrect");
         }
-        const client = new SecretManagerServiceClient();
-        const privateKeyAccess = await client.accessSecretVersion({
-            name: `projects/${process.env.PROJECT_ID ?? '656565803311'}/secrets/${process.env.SECRET_FILE_NAME ?? 'private_key.pem'}/versions/latest`
-        })
-        const privateKey = privateKeyAccess[0].payload?.data?.toString() ?? "";
-        return sign({
-            userId: user.docs[0].id,
-            roles: userData.roles
-        }, privateKey, { expiresIn: "1h", algorithm: "RS256" });
+        if (process.env.TEST_MODE === "true") {
+            const privateKey = readFileSync("../keys/private.pem");
+            return sign({
+                userId: user.docs[0].id,
+                roles: userData.roles
+            }, privateKey, {expiresIn: "1h", algorithm: "RS256"});
+        } else {
+            const client = new SecretManagerServiceClient();
+            const privateKeyAccess = await client.accessSecretVersion({
+                name: `projects/${process.env.PROJECT_ID ?? '656565803311'}/secrets/${process.env.SECRET_FILE_NAME ?? 'private_key.pem'}/versions/latest`
+            })
+            const privateKey = privateKeyAccess[0].payload?.data?.toString() ?? "";
+            return sign({
+                userId: user.docs[0].id,
+                roles: userData.roles
+            }, privateKey, {expiresIn: "1h", algorithm: "RS256"});
+        }
 
     }
 
@@ -152,16 +161,20 @@ export default class UserImpl implements UserService {
 
         const storage = new Storage();
         let publicKey: string;
-        try {
-            const bucket = storage.bucket(process.env.STORAGE_BUCKET_NAME ?? "codehub-public-keys");
-            const file = await bucket.file(process.env.PUBLIC_KEY_FILENAME ?? 'public_key.pem').download();
-            publicKey = file[0].toString();
-        } catch (e) {
-            console.error(e);
-            throw {
-                message: "Error while downloading public key",
-                code: 500
-            };
+        if (process.env.TEST_MODE === "true") {
+            publicKey = readFileSync("../keys/public.pem").toString();
+        } else {
+            try {
+                const bucket = storage.bucket(process.env.STORAGE_BUCKET_NAME ?? "codehub-public-keys");
+                const file = await bucket.file(process.env.PUBLIC_KEY_FILENAME ?? 'public_key.pem').download();
+                publicKey = file[0].toString();
+            } catch (e) {
+                console.error(e);
+                throw {
+                    message: "Error while downloading public key",
+                    code: 500
+                };
+            }
         }
         const token = body.authToken;
         let payload = verify(token, publicKey) as JwtPayload;

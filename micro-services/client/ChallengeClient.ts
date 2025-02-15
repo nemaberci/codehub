@@ -18,11 +18,12 @@ class ChallengeClient {
         controlSolution?: inputValueModel.SolutionSource,
         testCases?: inputValueModel.TestCase[],
         outputVerifier?: inputValueModel.File,
+        overheadMultiplier?: number,
     ): Promise<returnValueModel.Challenge> {
         const url = (process.env as any).CHALLENGE_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3000'}/challenge/upload/`,
+                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3002'}/challenge/upload/`,
                 {
                     method: "POST",
                     headers: {
@@ -54,7 +55,8 @@ class ChallengeClient {
                 enabledLanguages,
                 controlSolution,
                 testCases,
-                outputVerifier
+                outputVerifier,
+                overheadMultiplier
             }));
             req.end();
         });
@@ -69,7 +71,7 @@ class ChallengeClient {
         const url = (process.env as any).CHALLENGE_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3000'}/challenge/add_test_cases/${ challengeId }/`,
+                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3002'}/challenge/add_test_cases/${ challengeId }/`,
                 {
                     method: "POST",
                     headers: {
@@ -110,7 +112,7 @@ class ChallengeClient {
         const url = (process.env as any).CHALLENGE_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3000'}/challenge/add_control_solution/${ challengeId }/`,
+                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3002'}/challenge/add_control_solution/${ challengeId }/`,
                 {
                     method: "POST",
                     headers: {
@@ -149,7 +151,7 @@ class ChallengeClient {
         const url = (process.env as any).CHALLENGE_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3000'}/challenge/get/${ challengeId }/`,
+                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3002'}/challenge/get/${ challengeId }/`,
                 {
                     method: "GET",
                     headers: {
@@ -185,7 +187,7 @@ class ChallengeClient {
         const url = (process.env as any).CHALLENGE_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3000'}/challenge/list/`,
+                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3002'}/challenge/list/`,
                 {
                     method: "GET",
                     headers: {
@@ -221,7 +223,7 @@ class ChallengeClient {
         const url = (process.env as any).CHALLENGE_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3000'}/challenge/list_by_user/${ userId }/`,
+                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3002'}/challenge/list_by_user/${ userId }/`,
                 {
                     method: "GET",
                     headers: {

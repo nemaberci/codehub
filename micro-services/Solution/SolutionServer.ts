@@ -50,10 +50,10 @@ app.post('/solution/solve/',
     res.end();
   }
 )
-console.log("Registered endpoint on '/solution/list/:challenge_id/'");
-app.get('/solution/list/:challenge_id/',
+console.log("Registered endpoint on '/solution/list/:challenge_id'");
+app.get('/solution/list/:challenge_id',
   (req, res, next) => {
-    console.log("Call to '/solution/list/:challenge_id/'");
+    console.log("Call to '/solution/list/:challenge_id'");
     next();
   },
   async (req, res, next) => {
@@ -90,10 +90,10 @@ app.get('/solution/list/:challenge_id/',
     res.end();
   }
 )
-console.log("Registered endpoint on '/solution/result/:challenge_id/:user_id/'");
-app.get('/solution/result/:challenge_id/:user_id/',
+console.log("Registered endpoint on '/solution/result/:challenge_id/:user_id'");
+app.get('/solution/result/:challenge_id/:user_id',
   (req, res, next) => {
-    console.log("Call to '/solution/result/:challenge_id/:user_id/'");
+    console.log("Call to '/solution/result/:challenge_id/:user_id'");
     next();
   },
   async (req, res, next) => {
@@ -131,10 +131,10 @@ app.get('/solution/result/:challenge_id/:user_id/',
     res.end();
   }
 )
-console.log("Registered endpoint on '/solution/build_result/:challenge_id/:user_id/'");
-app.get('/solution/build_result/:challenge_id/:user_id/',
+console.log("Registered endpoint on '/solution/build_result/:challenge_id/:user_id'");
+app.get('/solution/build_result/:challenge_id/:user_id',
   (req, res, next) => {
-    console.log("Call to '/solution/build_result/:challenge_id/:user_id/'");
+    console.log("Call to '/solution/build_result/:challenge_id/:user_id'");
     next();
   },
   async (req, res, next) => {
@@ -173,3 +173,6 @@ app.get('/solution/build_result/:challenge_id/:user_id/',
 
 app.listen(parseInt(process.env.PORT ?? '3000'))
 console.log(`App started and listening on port ${process.env.PORT ?? 3000}`);
+if (process.env.TEST_MODE) {
+  console.log("Test mode enabled");
+}

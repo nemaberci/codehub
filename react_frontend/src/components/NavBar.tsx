@@ -10,6 +10,14 @@ export default function NavBar() {
 	let loginButton = <></>;
 	const [displayName, setDisplayName] = useState("");
 
+	if (localStorage.getItem("token")) {
+		const jwt = jwtDecode(localStorage.getItem("token")!);
+		// If the token is expired, log out
+		if (jwt.exp && jwt.exp * 1000 < Date.now()) {
+			localStorage.clear();
+			navigate("/");
+		}
+	}
 	if (localStorage.getItem("token")?.trim().length) {
 		axios.get(`/api/user/by_id/${(jwtDecode(localStorage.getItem("token")!) as any).userId}`).then(
 			(response) => {

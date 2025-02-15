@@ -36,6 +36,10 @@ interface UploadBody {
     * @description Output verifier of the challenge
     */
     outputVerifier?: model.File;
+    /** 
+    * @description How much to multiply the time and memory limits by compared to the control solution
+    */
+    overheadMultiplier?: number;
 }
 /** 
 * @description Add test cases to a challenge
@@ -79,6 +83,10 @@ interface AddControlSolutionBody {
 * @description Get a challenge
 */
 interface GetBody {
+    /**
+    * @description The user's custom access token
+    */
+    authToken: string
     /** 
     * @description Id of the challenge to get
     */

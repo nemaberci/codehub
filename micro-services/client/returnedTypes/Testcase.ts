@@ -34,6 +34,26 @@ interface Testcase {
     * @type number
     */
     maxMemory: number;
+    /** 
+    * @description The input of the testcase
+    * @type string
+    */
+    input: string | null;
+    /** 
+    * @description The output of the testcase
+    * @type string
+    */
+    output: string | null;
+    /** 
+    * @description Whether the input is generated
+    * @type boolean
+    */
+    inputGenerated: boolean | null;
+    /** 
+    * @description How much to multiply the time and memory limits by compared to the control solution
+    * @type number
+    */
+    overheadMultiplier: number;
 }
 
 export default Testcase

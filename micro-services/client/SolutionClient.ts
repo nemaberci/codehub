@@ -19,7 +19,7 @@ class SolutionClient {
         const url = (process.env as any).SOLUTION_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).SOLUTION_PORT ?? '3000'}/solution/solve/`,
+                `${url}:${(process.env as any).SOLUTION_PORT ?? '3001'}/solution/solve/`,
                 {
                     method: "POST",
                     headers: {
@@ -61,7 +61,7 @@ class SolutionClient {
         const url = (process.env as any).SOLUTION_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).SOLUTION_PORT ?? '3000'}/solution/list/${ challengeId }/`,
+                `${url}:${(process.env as any).SOLUTION_PORT ?? '3001'}/solution/list/${ challengeId }/`,
                 {
                     method: "GET",
                     headers: {
@@ -97,7 +97,7 @@ class SolutionClient {
         const url = (process.env as any).SOLUTION_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).SOLUTION_PORT ?? '3000'}/solution/result/${ challengeId }/${ userId }/`,
+                `${url}:${(process.env as any).SOLUTION_PORT ?? '3001'}/solution/result/${ challengeId }/${ userId }/`,
                 {
                     method: "GET",
                     headers: {
@@ -133,7 +133,7 @@ class SolutionClient {
         const url = (process.env as any).SOLUTION_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).SOLUTION_PORT ?? '3000'}/solution/build_result/${ challengeId }/${ userId }/`,
+                `${url}:${(process.env as any).SOLUTION_PORT ?? '3001'}/solution/build_result/${ challengeId }/${ userId }/`,
                 {
                     method: "GET",
                     headers: {

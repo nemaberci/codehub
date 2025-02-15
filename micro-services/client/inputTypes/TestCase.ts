@@ -44,6 +44,11 @@ interface TestCase {
     * @type string
     */
     name: string;
+    /** 
+    * @description How much to multiply the time and memory limits by compared to the control solution
+    * @type number
+    */
+    overheadMultiplier: number;
 }
 
 export default TestCase

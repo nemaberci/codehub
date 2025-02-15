@@ -11,10 +11,10 @@ const serviceImpl: FileHandlingService = new FileHandlingImpl()
 
 const app = express()
 app.use(express.json())
-console.log("Registered endpoint on '/file_handling/upload_folder_content/:folder_name/'");
-app.post('/file_handling/upload_folder_content/:folder_name/',
+console.log("Registered endpoint on '/file_handling/upload_folder_content/:folder_name'");
+app.post('/file_handling/upload_folder_content/:folder_name',
   (req, res, next) => {
-    console.log("Call to '/file_handling/upload_folder_content/:folder_name/'");
+    console.log("Call to '/file_handling/upload_folder_content/:folder_name'");
     next();
   },
   userContentAccess,
@@ -51,10 +51,10 @@ app.post('/file_handling/upload_folder_content/:folder_name/',
     res.end();
   }
 )
-console.log("Registered endpoint on '/file_handling/download_folder_content/:folder_name/'");
-app.get('/file_handling/download_folder_content/:folder_name/',
+console.log("Registered endpoint on '/file_handling/download_folder_content/:folder_name'");
+app.get('/file_handling/download_folder_content/:folder_name',
   (req, res, next) => {
-    console.log("Call to '/file_handling/download_folder_content/:folder_name/'");
+    console.log("Call to '/file_handling/download_folder_content/:folder_name'");
     next();
   },
   userContentAccess,
@@ -90,10 +90,10 @@ app.get('/file_handling/download_folder_content/:folder_name/',
     res.end();
   }
 )
-console.log("Registered endpoint on '/file_handling/download_file/:file_name/'");
-app.get('/file_handling/download_file/:file_name/',
+console.log("Registered endpoint on '/file_handling/download_file/:file_name(*)'");
+app.get('/file_handling/download_file/:file_name(*)',
   (req, res, next) => {
-    console.log("Call to '/file_handling/download_file/:file_name/'");
+    console.log("Call to '/file_handling/download_file/:file_name(*)'");
     next();
   },
   userContentAccess,
@@ -129,10 +129,10 @@ app.get('/file_handling/download_file/:file_name/',
     res.end();
   }
 )
-console.log("Registered endpoint on '/file_handling/delete_folder/:folder_name/'");
-app.delete('/file_handling/delete_folder/:folder_name/',
+console.log("Registered endpoint on '/file_handling/delete_folder/:folder_name'");
+app.delete('/file_handling/delete_folder/:folder_name',
   (req, res, next) => {
-    console.log("Call to '/file_handling/delete_folder/:folder_name/'");
+    console.log("Call to '/file_handling/delete_folder/:folder_name'");
     next();
   },
   userContentAccess,
@@ -171,3 +171,6 @@ app.delete('/file_handling/delete_folder/:folder_name/',
 
 app.listen(parseInt(process.env.PORT ?? '3000'))
 console.log(`App started and listening on port ${process.env.PORT ?? 3000}`);
+if (process.env.TEST_MODE) {
+  console.log("Test mode enabled");
+}

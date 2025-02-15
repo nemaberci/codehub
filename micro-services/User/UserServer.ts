@@ -30,10 +30,10 @@ app.post('/user/login/',
     res.end();
   }
 )
-console.log("Registered endpoint on '/user/by_id/:user_id/'");
-app.get('/user/by_id/:user_id/',
+console.log("Registered endpoint on '/user/by_id/:user_id'");
+app.get('/user/by_id/:user_id',
   (req, res, next) => {
-    console.log("Call to '/user/by_id/:user_id/'");
+    console.log("Call to '/user/by_id/:user_id'");
     next();
   },
   async (req, res, next) => {
@@ -87,10 +87,10 @@ app.post('/user/register/',
     res.end();
   }
 )
-console.log("Registered endpoint on '/user/add_roles/:username/'");
-app.post('/user/add_roles/:username/',
+console.log("Registered endpoint on '/user/add_roles/:username'");
+app.post('/user/add_roles/:username',
   (req, res, next) => {
-    console.log("Call to '/user/add_roles/:username/'");
+    console.log("Call to '/user/add_roles/:username'");
     next();
   },
   async (req, res, next) => {
@@ -125,10 +125,10 @@ app.post('/user/add_roles/:username/',
     res.end();
   }
 )
-console.log("Registered endpoint on '/user/remove_roles/:username/'");
-app.post('/user/remove_roles/:username/',
+console.log("Registered endpoint on '/user/remove_roles/:username'");
+app.post('/user/remove_roles/:username',
   (req, res, next) => {
-    console.log("Call to '/user/remove_roles/:username/'");
+    console.log("Call to '/user/remove_roles/:username'");
     next();
   },
   async (req, res, next) => {
@@ -187,3 +187,6 @@ app.get('/user/has_roles/',
 
 app.listen(parseInt(process.env.PORT ?? '3000'))
 console.log(`App started and listening on port ${process.env.PORT ?? 3000}`);
+if (process.env.TEST_MODE) {
+  console.log("Test mode enabled");
+}

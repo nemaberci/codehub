@@ -21,6 +21,7 @@ import {
     ListReturned
 } from "../types/EndpointReturnedTypes";
 import {decode} from "jsonwebtoken";
+import * as model from "../../client/returnedTypes";
 
 // initializeApp({
 //     credential: applicationDefault()
@@ -33,7 +34,7 @@ export default class ChallengeImpl implements ChallengeService {
         const db = getFirestore();
 
         let challengeId = "challenge-" + randomUUID().toString();
-        await db.collection("Challenge").doc(challengeId).set({
+        let challenge = {
             created_by: decode(body.authToken, {json: true})!.userId,
             description: body.description,
             language_name: body.controlSolution?.language ?? "",
@@ -41,9 +42,11 @@ export default class ChallengeImpl implements ChallengeService {
             short_description: body.shortDescription,
             time_uploaded: new Date(),
             enabled_languages: body.enabledLanguages
-        });
+        };
+        Object.keys(challenge).forEach(key => challenge[key as keyof typeof challenge] === undefined && delete challenge[key as keyof typeof challenge])
+        await db.collection("Challenge").doc(challengeId).set(challenge);
 
-        return await this.freshDTO(challengeId);
+        return await this.freshDTO(body.authToken, challengeId);
 
     }
 
@@ -145,13 +148,21 @@ export default class ChallengeImpl implements ChallengeService {
             message.ack();
             await subscription.close();
         })
+        setTimeout(
+            async () => {
+                await subscription.close();
+            },
+            1000 * 60 * 60 // 1 hour
+        )
         console.log("Published message to pubsub topic: ", topicName);
 
-        return await this.freshDTO(body.challengeId);
+        return await this.freshDTO(body.authToken, body.challengeId);
 
     }
 
     async addTestCases(body: AddTestCasesBody): Promise<AddTestCasesReturned> {
+
+        // todo: update test cases instead of deleting and reuploading
 
         const db = getFirestore();
         let fileHandlingClient = FileHandlingClient;
@@ -264,7 +275,8 @@ export default class ChallengeImpl implements ChallengeService {
                 max_memory: testCase.maxMemory,
                 max_runtime: testCase.maxTime,
                 points: testCase.points,
-                name: testCase.name
+                name: testCase.name,
+                overhead_multiplier: testCase.overheadMultiplier
             });
             await db.collection("Challenge").doc(body.challengeId).collection("Testcases").doc(testCaseId).set({
                 description: testCase.description,
@@ -274,17 +286,45 @@ export default class ChallengeImpl implements ChallengeService {
                 max_memory: testCase.maxMemory,
                 max_runtime: testCase.maxTime,
                 points: testCase.points,
-                name: testCase.name
+                name: testCase.name,
+                overhead_multiplier: testCase.overheadMultiplier
             })
             console.log("Uploaded test case to firestore: ", testCaseId)
         }
 
-        return await this.freshDTO(body.challengeId);
+        return await this.freshDTO(body.authToken, body.challengeId);
     }
 
-    private async freshDTO(challengeId: string): Promise<Challenge> {
+    private async freshDTO(authToken: string, challengeId: string): Promise<Challenge> {
         const db = getFirestore();
         const challenge = await db.collection("Challenge").doc(challengeId).get();
+
+        let fileHandlingClient = FileHandlingClient;
+        let testCases: model.Testcase[] = [];
+        for (let testCase of (await db.collection("Challenge").doc(challengeId).collection("Testcases").get()).docs) {
+            console.log("testcase: ", testCase.data())
+            console.log("challenge:", challenge.data());
+            const inputFile = await fileHandlingClient.downloadFile(
+                authToken,
+                challenge.data()!.text_location + "/" + testCase.data().location
+            );
+            const outputFile = await fileHandlingClient.downloadFile(
+                authToken,
+                challenge.data()!.results_location + "/" + testCase.data().output_file_location
+            )
+            testCases.push({
+                id: testCase.id,
+                name: testCase.data().name,
+                description: testCase.data().description,
+                points: testCase.data().points,
+                maxMemory: testCase.data().max_memory,
+                maxTime: testCase.data().max_runtime,
+                input: Buffer.from(inputFile.content, 'base64').toString(),
+                inputGenerated: testCase.data().is_generated,
+                output: Buffer.from(outputFile.content, 'base64').toString(),
+                overheadMultiplier: testCase.data().overhead_multiplier
+            })
+        }
 
         return {
             id: challengeId,
@@ -293,22 +333,14 @@ export default class ChallengeImpl implements ChallengeService {
             shortDescription: challenge.data()!.short_description,
             userId: challenge.data()!.created_by,
             createdAt: challenge.data()!.time_uploaded,
-            testCases: (await db.collection("Challenge").doc(challengeId).collection("Testcases").get()).docs.map(
-                d => ({
-                    id: d.id,
-                    name: d.data().name,
-                    description: d.data().description,
-                    points: d.data().points,
-                    maxMemory: d.data().max_memory,
-                    maxTime: d.data().max_runtime
-                })
-            ),
+            testCases: testCases,
             enabledLanguages: challenge.data()!.enabled_languages
         };
     }
 
     async get(body: GetBody): Promise<GetReturned> {
-        return await this.freshDTO(body.challengeId);
+        console.log(body);
+        return await this.freshDTO(body.authToken, body.challengeId);
     }
 
     async list(body: ListBody): Promise<ListReturned> {
@@ -331,7 +363,11 @@ export default class ChallengeImpl implements ChallengeService {
                         description: d.data().description,
                         points: d.data().points,
                         maxMemory: d.data().max_memory,
-                        maxTime: d.data().max_runtime
+                        maxTime: d.data().max_runtime,
+                        output: null,
+                        inputGenerated: null,
+                        input: null,
+                        overheadMultiplier: d.data().overhead_multiplier
                     })
                 ),
                 enabledLanguages: challenge.data().enabled_languages
@@ -365,7 +401,11 @@ export default class ChallengeImpl implements ChallengeService {
                         description: d.data().description,
                         points: d.data().points,
                         maxMemory: d.data().max_memory,
-                        maxTime: d.data().max_runtime
+                        maxTime: d.data().max_runtime,
+                        output: null,
+                        inputGenerated: null,
+                        input: null,
+                        overheadMultiplier: d.data().overhead_multiplier
                     })
                 ),
                 enabledLanguages: challenge.data().enabled_languages

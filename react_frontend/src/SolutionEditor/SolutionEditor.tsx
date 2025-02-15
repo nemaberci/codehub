@@ -217,7 +217,6 @@ export default function SolutionEditor({
 							value={solution}
 							theme="vs-dark"
 							onChange={(value) => {
-								console.log("changed");
 								setSolution(value ?? "");
 							}}
 						/>

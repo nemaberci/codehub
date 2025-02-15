@@ -17,7 +17,7 @@ class UserClient {
         const url = (process.env as any).USER_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/login/`,
+                `${url}:${(process.env as any).USER_PORT ?? '3003'}/user/login/`,
                 {
                     method: "POST",
                     headers: {
@@ -56,7 +56,7 @@ class UserClient {
         const url = (process.env as any).USER_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/by_id/${ userId }/`,
+                `${url}:${(process.env as any).USER_PORT ?? '3003'}/user/by_id/${ userId }/`,
                 {
                     method: "GET",
                     headers: {
@@ -94,7 +94,7 @@ class UserClient {
         const url = (process.env as any).USER_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/register/`,
+                `${url}:${(process.env as any).USER_PORT ?? '3003'}/user/register/`,
                 {
                     method: "POST",
                     headers: {
@@ -134,7 +134,7 @@ class UserClient {
         const url = (process.env as any).USER_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/add_roles/${ username }/`,
+                `${url}:${(process.env as any).USER_PORT ?? '3003'}/user/add_roles/${ username }/`,
                 {
                     method: "POST",
                     headers: {
@@ -174,7 +174,7 @@ class UserClient {
         const url = (process.env as any).USER_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/remove_roles/${ username }/`,
+                `${url}:${(process.env as any).USER_PORT ?? '3003'}/user/remove_roles/${ username }/`,
                 {
                     method: "POST",
                     headers: {
@@ -214,7 +214,7 @@ class UserClient {
         const url = (process.env as any).USER_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(
-                `${url}:${(process.env as any).USER_PORT ?? '3000'}/user/has_roles/`,
+                `${url}:${(process.env as any).USER_PORT ?? '3003'}/user/has_roles/`,
                 {
                     method: "GET",
                     headers: {
