@@ -3,6 +3,7 @@ import ChallengeListRow from "./ChallengeListRow";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import _ from "lodash";
+import {User, Challenge as ReturnedChallenge} from "../client/returnedTypes";
 
 export interface Challenge {
 	id: string;
@@ -11,6 +12,7 @@ export interface Challenge {
 	points: number[];
 	uploader: string;
 	uploadTime: string;
+	uploaderUserId: string;
 }
 
 export default function ChallengeList() {
@@ -19,17 +21,28 @@ export default function ChallengeList() {
 
 	async function fetchChallenges() {
 		try {
-			const response = await axios.get("/api/challenge/list");
-			const mapped = response.data.map((challenge: any) => {
+			const response = await axios.get<ReturnedChallenge[]>("/api/challenge/list");
+			const userIds: Set<string> = new Set(response.data.map((challenge: any) => challenge.userId));
+			console.log("userIds", userIds)
+			const userMap: { [key: string]: string } = {};
+			// todo: batch request
+			const promises = Array.from(userIds).map(async (userId) => {
+				const userResponse = await axios.get<User>(`/api/user/by_id/${userId}`);
+				userMap[userId] = userResponse.data.username;
+			});
+			(await Promise.all(promises))
+			console.log("userMap", userMap)
+			const mapped = response.data.map((challenge) => {
 				const points: number[] = challenge.testCases.map((testCase: any) => testCase.points);
 				const uploadTime = new Date(challenge.createdAt?._seconds * 1000).toLocaleString();
 				return {
 					id: challenge.id,
 					name: challenge.name,
 					shortDescription: challenge.shortDescription,
-					uploader: challenge.user,
+					uploader: userMap[challenge.userId],
 					points: points,
 					uploadTime: uploadTime,
+					uploaderUserId: challenge.userId,
 				};
 			});
 			const sorted: any[] = _.reverse(_.sortBy(mapped, "uploadTime"));
@@ -50,12 +63,13 @@ export default function ChallengeList() {
 				<div className="max-w-1/2 text-center mt-10">
 					<Table>
 						<Table.Head>
-							<span />
+							<span/>
 							<span>Név</span>
 							<span>Leírás</span>
 							<span>Pontszámok</span>
 							<span>Feltöltötte</span>
 							<span>Feltöltés ideje</span>
+							<span>Műveletek</span>
 						</Table.Head>
 
 						<Table.Body>

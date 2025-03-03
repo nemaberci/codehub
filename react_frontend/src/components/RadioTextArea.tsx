@@ -1,31 +1,48 @@
-import { Field, useFormikContext } from "formik";
+import {useFormikContext} from "formik";
 import Radio from "./Radio";
-import { Textarea } from "react-daisyui";
 import _ from "lodash";
+import {Editor} from "@monaco-editor/react";
+import {useEffect, useState} from "react";
 
 export default function RadioTextArea({
 	radioName,
 	radioValue,
 	textAreaName,
 	title,
+	defaultValue,
 }: {
 	radioName: string;
 	radioValue: string;
 	textAreaName: string;
 	title: string;
+	defaultValue?: string;
 }) {
 	const context: any = useFormikContext();
-	const disabled = _.get(context.values, radioName) !== radioValue;
+	const [disabled, setDisabled] = useState(false);
+	useEffect(
+		() => {
+			setDisabled(_.get(context.values, radioName) !== radioValue);
+		},
+		[context.values]
+	);
 	return (
 		<>
 			<Radio name={radioName} value={radioValue} title={title} />
-			<Field
-				as={Textarea}
-				bordered
-				disabled={disabled}
-				className={"w-full h-64 font-mono " + (disabled ? "hidden" : "")}
-				name={textAreaName}
-			/>
+			{
+				!disabled &&
+					<Editor
+						height={"35vh"}
+						language={radioValue === "script" ? "python" : "plaintext" }
+						theme={"vs-dark"}
+						value={
+							context.values[textAreaName]
+						}
+						onChange={(value) => {
+							context.setFieldValue(textAreaName, value);
+						}}
+						defaultValue={defaultValue}
+					/>
+			}
 		</>
 	);
 }

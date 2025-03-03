@@ -33,7 +33,7 @@ export default class SolutionImpl implements SolutionService {
         let fileHandlingClient = FileHandlingClient;
         let folderName = "solution-source-" + randomUUID().toString();
         await fileHandlingClient.uploadFolderContent(
-            (process.env as any).FILE_HANDLING_API_KEY,
+            body.authToken,
             folderName,
             body.folderContents
         );
@@ -46,20 +46,16 @@ export default class SolutionImpl implements SolutionService {
             time_submitted: new Date(),
             source_folder: folderName,
             user: decode(body.authToken, {json: true})!.userId,
+            language: body.language,
         });
         console.log("Uploaded solution to firestore: ", solutionId);
 
         const pubsub = new PubSub();
         const topicName = "SolutionUploaded";
 
-        const userId = decode(body.authToken, {json: true})!["userId"];
-
-        if (
-            (await db.collection("Challenge").doc(body.challengeId).get()).data()!.user === userId
-        ) {
-            await db.collection("Challenge").doc(body.challengeId).update({
-                solution_id: db.collection("Solution").doc(solutionId)
-            });
+        // todo: normal language handling
+        if (!["java", "cpp"].includes(body.language ?? "java")) {
+            throw new Error("Language not supported");
         }
 
         await pubsub.topic(topicName).publishMessage(
@@ -68,7 +64,9 @@ export default class SolutionImpl implements SolutionService {
                     sourceFolderName: folderName,
                     challengeId: body.challengeId,
                     entryPoint: body.entryPoint ?? "Solution.java",
-                    solutionId: solutionId
+                    solutionId: solutionId,
+                    secretName: (process.env as any)["SECRET_FILE_NAME"],
+                    imageName: `${body.language ?? 'java'}-builder`
                 }
             }
         );
@@ -77,8 +75,10 @@ export default class SolutionImpl implements SolutionService {
         return {
             id: folderName,
             challengeId: body.challengeId,
-            user: userId,
-            testCaseResults: []
+            user: decode(body.authToken, {json: true})!.userId,
+            testCaseResults: [],
+            language: body.language ?? "java",
+            files: body.folderContents
         };
 
     }
@@ -99,7 +99,12 @@ export default class SolutionImpl implements SolutionService {
             .orderBy("time_submitted", "desc")
             .get())
             .docs[0];
-        console.log(solution)
+        // console.log(solution)
+        let fileHandlingClient = FileHandlingClient;
+        const files = await fileHandlingClient.downloadFolderContent(
+            body.authToken,
+            solution.data().source_folder
+        );
 
         return {
             id: solution.id,
@@ -118,7 +123,9 @@ export default class SolutionImpl implements SolutionService {
                     testCaseId: d.test_case_id as string,
                     memory: d.memory as number,
                     time: d.runtime as number
-                }))
+                })),
+            language: solution.data().language,
+            files: files
         }
     }
 
@@ -136,7 +143,9 @@ export default class SolutionImpl implements SolutionService {
             id: d.id,
             challengeId: d.data().challenge_name,
             user: d.data().user,
-            testCaseResults: []
+            testCaseResults: [],
+            language: d.data().language,
+            files: null
         }));
 
         for (let i = 0; i < solutions.length; i++) {

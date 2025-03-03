@@ -1,0 +1,53 @@
+# start with kubectl apply -f <filename>
+# test of the repository connectivity
+# env variables are not passed, it doesn't run correctly
+# the goal was to have it start up
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-handling
+  namespace: filehandling
+  labels:
+    app: file-handling
+  
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: file-handling
+  template:
+    metadata:
+      labels:
+        app: file-handling
+      namespace: filehandling
+    spec:
+      serviceAccountName: filehandling
+      nodeSelector:
+        iam.gke.io/gke-metadata-server-enabled: "true"
+      containers:
+      - name: file-handling
+        image: europe-west4-docker.pkg.dev/codehub-400314/code-hub-main/file-handling:latest
+        resources:
+          limits:
+            cpu: "1"
+            memory: "512Mi"
+          requests:
+            cpu: "500m"
+            memory: "256Mi"
+        env:
+          - name: SOLUTION_URL
+            value: <SOLUTION_URL>
+          - name: SOLUTION_PORT
+            value: <SOLUTION_PORT>
+          - name: USER_URL
+            value: <USER_URL>
+          - name: USER_PORT
+            value: <USER_PORT>
+          - name: CHALLENGE_URL
+            value: <CHALLENGE_URL>
+          - name: CHALLENGE_PORT
+            value: <CHALLENGE_PORT>
+          - name: FILE_HANDLING_URL
+            value: http://localhost
+          - name: FILE_HANDLING_PORT
+            value: "3000"

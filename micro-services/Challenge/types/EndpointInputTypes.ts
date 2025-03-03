@@ -5,7 +5,7 @@ import * as model from '../../client/inputTypes';
 */
 interface UploadBody {
     /**
-    * @description The user's access token
+    * @description The user's custom access token
     */
     authToken: string,
     /** 
@@ -21,6 +21,10 @@ interface UploadBody {
     */
     shortDescription: string;
     /** 
+    * @description The enabled languages for the challenge
+    */
+    enabledLanguages: string[];
+    /** 
     * @description Control solutions of the challenge
     */
     controlSolution?: model.SolutionSource;
@@ -32,13 +36,17 @@ interface UploadBody {
     * @description Output verifier of the challenge
     */
     outputVerifier?: model.File;
+    /** 
+    * @description How much to multiply the time and memory limits by compared to the control solution
+    */
+    overheadMultiplier?: number;
 }
 /** 
 * @description Add test cases to a challenge
 */
 interface AddTestCasesBody {
     /**
-    * @description The user's access token
+    * @description The user's custom access token
     */
     authToken: string,
     /** 
@@ -59,7 +67,7 @@ interface AddTestCasesBody {
 */
 interface AddControlSolutionBody {
     /**
-    * @description The user's access token
+    * @description The user's custom access token
     */
     authToken: string,
     /** 
@@ -76,7 +84,7 @@ interface AddControlSolutionBody {
 */
 interface GetBody {
     /**
-    * @description The user's access token
+    * @description The user's custom access token
     */
     authToken: string
     /** 
@@ -88,19 +96,11 @@ interface GetBody {
 * @description List all challenges
 */
 interface ListBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string
 }
 /** 
 * @description List all challenges of a user
 */
 interface ListByUserBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string
     /** 
     * @description Id of the user to get the challenges of
     */

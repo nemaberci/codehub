@@ -14,7 +14,7 @@ interface UploadFolderContentBody {
     folderName: string;
 }
 /** 
-* @description Download the content of a folder
+* @description Download the content of a folder from the sources bucket
 */
 interface DownloadFolderContentBody {
     /** 
@@ -23,13 +23,9 @@ interface DownloadFolderContentBody {
     folderName: string;
 }
 /** 
-* @description Download a single file from a storage bucket
+* @description Download a single file from the sources bucket
 */
 interface DownloadFileBody {
-    /** 
-    * @description Name of the storage bucket to download the content from
-    */
-    bucketName: string;
     /** 
     * @description Name of the file to download
     */

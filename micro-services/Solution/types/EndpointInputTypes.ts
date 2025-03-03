@@ -5,7 +5,7 @@ import * as model from '../../client/inputTypes';
 */
 interface SolveBody {
     /**
-    * @description The user's access token
+    * @description The user's custom access token
     */
     authToken: string,
     /** 
@@ -20,13 +20,17 @@ interface SolveBody {
     * @description The entry point of the solution (by default: Solution.java)
     */
     entryPoint?: string;
+    /** 
+    * @description The language of the solution (by default: Java)
+    */
+    language?: string;
 }
 /** 
 * @description List all solutions for a challenge
 */
 interface ListBody {
     /**
-    * @description The user's access token
+    * @description The user's custom access token
     */
     authToken: string
     /** 
@@ -39,7 +43,7 @@ interface ListBody {
 */
 interface ResultBody {
     /**
-    * @description The user's access token
+    * @description The user's custom access token
     */
     authToken: string
     /** 
@@ -55,16 +59,12 @@ interface ResultBody {
 * @description Get the build result of a solution of a challenge for a user
 */
 interface BuildResultBody {
-    /**
-    * @description The user's access token
-    */
-    authToken: string
     /** 
-    * @description Id of the challenge to get the results of
+    * @description Id of the challenge to get the build results of
     */
     challengeId: string;
     /** 
-    * @description Id of the user to get the results of
+    * @description Id of the user to get the build results of
     */
     userId: string;
 }

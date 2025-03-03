@@ -1,13 +1,22 @@
 import {File} from "../../client/returnedTypes";
 import FileHandlingService from "../api/FileHandlingService";
-import {DeleteFolderBody, DownloadFileBody, DownloadFolderContentBody, UploadFolderContentBody} from "../types/EndpointInputTypes";
+import {
+    DeleteFolderBody,
+    DownloadFileBody,
+    DownloadFolderContentBody,
+    UploadFolderContentBody
+} from "../types/EndpointInputTypes";
 import {Storage} from "@google-cloud/storage";
+
 
 export default class FileHandlingImpl implements FileHandlingService {
     async downloadFile(body: DownloadFileBody): Promise<File> {
+        if (body.fileName.endsWith("/") || body.fileName.endsWith("\\")) {
+            body.fileName = body.fileName.substring(0, body.fileName.length - 1)
+        }
         const storage = new Storage();
         try {
-            const bucket = storage.bucket(body.bucketName);
+            const bucket = storage.bucket(process.env.STORAGE_BUCKET_NAME ?? "code-hub-sources");
             const file = await bucket.file(body.fileName).download();
             return {
                 content: file[0].toString('base64'),
@@ -61,6 +70,7 @@ export default class FileHandlingImpl implements FileHandlingService {
     async downloadFolderContent(body: DownloadFolderContentBody): Promise<File[]> {
         const storage = new Storage();
         const bucket = storage.bucket(process.env.STORAGE_BUCKET_NAME ?? "code-hub-sources");
+        console.log("Downloading files in folder: ", `${process.env.STORAGE_BUCKET_NAME ?? "code-hub-sources"}/${body.folderName}`)
         let promises: Promise<File>[] = []
         const files = await bucket.getFiles(
             {
@@ -68,6 +78,7 @@ export default class FileHandlingImpl implements FileHandlingService {
             }
         )
         for (const file of files[0].filter(f => f.name.length > `${body.folderName}/`.length)) {
+            console.log("File in folder: ", file.name)
             promises.push(
                 new Promise(
                     (resolve, reject) => {

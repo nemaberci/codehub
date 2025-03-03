@@ -1,0 +1,11 @@
+#include <iostream>
+
+int main(int argc, char** argv) {
+
+    std::cout << "Hello, World!" << std::endl;
+
+    // Write your solution here
+
+    return 0;
+
+}

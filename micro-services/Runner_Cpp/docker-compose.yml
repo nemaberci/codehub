@@ -1,0 +1,15 @@
+version: '3'
+services:
+  runner:
+    image: runner-cpp:latest
+    environment:
+      - "FILE_HANDLER_URL=host.docker.internal:3000"
+      - "TOKEN=token"
+      - "ENTRY_POINT=Solution"
+      - "EXECUTABLE_FOLDER_NAME=test-solution-executable"
+      - "INPUT_TXT_FOLDER_NAME=test-solution-input-txt"
+      - "INPUT_PY_FOLDER_NAME=test-solution-input-py"
+      - 'TEST_CASES_GENERATED=true;false;false'
+      - 'TEST_CASES_LOCATION=input-gen.py;input-1.txt;input-2.txt'
+      - "RESULTS_FOLDER_NAME=test-solution-results-2"
+    network_mode: "bridge"

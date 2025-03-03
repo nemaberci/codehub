@@ -26,9 +26,9 @@ interface Challenge {
     shortDescription: string;
     /** 
     * @description The user that created the challenge
-    * @type model.User
+    * @type string
     */
-    user: model.User;
+    userId: string;
     /** 
     * @description The test cases of the challenge
     * @type model.Testcase[]
@@ -36,9 +36,14 @@ interface Challenge {
     testCases: model.Testcase[];
     /** 
     * @description The date the challenge was created
-    * @type string
+    * @type model.CreatedAt
     */
-    createdAt: string;
+    createdAt: model.CreatedAt;
+    /** 
+    * @description The enabled languages for the challenge
+    * @type string[]
+    */
+    enabledLanguages: string[];
 }
 
 export default Challenge

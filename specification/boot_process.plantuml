@@ -1,0 +1,40 @@
+@startuml Boot sequence
+title Boot sequence
+
+actor "User" as actor
+entity "User micro service" as user
+entity "File handling" as file
+database "Database" as db
+entity "Private key storage bucket" as private_bucket
+entity "Public key storage bucket" as public_bucket
+entity "Other micro service" as other
+
+user -> file ++: Get private key
+file -> private_bucket ++: Get private key
+private_bucket -> file --: Private key
+file -> user --: Private key
+
+...
+
+user -> file ++: Get public key
+file -> public_bucket ++: Get public key
+public_bucket -> file --: Public key
+file -> user --: Public key
+
+...
+
+actor -> user ++: Login
+user -> user ++: Sign JWT
+deactivate user
+user -> actor --: JWT
+
+actor -> other ++: Request
+other -> user ++: Validate JWT and check roles
+user -> user ++: Validate JWT
+deactivate user
+user -> db ++: Get user roles
+db -> user --: User roles
+user -> other --: User has required roles
+other -> actor --: Response
+
+@enduml

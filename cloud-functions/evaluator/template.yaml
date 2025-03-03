@@ -1,0 +1,64 @@
+# start with kubectl apply -f <filename>
+# test of the repository connectivity
+# env variables are not passed, it doesn't run correctly
+# the goal was to have it start up
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: <JOB_NAME>
+  labels:
+    app: evaluator
+spec:
+  activeDeadlineSeconds: 600
+  backoffLimit: 1
+  completionMode: NonIndexed
+  completions: 1
+  parallelism: 1
+  ttlSecondsAfterFinished: 60
+  template:
+    spec:
+      serviceAccountName: runner
+      containers:
+      - name: micro-service-evaluator
+        image: europe-west4-docker.pkg.dev/codehub-400314/code-hub-main/micro-service-evaluator:latest
+        resources:
+          limits:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 128Mi
+          requests:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 128Mi
+        securityContext:
+          capabilities:
+            drop:
+            - NET_RAW
+        env:
+        # kubectl get pods --namespace filehandling -o=jsonpath="{range .items[*]}{.status.podIP}"
+        - name: FILE_HANDLER_URL
+          value: <FILE_HANDLER_URL>
+        - name: TOKEN
+          value: <TOKEN>
+        - name: RESULTS_FOLDER_NAME
+          value: <RESULTS_FOLDER_NAME>
+        - name: CHALLENGE_ID
+          value: <CHALLENGE_ID>
+        - name: SOLUTION_ID
+          value: <SOLUTION_ID>
+        - name: OUTPUT_VERIFIER_LOCATION
+          value: <OUTPUT_VERIFIER_LOCATION>
+        - name: RESULTS_LOCATION
+          value: <RESULTS_LOCATION>
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      schedulerName: default-scheduler
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.io/arch
+        operator: Equal
+        value: amd64

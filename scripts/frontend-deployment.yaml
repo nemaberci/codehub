@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: frontend
+  labels:
+    app: frontend
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+      namespace: frontend
+    spec:
+      serviceAccountName: frontend
+      nodeSelector:
+        iam.gke.io/gke-metadata-server-enabled: "true"
+      containers:
+        - name: frontend
+          image: europe-west4-docker.pkg.dev/codehub-400314/code-hub-main/frontend:latest
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+            requests:
+              cpu: "500m"
+              memory: "256Mi"
+          env:
+            - name: USER_HOST
+              value: <USER_URL>
+            - name: SOLUTION_HOST
+              value: <SOLUTION_URL>
+            - name: CHALLENGE_HOST
+              value: <CHALLENGE_URL>

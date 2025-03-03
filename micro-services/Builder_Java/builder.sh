@@ -13,7 +13,7 @@ if [ "$(ls -A output)" ]; then
   curl ${FILE_HANDLER_URL}/file_handling/upload_folder_content/${EXECUTABLE_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -H "Content-Type: application/json" --data "@files.txt"
 
   python3 ./upload_build_result.py true
-  python3 ./publish_built_event.py ${ENTRY_POINT} ${EXECUTABLE_FOLDER_NAME} ${CHALLENGE_ID} ${SOLUTION_ID}
+  python3 ./publish_built_event.py ${ENTRY_POINT} ${EXECUTABLE_FOLDER_NAME} ${CHALLENGE_ID} ${SOLUTION_ID} ${SECRET_NAME}
 
 else
 

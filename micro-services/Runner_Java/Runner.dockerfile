@@ -1,8 +1,8 @@
 FROM eclipse-temurin:17-jre-alpine
 
 RUN apk add curl && apk add python3 && apk add --no-cache tini && apk add bash && apk add coreutils && apk add py3-pip
-RUN pip install --upgrade pip
-RUN pip install google-cloud-pubsub
+RUN pip install --upgrade pip --break-system-packages
+RUN pip install google-cloud-pubsub --break-system-packages
 RUN rm -rf /var/cache/apk/*
 RUN mkdir "/work"
 COPY runner.sh .

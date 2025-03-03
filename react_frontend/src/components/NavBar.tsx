@@ -1,16 +1,32 @@
 import { jwtDecode } from "jwt-decode";
 import { Button, Navbar, Tooltip } from "react-daisyui";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import {useState} from "react";
 
 export default function NavBar() {
 	const navigate = useNavigate();
 
 	let loginButton = <></>;
+	const [displayName, setDisplayName] = useState("");
 
+	if (localStorage.getItem("token")) {
+		const jwt = jwtDecode(localStorage.getItem("token")!);
+		// If the token is expired, log out
+		if (jwt.exp && jwt.exp * 1000 < Date.now()) {
+			localStorage.clear();
+			navigate("/");
+		}
+	}
 	if (localStorage.getItem("token")?.trim().length) {
+		axios.get(`/api/user/by_id/${(jwtDecode(localStorage.getItem("token")!) as any).userId}`).then(
+			(response) => {
+				setDisplayName(response.data.username);
+			}
+		)
 		loginButton = (
 			<NavBarButtonsSignedIn
-				displayName={(jwtDecode(localStorage.getItem("token")!) as any).userId + ""}
+				displayName={displayName + ""}
 				logout={() => {
 					localStorage.clear();
 					navigate("/");
