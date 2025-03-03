@@ -32,6 +32,7 @@ export default function EditTestCases() {
                 // todo: move type of endpoint to here
                 testCases: (response.data.testCases as any[]).map(
                     testCase => ({
+                        id: testCase.id,
                         points: testCase.points,
                         name: testCase.name,
                         description: testCase.description,

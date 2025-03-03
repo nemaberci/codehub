@@ -111,8 +111,9 @@ for i in range(len(test_cases)):
                         "test_case_id": test_case_doc_refs[i].id
                     }
                 )
-    except:
+    except Exception as e:
         print("Test case " + str(i) + " failed: exception occurred")
+        print(e)
         sub_results_ref.document("Testcase_" + str(i)).set(
             {
                 "runtime": 0,

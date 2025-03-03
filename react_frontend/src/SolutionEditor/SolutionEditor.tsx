@@ -40,7 +40,7 @@ export default function SolutionEditor({
 	});
 	const [selectedLanguage, setSelectedLanguage] = useState("java");
 	const [enabledLanguages, setEnabledLanguages] = useState<string[]>([]);
-	//const [intervalHandle, setIntervalHandle] = useState(null);
+	const [intervalHandle, setIntervalHandle] = useState<number>(-1);
 
 	const { id: challengeId } = useParams();
 	const userId = (jwtDecode(localStorage.getItem("token")!) as any).userId;
@@ -118,13 +118,12 @@ export default function SolutionEditor({
 				const response = await axios.get<Solution>(`/api/solution/result/${challengeId}/${userId}`);
 				setResults(response.data);
 				setRunning(false);
-				/*if (response.data.testCaseResults?.length > 0) {
-					
+				if (response.data.testCaseResults?.length > 0) {
 					if (intervalHandle) {
 						clearInterval(intervalHandle);
-						setIntervalHandle(null);
+						setIntervalHandle(-1);
 					}
-				}*/
+				}
 			}
 		} catch (e) {
 			console.error(e);
@@ -162,7 +161,7 @@ export default function SolutionEditor({
 					entryPoint: `Solution.${selectedLanguage}`
 				});
 			}
-			//setIntervalHandle(setInterval(fetchResult, 15000));
+			setIntervalHandle(setInterval(fetchResult, 15000));
 			setRunning(false);
 		} catch (error) {
 			console.error(error);

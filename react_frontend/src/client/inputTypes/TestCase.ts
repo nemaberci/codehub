@@ -6,6 +6,11 @@ import * as model from "./index";
 */
 interface TestCase {
     /** 
+    * @description The id of the test case (if it exists already).
+    * @type string
+    */
+    id?: string;
+    /** 
     * @description The constant input of the test case. Either this or inputGenerator must be provided.
     * @type string
     */

@@ -55,6 +55,17 @@ export default class ChallengeImpl implements ChallengeService {
         const db = getFirestore();
         let fileHandlingClient = FileHandlingClient;
 
+        // Reset current limits
+
+        const testCases = await db.collection("Challenge").doc(body.challengeId).collection("Testcases").get()
+        for (let doc of testCases.docs) {
+            await doc.ref.update({
+                // 30 seconds, 500 MB
+                max_runtime: 30_000,
+                max_memory: 500_000
+            });
+        }
+
         let folderName = "solution-source-" + randomUUID().toString();
 
         await fileHandlingClient.uploadFolderContent(
@@ -105,6 +116,9 @@ export default class ChallengeImpl implements ChallengeService {
                 filter: `attributes.solutionId = "${solutionId}"`
             }
         )
+        let overheadMultiplier = (await db.collection("Challenge").doc(body.challengeId).get())
+            .data()!
+            .test_case_overhead_multiplier;
         subscription.on("message", async (message) => {
             console.log("Received message: ", message.data.toString());
             const solutionResultsSnapshot = await db
@@ -133,14 +147,14 @@ export default class ChallengeImpl implements ChallengeService {
             testCaseTimes.forEach(
                 async (testCaseTime) => {
                     await db.collection("Challenge").doc(body.challengeId).collection("Testcases").doc(testCaseTime.id).update({
-                        max_runtime: testCaseTime.time * 2
+                        max_runtime: testCaseTime.time * overheadMultiplier
                     })
                 }
             )
             testCaseMemories.forEach(
                 async (testCaseMemory) => {
                     await db.collection("Challenge").doc(body.challengeId).collection("Testcases").doc(testCaseMemory.id).update({
-                        max_memory: testCaseMemory.memory * 2
+                        max_memory: testCaseMemory.memory * overheadMultiplier
                     })
                 }
             )
@@ -166,13 +180,26 @@ export default class ChallengeImpl implements ChallengeService {
 
         const db = getFirestore();
         let fileHandlingClient = FileHandlingClient;
+        const challenge = (await db.collection("Challenge").doc(body.challengeId).get()).data()!;
 
-        let outputVerifierLocation = "output-verifier-" + randomUUID().toString();
-        let scriptLocation = "script-" + randomUUID().toString();
-        let textLocation = "text-" + randomUUID().toString();
-        let resultsLocation = "results-" + randomUUID().toString();
+        let outputVerifierLocation;
+        let scriptLocation;
+        let textLocation;
+        let resultsLocation;
 
         if (body.outputVerifier) {
+
+            if (challenge.output_verifier_location) {
+                await fileHandlingClient.deleteFolder(
+                    body.authToken,
+                    challenge.output_verifier_location
+                );
+                console.log("Deleted previous output verifier from: ", challenge.output_verifier_location)
+                outputVerifierLocation = challenge.output_verifier_location;
+            } else {
+                outputVerifierLocation = "output-verifier-" + randomUUID().toString();
+            }
+
             await fileHandlingClient.uploadFolderContent(
                 body.authToken,
                 outputVerifierLocation,
@@ -223,6 +250,18 @@ export default class ChallengeImpl implements ChallengeService {
         }
 
         if (inputFiles.length > 0) {
+
+            if (challenge.text_location) {
+                await fileHandlingClient.deleteFolder(
+                    body.authToken,
+                    challenge.text_location
+                );
+                console.log("Deleted previous input files from: ", challenge.text_location)
+                textLocation = challenge.text_location;
+            } else {
+                textLocation = "text-" + randomUUID().toString();
+            }
+
             await fileHandlingClient.uploadFolderContent(
                 body.authToken,
                 textLocation,
@@ -235,6 +274,18 @@ export default class ChallengeImpl implements ChallengeService {
         }
 
         if (inputGeneratorFiles.length > 0) {
+
+            if (challenge.script_location) {
+                await fileHandlingClient.deleteFolder(
+                    body.authToken,
+                    challenge.script_location
+                );
+                console.log("Deleted previous input generators from: ", challenge.script_location)
+                scriptLocation = challenge.script_location;
+            } else {
+                scriptLocation = "script-" + randomUUID().toString();
+            }
+
             await fileHandlingClient.uploadFolderContent(
                 body.authToken,
                 scriptLocation,
@@ -247,6 +298,18 @@ export default class ChallengeImpl implements ChallengeService {
         }
 
         if (outputFiles.length > 0) {
+
+            if (challenge.results_location) {
+                await fileHandlingClient.deleteFolder(
+                    body.authToken,
+                    challenge.results_location
+                );
+                console.log("Deleted previous output files from: ", challenge.results_location)
+                resultsLocation = challenge.results_location;
+            } else {
+                resultsLocation = "results-" + randomUUID().toString();
+            }
+
             await fileHandlingClient.uploadFolderContent(
                 body.authToken,
                 resultsLocation,
@@ -258,16 +321,15 @@ export default class ChallengeImpl implements ChallengeService {
             console.log("Uploaded output files to: ", resultsLocation)
         }
 
-        const testCases = await db.collection("Challenge").doc(body.challengeId).collection("Testcases").get()
-        for (let doc of testCases.docs) {
-            await doc.ref.delete();
-        }
-        console.log("Deleted previous test cases from firestore");
+        let testCasesToKeep = [];
 
         for (let i in (body.testCases ?? [])) {
             let testCase = (body.testCases ?? [])[i];
-            let testCaseId = "test-case-" + randomUUID().toString();
-            console.log("Creating test case: ", {
+            let testCaseId = body.testCases![i].id
+                ?? "test-case-" + randomUUID().toString();
+            testCasesToKeep.push(testCaseId);
+            console.log("Creating / updating test case: ", {
+                id: testCaseId,
                 description: testCase.description,
                 is_generated: !!testCase.inputGenerator,
                 location: testCaseFileNames[i],
@@ -290,6 +352,13 @@ export default class ChallengeImpl implements ChallengeService {
                 overhead_multiplier: testCase.overheadMultiplier
             })
             console.log("Uploaded test case to firestore: ", testCaseId)
+        }
+
+        const testCasesToDelete = await db.collection("Challenge").doc(body.challengeId).collection("Testcases").get();
+        for (let doc of testCasesToDelete.docs) {
+            if (!testCasesToKeep.includes(doc.id)) {
+                await doc.ref.delete();
+            }
         }
 
         return await this.freshDTO(body.authToken, body.challengeId);
