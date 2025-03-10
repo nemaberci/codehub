@@ -19,6 +19,7 @@ import { jwtDecode } from "jwt-decode";
 import _ from "lodash";
 import {Challenge, Solution, SolutionBuildResult} from "../client/returnedTypes";
 import TestCaseResult from "../client/returnedTypes/TestCaseResult.ts";
+import remarkMath from "remark-math";
 
 export default function SolutionEditor({
 	reference
@@ -161,6 +162,7 @@ export default function SolutionEditor({
 					entryPoint: `Solution.${selectedLanguage}`
 				});
 			}
+			// @ts-ignore
 			setIntervalHandle(setInterval(fetchResult, 15000));
 			setRunning(false);
 		} catch (error) {
@@ -201,7 +203,7 @@ export default function SolutionEditor({
 					<div className="h-full overflow-auto p-4">
 						<article className="prose overflow-auto max-w-none">
 							<h1>{title}</h1>
-							<Markdown>{text}</Markdown>
+							<Markdown remarkPlugins={[remarkMath]}>{text}</Markdown>
 						</article>
 					</div>
 				</Allotment.Pane>

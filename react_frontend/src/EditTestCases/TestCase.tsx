@@ -42,6 +42,7 @@ function OutputFields({objectPath}: { objectPath: string }) {
 
 export default function TestCase({index}: { index: number }) {
     const context: any = useFormikContext();
+    const [selectedLanguage, setSelectedLanguage] = useState(context.values.testCases[index].limits[0].language);
     return (
         <>
             <Divider/>
@@ -65,8 +66,35 @@ export default function TestCase({index}: { index: number }) {
                 <FormRow name={`testCases.${index}.points`} title="Pontszám" type="number"/>
                 <FormRow name={`testCases.${index}.overheadMultiplier`} title="Tolerancia szorzó" type="number"
                          tooltip={"Az etalon megoldáshoz képest hányszoros maximális memóriahasználat és futásidő megengedett."}/>
-                <FormRow name={`testCases.${index}.maxTime`} title="Max. futásidő (ms)" disabled/>
-                <FormRow name={`testCases.${index}.maxMemory`} title="Max. memória (kB)" disabled/>
+                <tr>
+                    <td>KJiválasztott nyelv</td>
+                    <td>
+                        <select className="select w-full max-w-xs"
+                                onChange={(e) => setSelectedLanguage(e.target.value)}>
+                            {
+                                context.values.testCases[index].limits.map(
+                                    (limit: any) => <option>{limit.language}</option>
+                                )
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Max. futásidő (ms)</td>
+                    <td>
+                        <input value={context.values.testCases[index].limits.find((l: { memory: number; time: number; language: string; }) => l.language === selectedLanguage)?.time ?? "N/A"}
+                               className={"input w-full input-bordered focus:outline-offset-0"}
+                               disabled={true} />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Max. memória (kB)</td>
+                    <td>
+                        <input value={context.values.testCases[index].limits.find((l: { memory: number; time: number; language: string; }) => l.language === selectedLanguage)?.memory ?? "N/A"}
+                               className={"input w-full input-bordered focus:outline-offset-0"}
+                               disabled={true}/>
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         <h4>Bemenet</h4>

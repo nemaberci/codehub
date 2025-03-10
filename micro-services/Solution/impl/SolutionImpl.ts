@@ -40,12 +40,32 @@ export default class SolutionImpl implements SolutionService {
         console.log("Uploaded folder contents to: ", folderName)
         let solutionId = "solution-" + randomUUID().toString();
 
+        const SOLUTIONS_PER_DAY = 20;
+
+        const userId = decode(body.authToken, {json: true})!.userId;
+        const uploadedToday = (await db.collection("Solution")
+            .where(
+                "user",
+                "==",
+                userId
+            )
+            .where(
+                "time_submitted",
+                ">",
+                new Date(new Date().setHours(0, 0, 0, 0))
+            )
+            .get()).docs.length;
+
+        if (uploadedToday >= SOLUTIONS_PER_DAY) {
+            throw new Error(`You have already uploaded ${SOLUTIONS_PER_DAY} solutions today`);
+        }
+
         await db.collection("Solution").doc(solutionId).set({
             challenge_name: body.challengeId,
             entry_point: body.entryPoint ?? "Solution.java",
             time_submitted: new Date(),
             source_folder: folderName,
-            user: decode(body.authToken, {json: true})!.userId,
+            user: userId,
             language: body.language,
         });
         console.log("Uploaded solution to firestore: ", solutionId);
@@ -75,7 +95,7 @@ export default class SolutionImpl implements SolutionService {
         return {
             id: folderName,
             challengeId: body.challengeId,
-            user: decode(body.authToken, {json: true})!.userId,
+            user: userId,
             testCaseResults: [],
             language: body.language ?? "java",
             files: body.folderContents

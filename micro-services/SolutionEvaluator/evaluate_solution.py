@@ -15,6 +15,7 @@ db = firestore.client()
 
 doc_ref = db.collection("Challenge").document(os.getenv('CHALLENGE_ID'))
 test_cases_ref = doc_ref.collection("Testcases")
+lang = db.collection("Solution").document(os.getenv('SOLUTION_ID')).get().to_dict()["language"]
 result_ref = db.collection("Solution").document(os.getenv('SOLUTION_ID')).collection("Result").document("Result")
 result_ref.set(
     {
@@ -37,7 +38,10 @@ for i in range(len(test_cases)):
         print("Test case " + str(i) + " took " + str(millis) + " milliseconds")
         kbytes = int(open("peak_" + str(i), "r").read())
         print(f"Test case {i}'s peak memory consumption is {kbytes} KB")
-        if millis > test_case["max_runtime"]:
+        limits = db.collection("Challenge").document(os.getenv('CHALLENGE_ID')).collection("Testcases").document(test_case_doc_refs[i].id).collection("limits").document(lang).get()
+        max_runtime = limits.to_dict()["max_runtime"]
+        max_memory = limits.to_dict()["max_memory"]
+        if millis > max_runtime:
             print("Test case " + str(i) + " failed: exceeded max runtime")
             sub_results_ref.document("Testcase_" + str(i)).set(
                 {
@@ -48,7 +52,7 @@ for i in range(len(test_cases)):
                 }
             )
             continue
-        if kbytes > test_case["max_memory"]:
+        if kbytes > max_memory:
             print("Test case " + str(i) + " failed: exceeded max memory")
             sub_results_ref.document("Testcase_" + str(i)).set(
                 {

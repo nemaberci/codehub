@@ -36,16 +36,6 @@ interface TestCase {
     */
     description: string;
     /** 
-    * @description The maximum memory that the test case is allowed to use (KB).
-    * @type number
-    */
-    maxMemory?: number;
-    /** 
-    * @description The maximum time that the test case is allowed to use (ms).
-    * @type number
-    */
-    maxTime?: number;
-    /** 
     * @description The name of the test case.
     * @type string
     */

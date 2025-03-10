@@ -11,8 +11,11 @@ interface TestCase {
     name: string;
     description: string;
     points: number;
-    maxMemory: number;
-    maxTime: number;
+    limits: {
+        memory: number;
+        time: number;
+        language: string;
+    }[];
     inputType: "raw" | "script";
     input?: string;
     inputGenerator?: string;
@@ -20,7 +23,12 @@ interface TestCase {
 }
 
 export default function EditTestCases() {
-    const [initialValues, setInitialValues] = useState({name: "", testCases: []});
+    const [initialValues, setInitialValues] = useState<{
+        id: string,
+        name: string,
+        enabledLanguages: string[],
+        testCases: TestCase[]
+}>({name: "", testCases: [], id: "", enabledLanguages: []});
     const {id} = useParams();
     const navigate = useNavigate();
 
@@ -37,8 +45,7 @@ export default function EditTestCases() {
                         name: testCase.name,
                         description: testCase.description,
                         overheadMultiplier: testCase.overheadMultiplier,
-                        maxMemory: testCase.maxMemory,
-                        maxTime: testCase.maxTime,
+                        limits: testCase.limits,
                         inputType: testCase.inputGenerated ? "script" : "raw",
                         input: testCase.inputGenerated ? undefined : testCase.input,
                         inputGenerator: testCase.inputGenerated ? testCase.input : undefined,
@@ -171,8 +178,13 @@ export default function EditTestCases() {
                                                 className="w-1/4 btn-outline"
                                                 onClick={() => {
                                                     arrayHelpers.push({
-                                                        maxTime: "N/A",
-                                                        maxMemory: "N/A",
+                                                        limits: initialValues.enabledLanguages.map(
+                                                            (lang: string) => ({
+                                                                memory: 500_000,
+                                                                time: 30_000,
+                                                                language: lang
+                                                            })
+                                                        )
                                                     });
                                                 }}
                                                 type="button"

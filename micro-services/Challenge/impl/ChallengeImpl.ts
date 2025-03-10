@@ -22,6 +22,8 @@ import {
 } from "../types/EndpointReturnedTypes";
 import {decode} from "jsonwebtoken";
 import * as model from "../../client/returnedTypes";
+import {firestore} from "firebase-admin";
+import FieldValue = firestore.FieldValue;
 
 // initializeApp({
 //     credential: applicationDefault()
@@ -59,7 +61,9 @@ export default class ChallengeImpl implements ChallengeService {
 
         const testCases = await db.collection("Challenge").doc(body.challengeId).collection("Testcases").get()
         for (let doc of testCases.docs) {
-            await doc.ref.update({
+            // For each enabled language, reset the limits
+            await doc.ref.collection("limits").doc(body.controlSolution.language).delete();
+            await doc.ref.collection("limits").doc(body.controlSolution.language).set({
                 // 30 seconds, 500 MB
                 max_runtime: 30_000,
                 max_memory: 500_000
@@ -116,9 +120,6 @@ export default class ChallengeImpl implements ChallengeService {
                 filter: `attributes.solutionId = "${solutionId}"`
             }
         )
-        let overheadMultiplier = (await db.collection("Challenge").doc(body.challengeId).get())
-            .data()!
-            .test_case_overhead_multiplier;
         subscription.on("message", async (message) => {
             console.log("Received message: ", message.data.toString());
             const solutionResultsSnapshot = await db
@@ -128,6 +129,7 @@ export default class ChallengeImpl implements ChallengeService {
                 .doc("Result")
                 .collection("SubResults")
                 .get();
+            const solutionLanguage: string = (await db.collection("Solution").doc(solutionId).get()).data()!.language;
             const testCaseTimes = solutionResultsSnapshot.docs
                 .map(d => d.data())
                 .map(
@@ -146,14 +148,30 @@ export default class ChallengeImpl implements ChallengeService {
                 );
             testCaseTimes.forEach(
                 async (testCaseTime) => {
-                    await db.collection("Challenge").doc(body.challengeId).collection("Testcases").doc(testCaseTime.id).update({
+                    const overheadMultiplier = (await db.collection("Challenge").doc(body.challengeId).collection("Testcases").doc(testCaseTime.id).get())
+                        .data()!
+                        .overhead_multiplier;
+                    await db.collection("Challenge").doc(body.challengeId)
+                        .collection("Testcases")
+                        .doc(testCaseTime.id)
+                        .collection("limits")
+                        .doc(solutionLanguage)
+                        .update({
                         max_runtime: testCaseTime.time * overheadMultiplier
                     })
                 }
             )
             testCaseMemories.forEach(
                 async (testCaseMemory) => {
-                    await db.collection("Challenge").doc(body.challengeId).collection("Testcases").doc(testCaseMemory.id).update({
+                    const overheadMultiplier = (await db.collection("Challenge").doc(body.challengeId).collection("Testcases").doc(testCaseMemory.id).get())
+                        .data()!
+                        .overhead_multiplier;
+                    await db.collection("Challenge").doc(body.challengeId)
+                        .collection("Testcases")
+                        .doc(testCaseMemory.id)
+                        .collection("limits")
+                        .doc(solutionLanguage)
+                        .update({
                         max_memory: testCaseMemory.memory * overheadMultiplier
                     })
                 }
@@ -271,6 +289,10 @@ export default class ChallengeImpl implements ChallengeService {
                 text_location: textLocation
             });
             console.log("Uploaded input files to: ", textLocation)
+        } else {
+            await db.collection("Challenge").doc(body.challengeId).update({
+                text_location: FieldValue.delete()
+            });
         }
 
         if (inputGeneratorFiles.length > 0) {
@@ -295,6 +317,10 @@ export default class ChallengeImpl implements ChallengeService {
                 script_location: scriptLocation
             });
             console.log("Uploaded input generators to: ", scriptLocation)
+        } else {
+            await db.collection("Challenge").doc(body.challengeId).update({
+                script_location: FieldValue.delete()
+            });
         }
 
         if (outputFiles.length > 0) {
@@ -319,6 +345,10 @@ export default class ChallengeImpl implements ChallengeService {
                 results_location: resultsLocation
             });
             console.log("Uploaded output files to: ", resultsLocation)
+        } else {
+            await db.collection("Challenge").doc(body.challengeId).update({
+                results_location: FieldValue.delete()
+            });
         }
 
         let testCasesToKeep = [];
@@ -334,8 +364,6 @@ export default class ChallengeImpl implements ChallengeService {
                 is_generated: !!testCase.inputGenerator,
                 location: testCaseFileNames[i],
                 output_file_location: outputFilesNames[i],
-                max_memory: testCase.maxMemory,
-                max_runtime: testCase.maxTime,
                 points: testCase.points,
                 name: testCase.name,
                 overhead_multiplier: testCase.overheadMultiplier
@@ -345,8 +373,6 @@ export default class ChallengeImpl implements ChallengeService {
                 is_generated: !!testCase.inputGenerator,
                 location: testCaseFileNames[i],
                 output_file_location: outputFilesNames[i],
-                max_memory: testCase.maxMemory,
-                max_runtime: testCase.maxTime,
                 points: testCase.points,
                 name: testCase.name,
                 overhead_multiplier: testCase.overheadMultiplier
@@ -373,21 +399,43 @@ export default class ChallengeImpl implements ChallengeService {
         for (let testCase of (await db.collection("Challenge").doc(challengeId).collection("Testcases").get()).docs) {
             console.log("testcase: ", testCase.data())
             console.log("challenge:", challenge.data());
-            const inputFile = await fileHandlingClient.downloadFile(
-                authToken,
-                challenge.data()!.text_location + "/" + testCase.data().location
-            );
-            const outputFile = await fileHandlingClient.downloadFile(
-                authToken,
-                challenge.data()!.results_location + "/" + testCase.data().output_file_location
-            )
+            let inputFile: File;
+            if (challenge.data()!.text_location === undefined) {
+                inputFile = await fileHandlingClient.downloadFile(
+                    authToken,
+                    challenge.data()!.script_location + "/" + testCase.data()!.location
+                );
+            } else {
+                inputFile = await fileHandlingClient.downloadFile(
+                    authToken,
+                    challenge.data()!.text_location + "/" + testCase.data().location
+                );
+            }
+            let outputFile: File;
+            if (challenge.data()!.results_location === undefined) {
+                outputFile = {
+                    name: "output",
+                    content: ""
+                }
+            } else {
+                outputFile = await fileHandlingClient.downloadFile(
+                    authToken,
+                    challenge.data()!.results_location + "/" + testCase.data().output_file_location
+                )
+            }
+            let limits = await testCase.ref.collection("limits").get();
             testCases.push({
                 id: testCase.id,
                 name: testCase.data().name,
                 description: testCase.data().description,
                 points: testCase.data().points,
-                maxMemory: testCase.data().max_memory,
-                maxTime: testCase.data().max_runtime,
+                limits: limits.docs.map(
+                    d => ({
+                        memory: d.data().max_memory,
+                        time: d.data().max_runtime,
+                        language: d.ref.id
+                    })
+                ),
                 input: Buffer.from(inputFile.content, 'base64').toString(),
                 inputGenerated: testCase.data().is_generated,
                 output: Buffer.from(outputFile.content, 'base64').toString(),
@@ -418,6 +466,10 @@ export default class ChallengeImpl implements ChallengeService {
         const challengeDTOs: Challenge[] = [];
 
         for (let challenge of challenges.docs) {
+            let testCases: model.Testcase[] = [];
+            for (let d of (await db.collection("Challenge").doc(challenge.id).collection("Testcases").get()).docs) {
+                await this.addTestcase(d, testCases);
+            }
             challengeDTOs.push({
                 id: challenge.id,
                 name: challenge.data().name,
@@ -425,25 +477,33 @@ export default class ChallengeImpl implements ChallengeService {
                 userId: challenge.data().created_by,
                 shortDescription: challenge.data().short_description,
                 createdAt: challenge.data()!.time_uploaded,
-                testCases: (await db.collection("Challenge").doc(challenge.id).collection("Testcases").get()).docs.map(
-                    d => ({
-                        id: d.id,
-                        name: d.data().name,
-                        description: d.data().description,
-                        points: d.data().points,
-                        maxMemory: d.data().max_memory,
-                        maxTime: d.data().max_runtime,
-                        output: null,
-                        inputGenerated: null,
-                        input: null,
-                        overheadMultiplier: d.data().overhead_multiplier
-                    })
-                ),
+                testCases: testCases,
                 enabledLanguages: challenge.data().enabled_languages
             });
         }
 
         return challengeDTOs;
+    }
+
+    private async addTestcase(d: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>, testCases: model.Testcase[]) {
+        let limits = await d.ref.collection("limits").get();
+        testCases.push({
+            id: d.id,
+            name: d.data().name,
+            description: d.data().description,
+            points: d.data().points,
+            limits: limits.docs.map(
+                l => ({
+                    memory: l.data().max_memory,
+                    time: l.data().max_runtime,
+                    language: l.ref.id
+                })
+            ),
+            output: null,
+            inputGenerated: null,
+            input: null,
+            overheadMultiplier: d.data().overhead_multiplier
+        });
     }
 
     async listByUser(body: ListByUserBody): Promise<ListByUserReturned> {
@@ -456,6 +516,10 @@ export default class ChallengeImpl implements ChallengeService {
         const challengeDTOs: Challenge[] = [];
 
         for (let challenge of challenges.docs) {
+            let testCases: model.Testcase[] = [];
+            for (let d of (await db.collection("Challenge").doc(challenge.id).collection("Testcases").get()).docs) {
+                await this.addTestcase(d, testCases);
+            }
             challengeDTOs.push({
                 id: challenge.id,
                 name: challenge.data().name,
@@ -463,20 +527,7 @@ export default class ChallengeImpl implements ChallengeService {
                 userId: challenge.data().created_by,
                 createdAt: challenge.data()!.time_uploaded,
                 shortDescription: challenge.data().short_description,
-                testCases: (await db.collection("Challenge").doc(challenge.id).collection("Testcases").get()).docs.map(
-                    d => ({
-                        id: d.id,
-                        name: d.data().name,
-                        description: d.data().description,
-                        points: d.data().points,
-                        maxMemory: d.data().max_memory,
-                        maxTime: d.data().max_runtime,
-                        output: null,
-                        inputGenerated: null,
-                        input: null,
-                        overheadMultiplier: d.data().overhead_multiplier
-                    })
-                ),
+                testCases: testCases,
                 enabledLanguages: challenge.data().enabled_languages
             });
         }

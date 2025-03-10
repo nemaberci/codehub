@@ -26,15 +26,10 @@ interface Testcase {
     */
     points: number;
     /** 
-    * @description The max time of the testcase (ms)
-    * @type number
+    * @description The limits of the testcase
+    * @type model.TestCaseLimit[]
     */
-    maxTime: number;
-    /** 
-    * @description The max memory of the testcase (kB)
-    * @type number
-    */
-    maxMemory: number;
+    limits: model.TestCaseLimit[];
     /** 
     * @description The input of the testcase
     * @type string
