@@ -198,7 +198,9 @@ app.get('/challenge/list/',
     try {
       let answer = await serviceImpl.list(
         {
-          ...req.body        }
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
       );
       res.status(200).send(answer);
     } catch (e: any) {
@@ -236,7 +238,49 @@ app.get('/challenge/list_by_user/:user_id',
       let answer = await serviceImpl.listByUser(
         {
           userId: req.params.user_id,
-          ...req.body        }
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
+      );
+      res.status(200).send(answer);
+    } catch (e: any) {
+      res.status(e.status ?? 500).send(typeof e.message === "string" ? `["${e.message}"]` : e.message);
+    }
+    res.end();
+  }
+)
+console.log("Registered endpoint on '/challenge/delete/:challenge_id'");
+app.delete('/challenge/delete/:challenge_id',
+  (req, res, next) => {
+    console.log("Call to '/challenge/delete/:challenge_id'");
+    next();
+  },
+  async (req, res, next) => {
+    const payload = decode(req.headers.authorization!) as JwtPayload;
+    let requiredRoles = ["challenge_writer",];
+    let userClient = UserClient;
+    if (!req.headers.authorization) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    let hasRoles = await userClient.hasRoles(
+      req.headers.authorization!.substring("Bearer ".length),
+      requiredRoles
+    );
+    if (hasRoles) {
+      next();
+    } else {
+      res.status(401).send("Unauthorized");
+    }
+  },
+  async (req, res, next) => {
+    try {
+      let answer = await serviceImpl.delete(
+        {
+          challengeId: req.params.challenge_id,
+          ...req.body,
+          authToken: req.headers.authorization!.substring("Bearer ".length)
+        }
       );
       res.status(200).send(answer);
     } catch (e: any) {

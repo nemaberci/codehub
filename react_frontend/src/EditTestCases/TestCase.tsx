@@ -42,7 +42,7 @@ function OutputFields({objectPath}: { objectPath: string }) {
 
 export default function TestCase({index}: { index: number }) {
     const context: any = useFormikContext();
-    const [selectedLanguage, setSelectedLanguage] = useState(context.values.testCases[index].limits[0].language);
+    const [selectedLanguage, setSelectedLanguage] = useState(context.values.testCases[index].limits[0]?.language ?? "java");
     return (
         <>
             <Divider/>

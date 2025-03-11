@@ -45,6 +45,16 @@ interface Challenge {
     * @type string[]
     */
     enabledLanguages: string[];
+    /** 
+    * @description Whether the output is checked by a script
+    * @type boolean
+    */
+    isOutputScript: boolean;
+    /** 
+    * @description The output checker python script
+    * @type string
+    */
+    outputScript: string | null;
 }
 
 export default Challenge

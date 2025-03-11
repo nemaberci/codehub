@@ -11,6 +11,7 @@ secret_client = secretmanager.SecretManagerServiceClient()
 parent = f"projects/{project_id}"
 
 secrets = secret_client.list_secrets(parent=parent)
+
 print("secrets before: ", secrets)
 
 for secret in secrets:

@@ -96,15 +96,36 @@ interface GetBody {
 * @description List all challenges
 */
 interface ListBody {
+    /**
+    * @description The user's custom access token
+    */
+    authToken: string
 }
 /** 
 * @description List all challenges of a user
 */
 interface ListByUserBody {
+    /**
+    * @description The user's custom access token
+    */
+    authToken: string
     /** 
     * @description Id of the user to get the challenges of
     */
     userId: string;
+}
+/** 
+* @description Delete a challenge
+*/
+interface DeleteBody {
+    /**
+    * @description The user's custom access token
+    */
+    authToken: string
+    /** 
+    * @description Id of the challenge to delete
+    */
+    challengeId: string;
 }
 
 export {
@@ -113,5 +134,6 @@ export {
     AddControlSolutionBody,
     GetBody,
     ListBody,
-    ListByUserBody
+    ListByUserBody,
+    DeleteBody
 }

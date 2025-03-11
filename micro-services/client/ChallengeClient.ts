@@ -251,6 +251,42 @@ class ChallengeClient {
             req.end();
         });
     }
+    static async delete(
+        authToken: string,
+        
+        challengeId: string
+    ): Promise<boolean> {
+        const url = (process.env as any).CHALLENGE_URL ?? "http://127.0.0.1";
+        return new Promise((resolve, reject) => {
+            const req = http.request(
+                `${url}:${(process.env as any).CHALLENGE_PORT ?? '3002'}/challenge/delete/${ challengeId }/`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    agent: false
+                }, (res) => {
+                res.setEncoding('utf8');
+                let responseBody = '';
+            
+                res.on('data', (chunk) => {
+                    responseBody += chunk;
+                });
+            
+                res.on('end', () => {
+                    resolve(JSON.parse(responseBody));
+                });
+            });
+        
+            req.on('error', (err) => {
+                reject(err);
+            });
+        
+            req.end();
+        });
+    }
 }
 
 export default ChallengeClient

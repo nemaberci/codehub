@@ -14,9 +14,10 @@ export default function CheckboxTextArea({
 }) {
 	const context: any = useFormikContext();
 	const disabled = !context.values[checkboxName];
+	const currentValue: string = context.values[textAreaName];
 	useEffect(
 		() => {
-			if (!disabled) {
+			if (!disabled && currentValue === "") {
 				console.log("Setting default value");
 				context.setFieldValue(textAreaName, `# Implement the verify function
 # The function should return True if the output is correct, False otherwise

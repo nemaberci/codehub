@@ -2,6 +2,7 @@ import {Challenge} from "../../client/returnedTypes";
 import {
     AddControlSolutionBody,
     AddTestCasesBody,
+    DeleteBody,
     GetBody,
     ListBody,
     ListByUserBody,
@@ -17,6 +18,7 @@ import {File} from "../../client/inputTypes";
 import {
     AddControlSolutionReturned,
     AddTestCasesReturned,
+    DeleteReturned,
     GetReturned, ListByUserReturned,
     ListReturned
 } from "../types/EndpointReturnedTypes";
@@ -31,6 +33,15 @@ import FieldValue = firestore.FieldValue;
 initializeApp();
 
 export default class ChallengeImpl implements ChallengeService {
+
+    async delete(body: DeleteBody): Promise<DeleteReturned> {
+        const db = getFirestore();
+
+        await db.collection("Challenge").doc(body.challengeId).delete();
+
+        return true;
+    }
+
     async upload(body: UploadBody): Promise<Challenge> {
 
         const db = getFirestore();
@@ -226,6 +237,10 @@ export default class ChallengeImpl implements ChallengeService {
             console.log("Uploaded output verifier to: ", outputVerifierLocation)
             await db.collection("Challenge").doc(body.challengeId).update({
                 output_verifier_location: outputVerifierLocation
+            });
+        } else {
+            await db.collection("Challenge").doc(body.challengeId).update({
+                output_verifier_location: FieldValue.delete()
             });
         }
 
@@ -443,6 +458,15 @@ export default class ChallengeImpl implements ChallengeService {
             })
         }
 
+        let outputVerifier: string | null = null;
+        if (challenge.data()!.output_verifier_location) {
+            let outputVerifierFile = await FileHandlingClient.downloadFile(
+                authToken,
+                challenge.data()!.output_verifier_location + "/verifier.py"
+            );
+            outputVerifier = Buffer.from(outputVerifierFile.content, 'base64').toString();
+        }
+
         return {
             id: challengeId,
             name: challenge.data()!.name,
@@ -451,7 +475,9 @@ export default class ChallengeImpl implements ChallengeService {
             userId: challenge.data()!.created_by,
             createdAt: challenge.data()!.time_uploaded,
             testCases: testCases,
-            enabledLanguages: challenge.data()!.enabled_languages
+            enabledLanguages: challenge.data()!.enabled_languages,
+            outputScript: outputVerifier,
+            isOutputScript: !!outputVerifier
         };
     }
 
@@ -470,6 +496,14 @@ export default class ChallengeImpl implements ChallengeService {
             for (let d of (await db.collection("Challenge").doc(challenge.id).collection("Testcases").get()).docs) {
                 await this.addTestcase(d, testCases);
             }
+            let outputVerifier: string | null = null;
+            if (challenge.data()!.output_verifier_location) {
+                let outputVerifierFile = await FileHandlingClient.downloadFile(
+                    body.authToken,
+                    challenge.data()!.output_verifier_location + "/verifier.py"
+                );
+                outputVerifier = Buffer.from(outputVerifierFile.content, 'base64').toString();
+            }
             challengeDTOs.push({
                 id: challenge.id,
                 name: challenge.data().name,
@@ -478,7 +512,9 @@ export default class ChallengeImpl implements ChallengeService {
                 shortDescription: challenge.data().short_description,
                 createdAt: challenge.data()!.time_uploaded,
                 testCases: testCases,
-                enabledLanguages: challenge.data().enabled_languages
+                enabledLanguages: challenge.data().enabled_languages,
+                outputScript: outputVerifier,
+                isOutputScript: !!outputVerifier
             });
         }
 
@@ -520,6 +556,14 @@ export default class ChallengeImpl implements ChallengeService {
             for (let d of (await db.collection("Challenge").doc(challenge.id).collection("Testcases").get()).docs) {
                 await this.addTestcase(d, testCases);
             }
+            let outputVerifier: string | null = null;
+            if (challenge.data()!.output_verifier_location) {
+                let outputVerifierFile = await FileHandlingClient.downloadFile(
+                    body.authToken,
+                    challenge.data()!.output_verifier_location + "/verifier.py"
+                );
+                outputVerifier = Buffer.from(outputVerifierFile.content, 'base64').toString();
+            }
             challengeDTOs.push({
                 id: challenge.id,
                 name: challenge.data().name,
@@ -528,7 +572,9 @@ export default class ChallengeImpl implements ChallengeService {
                 createdAt: challenge.data()!.time_uploaded,
                 shortDescription: challenge.data().short_description,
                 testCases: testCases,
-                enabledLanguages: challenge.data().enabled_languages
+                enabledLanguages: challenge.data().enabled_languages,
+                outputScript: outputVerifier,
+                isOutputScript: !!outputVerifier
             });
         }
 

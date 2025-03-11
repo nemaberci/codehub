@@ -8,4 +8,5 @@ export default interface ChallengeService {
     get(body: EndpointInputTypes.GetBody): Promise<EndpointReturnedTypes.GetReturned>
     list(body: EndpointInputTypes.ListBody): Promise<EndpointReturnedTypes.ListReturned>
     listByUser(body: EndpointInputTypes.ListByUserBody): Promise<EndpointReturnedTypes.ListByUserReturned>
+    delete(body: EndpointInputTypes.DeleteBody): Promise<EndpointReturnedTypes.DeleteReturned>
 }

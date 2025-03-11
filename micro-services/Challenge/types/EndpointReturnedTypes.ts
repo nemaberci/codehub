@@ -6,6 +6,7 @@ type AddControlSolutionReturned = model.Challenge;
 type GetReturned = model.Challenge;
 type ListReturned = model.Challenge[];
 type ListByUserReturned = model.Challenge[];
+type DeleteReturned = boolean;
 
 export {
     UploadReturned,
@@ -13,5 +14,6 @@ export {
     AddControlSolutionReturned,
     GetReturned,
     ListReturned,
-    ListByUserReturned
+    ListByUserReturned,
+    DeleteReturned
 }

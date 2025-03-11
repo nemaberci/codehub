@@ -3,11 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { Challenge } from "./ChallengeList";
 import {NotePencil, Trash} from "@phosphor-icons/react";
 import {jwtDecode} from "jwt-decode";
+import axios from "axios";
 
-export default function ChallengeListRow({ challenge, index }: { challenge: Challenge; index: number }) {
+export default function ChallengeListRow({ challenge, index, onDelete }: { challenge: Challenge; index: number, onDelete: () => Promise<void> }) {
 	const navigate = useNavigate();
 
 	const userId: string = (jwtDecode(localStorage.getItem("token")!) as {userId: string}).userId;
+	const deleteChallenge = async () => {
+		try {
+			await axios.delete(`/api/challenge/delete/${challenge.id}`);
+			await onDelete();
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
 	return (
 		<Table.Row
@@ -41,8 +50,9 @@ export default function ChallengeListRow({ challenge, index }: { challenge: Chal
 							<Button
 								size="xs"
 								color="neutral"
-								onClick={() => {
-									console.log("todo");
+								onClick={(e) => {
+									deleteChallenge();
+									e.stopPropagation();
 								}}
 							>
 								<Trash size={16} />

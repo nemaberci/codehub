@@ -74,7 +74,7 @@ export default function ChallengeList() {
 
 						<Table.Body>
 							{challenges.map((challenge: any, index) => (
-								<ChallengeListRow challenge={challenge} index={index + 1} key={challenge.id} />
+								<ChallengeListRow challenge={challenge} index={index + 1} key={challenge.id} onDelete={fetchChallenges} />
 							))}
 						</Table.Body>
 					</Table>

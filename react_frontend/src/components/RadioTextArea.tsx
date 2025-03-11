@@ -2,7 +2,6 @@ import {useFormikContext} from "formik";
 import Radio from "./Radio";
 import _ from "lodash";
 import {Editor} from "@monaco-editor/react";
-import {useEffect, useState} from "react";
 
 export default function RadioTextArea({
 	radioName,
@@ -18,16 +17,10 @@ export default function RadioTextArea({
 	defaultValue?: string;
 }) {
 	const context: any = useFormikContext();
-	const [disabled, setDisabled] = useState(false);
-	useEffect(
-		() => {
-			setDisabled(_.get(context.values, radioName) !== radioValue);
-		},
-		[context.values]
-	);
+	const disabled = _.get(context.values, radioName) !== radioValue;
 	return (
 		<>
-			<Radio name={radioName} value={radioValue} title={title} />
+			<Radio name={radioName} value={radioValue} title={title} checked={_.get(context.values, radioName) === radioValue} />
 			{
 				!disabled &&
 					<Editor
@@ -35,7 +28,7 @@ export default function RadioTextArea({
 						language={radioValue === "script" ? "python" : "plaintext" }
 						theme={"vs-dark"}
 						value={
-							context.values[textAreaName]
+							_.get(context.values, textAreaName)
 						}
 						onChange={(value) => {
 							context.setFieldValue(textAreaName, value);
