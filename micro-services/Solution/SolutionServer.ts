@@ -171,6 +171,8 @@ app.get('/solution/build_result/:challenge_id/:user_id',
   }
 )
 
+serviceImpl.registerCustomCallbacks?.(app)
+
 app.listen(parseInt(process.env.PORT ?? '3000'))
 console.log(`App started and listening on port ${process.env.PORT ?? 3000}`);
 if (process.env.TEST_MODE) {

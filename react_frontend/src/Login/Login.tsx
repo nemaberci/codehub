@@ -3,9 +3,18 @@ import axios from "axios";
 import { Form as FormikForm, Formik } from "formik";
 import { Button } from "react-daisyui";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { isTokenValid } from "../utils/auth";
 
 export default function Login() {
 	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (isTokenValid()) {
+			navigate("/challenges");
+		}
+	}, [navigate]);
+
 	return (
 		<>
 			<div className="w-full flex flex-col items-center">
@@ -42,6 +51,7 @@ export default function Login() {
 											<Button type="submit" disabled={isSubmitting} className="w-1/2">
 												Bejelentkezés
 											</Button>
+											<a href="/auth/google">Login with Google</a>
 										</td>
 									</tr>
 								</tfoot>

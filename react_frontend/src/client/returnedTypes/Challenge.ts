@@ -1,9 +1,6 @@
 // @ts-ignore
 import * as model from "./index";
 
-/** 
-* @description 
-*/
 interface Challenge {
     /** 
     * @description The id of the challenge

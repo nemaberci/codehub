@@ -1,0 +1,30 @@
+@startuml Check user rights
+title Check user rights
+
+actor User as user
+participant "Any Microservice" as ms
+database "Storage bucket" as bucket
+participant "User microservice" as user_ms
+database "Cloud SQL" as sql
+
+user -> ms ++ : Do action
+ms -> user_ms ++ : Does user have <right>?
+user_ms -> bucket ++ : Get public key
+bucket -> user_ms -- : public key
+user_ms -> user_ms ++ : Verify token
+deactivate user_ms
+user_ms -> sql ++ : Get user rights
+sql -> user_ms -- : user rights
+user_ms -> user_ms ++ : user rights contains <right>?
+deactivate user_ms
+alt Yes
+    user_ms -> ms -- : Yes
+    ms -> ms ++ : Do action
+    deactivate ms
+    ms -> user -- : Done (200: OK)
+else No
+    user_ms -> ms -- : No
+    ms -> user -- : Done (400: Unauthorized)
+end
+
+@enduml

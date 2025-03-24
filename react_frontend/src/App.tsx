@@ -7,6 +7,8 @@ import Frame from "./components/Frame";
 import EditTestCases from "./EditTestCases/EditTestCases";
 import Login from "./Login/Login";
 import axios from "axios";
+import AuthSuccess from "./Login/AuthSuccess.tsx";
+import { isTokenValid, clearAuth } from "./utils/auth";
 
 axios.interceptors.request.use(
 	(config) => {
@@ -28,17 +30,15 @@ axios.interceptors.response.use(
 	(error) => {
 		console.log(error);
 		if (error.response.status === 401 || error.response.status === 403) {
-			alert("Session expired");
-			localStorage.clear();
-			window.location.href = "/";
+			clearAuth();
 		}
 		return Promise.reject(error);
 	}
 );
 
 async function authLoader() {
-	if (!localStorage.getItem("token")?.trim().length) {
-		alert("You need to log in");
+	if (!isTokenValid()) {
+		clearAuth();
 		return redirect("/");
 	}
 	return null;
@@ -85,6 +85,10 @@ const router = createBrowserRouter([
 				loader: authLoader,
 			},
 		],
+	},
+	{
+		path: "/auth/success",
+		element: <AuthSuccess />,
 	},
 	{
 		path: "*",

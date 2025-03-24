@@ -1,8 +1,5 @@
 import * as model from "./index";
 
-/** 
-* @description 
-*/
 interface SolutionBuildResult {
     /** 
     * @description The id of the solution

@@ -1,9 +1,6 @@
 // @ts-ignore
 import * as model from "./index";
 
-/** 
-* @description 
-*/
 interface CreatedAt {
     /** 
     * @description The seconds

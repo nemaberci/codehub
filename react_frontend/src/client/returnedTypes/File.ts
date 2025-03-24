@@ -1,9 +1,6 @@
 // @ts-ignore
 import * as model from "./index";
 
-/** 
-* @description 
-*/
 interface File {
     /** 
     * @description The name of the file

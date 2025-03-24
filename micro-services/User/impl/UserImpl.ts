@@ -11,6 +11,8 @@ import * as EndpointReturnedTypes from "../types/EndpointReturnedTypes";
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import {Storage} from "@google-cloud/storage";
 import {readFileSync} from "fs";
+import { Express } from "express";
+import passport from "./passport";
 
 initializeApp();
 
@@ -81,7 +83,7 @@ export default class UserImpl implements UserService {
         return sign({
             userId: createdUser.id,
             roles: []
-        }, privateKey, { expiresIn: "1y", algorithm: "RS256" });
+        }, privateKey, {expiresIn: "1y", algorithm: "RS256"});
 
     }
 
@@ -208,5 +210,72 @@ export default class UserImpl implements UserService {
 
     constructor() {
         this.registerAdmin();
+    }
+
+    registerCustomCallbacks(app: Express) {
+        console.log("Registered endpoint on '/user/auth/google'");
+        app.get("/auth/google",
+            passport.authenticate("google", {
+                scope: ["email"],
+                session: false
+            })
+        );
+        console.log("Registered endpoint on '/user/auth/google/callback'");
+        app.get("/auth/google/callback",
+            passport.authenticate(
+                "google",
+                { session: false }
+            ),
+                (req, res) => {
+                    const email = (((req.user as any)["emails"] as any[])[0] as any)["value"]
+                    console.log(email)
+                    // const { email } = req.user;
+                    // Try to find user with this email address
+                    // If not found, create new user
+                    const db = getFirestore();
+                    db.collection("User").select("username", "passwordHash", "salt").where(
+                        "username",
+                        "==",
+                        email
+                    ).get().then(
+                        (user) => {
+                            if (user.empty) {
+                                let salt = randomBytes(256).toString('base64');
+                                let hash = pbkdf2Sync(email, salt, 1000, 64, 'sha512').toString('hex');
+                                db.collection("User").add({
+                                    username: email,
+                                    passwordHash: hash,
+                                    salt: salt,
+                                    roles: ["challenge_reader", "solution_reader", "file_reader"]
+                                }).then(
+                                    () =>{
+                                        db.collection("User").select("username", "passwordHash", "salt").where(
+                                            "username",
+                                            "==",
+                                            email
+                                        ).get().then(
+                                            actualUser => {
+                                                const privateKey = readFileSync("../keys/private.pem");
+                                                const token = sign({
+                                                    userId: actualUser.docs[0].id,
+                                                    roles: actualUser.docs[0].data().roles
+                                                }, privateKey, {expiresIn: "1h", algorithm: "RS256"});
+                                                res.redirect(`/auth/success?token=${token}`);
+                                            }
+                                        );
+                                    }
+                                )
+                            } else {
+                                const privateKey = readFileSync("../keys/private.pem");
+                                const token = sign({
+                                    userId: user.docs[0].id,
+                                    roles: user.docs[0].data().roles
+                                }, privateKey, {expiresIn: "1h", algorithm: "RS256"});
+                                res.redirect(`/auth/success?token=${token}`);
+                            }
+                        }
+                    );
+                }
+        );
     }
 }

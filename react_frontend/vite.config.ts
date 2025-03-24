@@ -17,6 +17,7 @@ export default defineConfig({
 	],
 	assetsInclude: ["**/*.md", "**/*.java"],
 	server: {
+		port: 5000,
 		proxy: {
 			"/api/solution": {
 				target: hosts.SOLUTION_HOST,
@@ -32,6 +33,14 @@ export default defineConfig({
 				target: hosts.CHALLENGE_HOST,
 				//changeOrigin: true,
 				rewrite: (path) => path.replace(/^\/api/, ""),
+			},
+			"/auth/google": {
+				target: hosts.USER_HOST,
+				rewrite: (path) => path,
+			},
+			"/auth/google/callback": {
+				target: hosts.USER_HOST,
+				rewrite: (path) => path,
 			},
 		},
 	},

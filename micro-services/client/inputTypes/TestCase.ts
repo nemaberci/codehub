@@ -1,8 +1,5 @@
 import * as model from "./index";
 
-/** 
-* @description 
-*/
 interface TestCase {
     /** 
     * @description The id of the test case (if it exists already).

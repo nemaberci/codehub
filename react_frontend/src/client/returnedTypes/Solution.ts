@@ -1,9 +1,6 @@
 // @ts-ignore
 import * as model from "./index";
 
-/** 
-* @description 
-*/
 interface Solution {
     /** 
     * @description The id of the solution

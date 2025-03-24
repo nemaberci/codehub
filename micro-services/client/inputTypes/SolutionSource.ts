@@ -1,8 +1,5 @@
 import * as model from "./index";
 
-/** 
-* @description 
-*/
 interface SolutionSource {
     /** 
     * @description The language of the solution
