@@ -25,11 +25,9 @@ export default function RadioTextArea({
 				!disabled &&
 					<Editor
 						height={"35vh"}
-						language={radioValue === "script" ? "python" : "plaintext" }
-						theme={"vs-dark"}
-						value={
-							_.get(context.values, textAreaName)
-						}
+						language={radioValue === "python" ? "python" : "javascript"}
+						theme={"vs-light"}
+						value={context.values[textAreaName]}
 						onChange={(value) => {
 							context.setFieldValue(textAreaName, value);
 						}}

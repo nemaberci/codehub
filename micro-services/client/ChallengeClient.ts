@@ -18,7 +18,6 @@ class ChallengeClient {
         controlSolution?: inputValueModel.SolutionSource,
         testCases?: inputValueModel.TestCase[],
         outputVerifier?: inputValueModel.File,
-        overheadMultiplier?: number,
     ): Promise<returnValueModel.Challenge> {
         const url = (process.env as any).CHALLENGE_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
@@ -55,8 +54,7 @@ class ChallengeClient {
                 enabledLanguages,
                 controlSolution,
                 testCases,
-                outputVerifier,
-                overheadMultiplier
+                outputVerifier
             }));
             req.end();
         });

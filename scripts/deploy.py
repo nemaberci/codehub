@@ -4,6 +4,7 @@ import string
 import sys
 import os
 import yaml
+import json
 from google.cloud import container_v1
 from google.cloud import secretmanager
 from google.cloud import storage
@@ -22,6 +23,19 @@ secret_client = secretmanager.SecretManagerServiceClient()
 
 # Build the parent name from the project.
 parent = f"projects/{project_id}"
+
+# Read auth.json for Google OAuth credentials
+try:
+    with open('auth.json', 'r') as f:
+        auth_config = json.load(f)
+        google_client_id = auth_config['google']['clientId']
+        google_client_secret = auth_config['google']['clientSecret']
+        google_callback_url = auth_config['google']['callbackUrl']
+except FileNotFoundError:
+    print("Warning: auth.json not found. Using environment variables for Google OAuth credentials.")
+    google_client_id = os.getenv('GOOGLE_CLIENT_ID', '')
+    google_client_secret = os.getenv('GOOGLE_CLIENT_SECRET', '')
+    google_callback_url = os.getenv('GOOGLE_CALLBACK_URL', '')
 
 private_key = rsa.generate_private_key(
     public_exponent=65537,
@@ -84,7 +98,6 @@ def create_deployment(cluster_name, zone, pod_yaml_file, pod_namespace):
     creds = get_credentials(cluster_name, zone)
 
     # Load the Kubernetes configuration dynamically with the fetched credentials
-    # print(creds)
     configuration = client.Configuration()
     configuration.host = f'https://{creds["endpoint"]}'
     configuration.verify_ssl = False
@@ -130,6 +143,10 @@ def create_deployment(cluster_name, zone, pod_yaml_file, pod_namespace):
                                                   )
                                                   )
             file_contents = file_contents.replace("<CHALLENGE_PORT>", "\"80\"")
+            # Replace Google OAuth credentials
+            file_contents = file_contents.replace("<GOOGLE_CLIENT_ID>", google_client_id)
+            file_contents = file_contents.replace("<GOOGLE_CLIENT_SECRET>", google_client_secret)
+            file_contents = file_contents.replace("<GOOGLE_CALLBACK_URL>", google_callback_url)
             print(file_contents)
             pod_spec = yaml.safe_load(file_contents)
 

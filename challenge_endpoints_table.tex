@@ -1,0 +1,161 @@
+\begin{table}[!h]
+\caption{Feladat mikroszolgáltatás végpontjai}
+\label{tab:challenge_endpoints}
+\footnotesize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llll}
+\hline
+\textbf{Végpont neve} & \textbf{Bemenet} & \textbf{Leírás} & \textbf{Visszatérési érték} \\
+\hline
+POST /upload/ & 
+UploadBody & 
+\begin{tabular}[c]{@{}l@{}}
+Feladat feltöltése. \\
+Megadhatóak tesztesetek, referencia megoldás \\
+már a feladat létrehozásakor.
+\end{tabular} & 
+Challenge
+\\ \hline
+POST /add\_test\_cases/:challenge\_id & 
+AddTestCasesBody & 
+\begin{tabular}[c]{@{}l@{}}
+Tesztesetek hozzáadása feladathoz. \\
+Felülírja a jelenlegi teszteseteket a feladatnál.
+\end{tabular} & 
+Challenge
+\\ \hline
+POST /add\_control\_solution/:challenge\_id & 
+AddControlSolutionBody & 
+Referenciamegoldás feltöltése feladathoz. & 
+Challenge
+\\ \hline
+GET /get/:challenge\_id & 
+N/A & 
+Egy feladat lekérdezése azonosító alapján & 
+Challenge
+\\ \hline
+GET /list/ & 
+N/A & 
+Feladatok listázása & 
+Challenge[]
+\\ \hline
+GET /list\_by\_user/:user\_id & 
+N/A & 
+Adott felhasználó feladatainak listázása & 
+Challenge[]
+\\ \hline
+DELETE /delete/:challenge\_id & 
+N/A & 
+Feladat törlése azonosító alapján & 
+boolean
+\\ \hline
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[!h]
+\caption{Feladat mikroszolgáltatáshoz szükséges típusok}
+\label{tab:challenge_types}
+\footnotesize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{ll}
+\hline
+\textbf{Típus neve} & \textbf{Definíció} \\
+\hline
+File & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}name: string, \\ 
+\hspace*{0.5em}content: string\\ 
+\}\end{tabular} \\
+\hline
+TestCase & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}id?: string, \\ 
+\hspace*{0.5em}input?: string, \\ 
+\hspace*{0.5em}inputGenerator?: File, \\ 
+\hspace*{0.5em}output?: string, \\ 
+\hspace*{0.5em}points: number, \\ 
+\hspace*{0.5em}description: string, \\ 
+\hspace*{0.5em}name: string, \\ 
+\hspace*{0.5em}overheadMultiplier: number\\ 
+\}\end{tabular} \\
+\hline
+UploadBody & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}name: string, \\ 
+\hspace*{0.5em}description: string, \\ 
+\hspace*{0.5em}shortDescription: string, \\ 
+\hspace*{0.5em}enabledLanguages: string[], \\ 
+\hspace*{0.5em}controlSolution?: SolutionSource, \\ 
+\hspace*{0.5em}testCases?: TestCase[], \\ 
+\hspace*{0.5em}outputVerifier?: File\\ 
+\}\end{tabular} \\
+\hline
+AddTestCasesBody & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}testCases: TestCase[], \\ 
+\hspace*{0.5em}outputVerifier: File\\ 
+\}\end{tabular} \\
+\hline
+AddControlSolutionBody & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}controlSolution: SolutionSource\\ 
+\}\end{tabular} \\
+\hline
+SolutionSource & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}language: string, \\ 
+\hspace*{0.5em}folderContents: File[], \\ 
+\hspace*{0.5em}entryPoint?: string\\ 
+\}\end{tabular} \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[!h]
+\caption{Feladat mikroszolgáltatás visszatérési értékei}
+\label{tab:challenge_returned}
+\footnotesize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{ll}
+\hline
+\textbf{Típus neve} & \textbf{Definíció} \\
+\hline
+Challenge & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}id: string, \\ 
+\hspace*{0.5em}name: string, \\ 
+\hspace*{0.5em}description: string, \\ 
+\hspace*{0.5em}shortDescription: string, \\ 
+\hspace*{0.5em}userId: string, \\ 
+\hspace*{0.5em}createdAt: Date, \\ 
+\hspace*{0.5em}testCases: Testcase[], \\ 
+\hspace*{0.5em}enabledLanguages: string[], \\ 
+\hspace*{0.5em}outputScript: string | null, \\ 
+\hspace*{0.5em}isOutputScript: boolean\\ 
+\}\end{tabular} \\
+\hline
+Testcase & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}id: string, \\ 
+\hspace*{0.5em}name: string, \\ 
+\hspace*{0.5em}description: string, \\ 
+\hspace*{0.5em}points: number, \\ 
+\hspace*{0.5em}limits: TestCaseLimit[], \\ 
+\hspace*{0.5em}input: string | null, \\ 
+\hspace*{0.5em}output: string | null, \\ 
+\hspace*{0.5em}inputGenerated: boolean | null, \\ 
+\hspace*{0.5em}overheadMultiplier: number\\ 
+\}\end{tabular} \\
+\hline
+TestCaseLimit & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}time: number, \\ 
+\hspace*{0.5em}memory: number, \\ 
+\hspace*{0.5em}language: string\\ 
+\}\end{tabular} \\
+\hline
+\end{tabular}%
+}
+\end{table} 

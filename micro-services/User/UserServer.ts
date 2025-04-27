@@ -75,6 +75,24 @@ app.post('/user/register/',
     next();
   },
   async (req, res, next) => {
+    const payload = decode(req.headers.authorization!) as JwtPayload;
+    let requiredRoles = ["admin",];
+    let userClient = UserClient;
+    if (!req.headers.authorization) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    let hasRoles = await userClient.hasRoles(
+      req.headers.authorization!.substring("Bearer ".length),
+      requiredRoles
+    );
+    if (hasRoles) {
+      next();
+    } else {
+      res.status(401).send("Unauthorized");
+    }
+  },
+  async (req, res, next) => {
     try {
       let answer = await serviceImpl.register(
         {

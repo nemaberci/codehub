@@ -21,7 +21,7 @@ export default class UserImpl implements UserService {
     async login(body: LoginBody): Promise<LoginReturned> {
 
         const db = getFirestore();
-        let user = await db.collection("User").select("username", "passwordHash", "salt").where(
+        let user = await db.collection("User").select("username", "passwordHash", "salt", "roles").where(
             "username",
             "==",
             body.username
@@ -36,11 +36,13 @@ export default class UserImpl implements UserService {
         if (hash !== passwordHash) {
             throw new Error("Password incorrect");
         }
+        const roles = Array.isArray(userData.roles) ? userData.roles : [];
+        
         if (process.env.TEST_MODE === "true") {
             const privateKey = readFileSync("../keys/private.pem");
             return sign({
                 userId: user.docs[0].id,
-                roles: userData.roles
+                roles: roles
             }, privateKey, {expiresIn: "1h", algorithm: "RS256"});
         } else {
             const client = new SecretManagerServiceClient();
@@ -50,7 +52,7 @@ export default class UserImpl implements UserService {
             const privateKey = privateKeyAccess[0].payload?.data?.toString() ?? "";
             return sign({
                 userId: user.docs[0].id,
-                roles: userData.roles
+                roles: roles
             }, privateKey, {expiresIn: "1h", algorithm: "RS256"});
         }
 
@@ -213,19 +215,21 @@ export default class UserImpl implements UserService {
     }
 
     registerCustomCallbacks(app: Express) {
-        console.log("Registered endpoint on '/user/auth/google'");
-        app.get("/auth/google",
-            passport.authenticate("google", {
-                scope: ["email"],
-                session: false
-            })
-        );
-        console.log("Registered endpoint on '/user/auth/google/callback'");
-        app.get("/auth/google/callback",
-            passport.authenticate(
-                "google",
-                { session: false }
-            ),
+        // Only register Google OAuth endpoints if all required configuration is present
+        if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_CALLBACK_URL) {
+            console.log("Registered endpoint on '/user/auth/google'");
+            app.get("/auth/google",
+                passport.authenticate("google", {
+                    scope: ["email"],
+                    session: false
+                })
+            );
+            console.log("Registered endpoint on '/user/auth/google/callback'");
+            app.get("/auth/google/callback",
+                passport.authenticate(
+                    "google",
+                    { session: false }
+                ),
                 (req, res) => {
                     const email = (((req.user as any)["emails"] as any[])[0] as any)["value"]
                     console.log(email)
@@ -265,17 +269,19 @@ export default class UserImpl implements UserService {
                                         );
                                     }
                                 )
-                            } else {
-                                const privateKey = readFileSync("../keys/private.pem");
-                                const token = sign({
-                                    userId: user.docs[0].id,
-                                    roles: user.docs[0].data().roles
-                                }, privateKey, {expiresIn: "1h", algorithm: "RS256"});
-                                res.redirect(`/auth/success?token=${token}`);
                             }
+                            const privateKey = readFileSync("../keys/private.pem");
+                            const token = sign({
+                                userId: user.docs[0].id,
+                                roles: user.docs[0].data().roles
+                            }, privateKey, {expiresIn: "1h", algorithm: "RS256"});
+                            res.redirect(`/auth/success?token=${token}`);
                         }
                     );
                 }
-        );
+            );
+        } else {
+            console.log("Google OAuth endpoints not registered - configuration is incomplete");
+        }
     }
 }

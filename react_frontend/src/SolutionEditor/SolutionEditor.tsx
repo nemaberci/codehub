@@ -21,6 +21,11 @@ import {Challenge, Solution, SolutionBuildResult} from "../client/returnedTypes"
 import TestCaseResult from "../client/returnedTypes/TestCaseResult.ts";
 import remarkMath from "remark-math";
 
+// UTF-8 safe base64 encoding
+function utf8ToBase64(str: string): string {
+	return btoa(unescape(encodeURIComponent(str)));
+}
+
 export default function SolutionEditor({
 	reference
 }: {
@@ -155,7 +160,7 @@ export default function SolutionEditor({
 						{
 							// todo: replace with normal file name
 							name: `Solution.${selectedLanguage}`,
-							content: btoa(solution),
+							content: utf8ToBase64(solution),
 						},
 					],
 					language: selectedLanguage,
@@ -216,7 +221,7 @@ export default function SolutionEditor({
 							defaultLanguage="java"
 							language={selectedLanguage}
 							value={solution}
-							theme="vs-dark"
+							theme="vs-light"
 							onChange={(value) => {
 								setSolution(value ?? "");
 							}}

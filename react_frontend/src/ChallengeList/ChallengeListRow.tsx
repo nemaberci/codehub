@@ -23,21 +23,20 @@ export default function ChallengeListRow({ challenge, index, onDelete }: { chall
 			hover
 			className="cursor-pointer"
 			onClick={() => navigate("/editor/" + challenge.id)}
-			//title={challenge.id}
 		>
-			<span>{index}</span>
+			<span className="pl-6">{index}</span>
 			<span>{challenge.name}</span>
 			<span>{challenge.shortDescription}</span>
-			<span>{challenge.points.join("/")}</span>
+			<span>{challenge.points.join(" / ")}</span>
 			<span>{challenge.uploader}</span>
 			<span>{challenge.uploadTime}</span>
-			<span>
-				{ challenge.uploaderUserId === userId &&
-					<>
+			<span className="pr-6 flex justify-center items-center h-full">
+				{challenge.uploaderUserId === userId && (
+					<div className="flex justify-center items-center space-x-2 h-full">
 						<Tooltip message="Szerkesztés">
 							<Button
 								size="xs"
-								color="neutral"
+								color="primary"
 								onClick={(e) => {
 									navigate("/edit/" + challenge.id + "/testcases");
 									e.stopPropagation();
@@ -49,7 +48,7 @@ export default function ChallengeListRow({ challenge, index, onDelete }: { chall
 						<Tooltip message="Törlés">
 							<Button
 								size="xs"
-								color="neutral"
+								color="error"
 								onClick={(e) => {
 									deleteChallenge();
 									e.stopPropagation();
@@ -58,25 +57,9 @@ export default function ChallengeListRow({ challenge, index, onDelete }: { chall
 								<Trash size={16} />
 							</Button>
 						</Tooltip>
-					</>
-				}
-			</span>
-			{/*<span>
-				{challenge.uploader === userId && (
-					<Tooltip message="Tesztesetek szerkesztése">
-						<Button
-							size="xs"
-							color="neutral"
-							onClick={(e) => {
-								navigate("/edit/" + challenge.id + "/testcases");
-								e.stopPropagation();
-							}}
-						>
-							<NotePencil size={16} />
-						</Button>
-					</Tooltip>
+					</div>
 				)}
-			</span>*/}
+			</span>
 		</Table.Row>
 	);
 }

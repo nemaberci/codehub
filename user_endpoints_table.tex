@@ -1,0 +1,107 @@
+\begin{table}[!h]
+\caption{Felhasználó mikroszolgáltatás végpontjai}
+\label{tab:user_endpoints}
+\footnotesize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llll}
+\hline
+\textbf{Végpont neve} & \textbf{Bemenet} & \textbf{Leírás} & \textbf{Visszatérési érték} \\
+\hline
+POST /login/ & 
+LoginBody & 
+\begin{tabular}[c]{@{}l@{}}
+Felhasználói bejelentkezés felhasználónév és jelszóval. \\
+Visszaad egy JWT tokent, amit a többi szolgáltatáshoz lehet használni.
+\end{tabular} & 
+string
+\\ \hline
+GET /by\_id/:user\_id & 
+N/A & 
+Felhasználó lekérdezése azonosító alapján & 
+User
+\\ \hline
+POST /register/ & 
+RegisterBody & 
+Új felhasználó regisztrálása & 
+string
+\\ \hline
+POST /add\_roles/:username & 
+AddRolesBody & 
+Szerepkörök hozzáadása felhasználóhoz & 
+boolean
+\\ \hline
+POST /remove\_roles/:username & 
+RemoveRolesBody & 
+Szerepkörök eltávolítása felhasználótól & 
+boolean
+\\ \hline
+GET /has\_roles/ & 
+N/A & 
+Ellenőrzi, hogy a felhasználó rendelkezik-e bizonyos szerepkörökkel & 
+boolean
+\\ \hline
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[!h]
+\caption{Felhasználó mikroszolgáltatáshoz szükséges típusok}
+\label{tab:user_types}
+\footnotesize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{ll}
+\hline
+\textbf{Típus neve} & \textbf{Definíció} \\
+\hline
+LoginBody & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}username: string, \\ 
+\hspace*{0.5em}password: string\\ 
+\}\end{tabular} \\
+\hline
+RegisterBody & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}username: string, \\ 
+\hspace*{0.5em}password: string\\ 
+\}\end{tabular} \\
+\hline
+AddRolesBody & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}roles: string[], \\ 
+\hspace*{0.5em}username: string\\ 
+\}\end{tabular} \\
+\hline
+RemoveRolesBody & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}roles: string[], \\ 
+\hspace*{0.5em}username: string\\ 
+\}\end{tabular} \\
+\hline
+HasRolesBody & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}authToken: string, \\ 
+\hspace*{0.5em}roles: string[]\\ 
+\}\end{tabular} \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[!h]
+\caption{Felhasználó mikroszolgáltatás visszatérési értékei}
+\label{tab:user_returned}
+\footnotesize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{ll}
+\hline
+\textbf{Típus neve} & \textbf{Definíció} \\
+\hline
+User & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}id: string, \\ 
+\hspace*{0.5em}username: string\\ 
+\}\end{tabular} \\
+\hline
+\end{tabular}%
+}
+\end{table} 

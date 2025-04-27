@@ -1,9 +1,11 @@
 import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 interface TokenPayload {
     userId: string;
     roles: string[];
     exp: number;
+    iat: number;
 }
 
 export function isTokenValid(): boolean {
@@ -35,4 +37,11 @@ export function getTokenPayload(): TokenPayload | null {
 export function clearAuth() {
     localStorage.removeItem("token");
     window.location.href = "/";
+}
+
+export function hasRole(role: string): boolean {
+    const tokenPayload = getTokenPayload();
+    if (!tokenPayload || !tokenPayload.roles) return false;
+    
+    return tokenPayload.roles.includes(role);
 } 

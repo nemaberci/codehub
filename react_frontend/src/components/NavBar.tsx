@@ -2,7 +2,8 @@ import { jwtDecode } from "jwt-decode";
 import { Button, Navbar, Tooltip } from "react-daisyui";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {useState} from "react";
+import {useState, useEffect} from "react";
+import { getTokenPayload, hasRole } from "../utils/auth";
 
 export default function NavBar() {
 	const navigate = useNavigate();
@@ -75,12 +76,23 @@ export default function NavBar() {
 
 function NavBarButtonsSignedIn({ displayName, logout }: { displayName: string; logout: () => void }) {
 	const navigate = useNavigate();
+	const [isAdmin, setIsAdmin] = useState(false);
+
+	useEffect(() => {
+		// Check if the user has the admin role
+		setIsAdmin(hasRole("admin"));
+	}, []);
 
 	return (
 		<>
 			<Button color="primary" onClick={() => navigate("/upload")}>
 				Új feladat feltöltése
 			</Button>
+			{isAdmin && (
+				<Button color="secondary" onClick={() => navigate("/register")}>
+					Felhasználó regisztrálása
+				</Button>
+			)}
 			<Tooltip message="Kijelentkezés" position="bottom">
 				<Button color="info" onClick={logout}>
 					{displayName}

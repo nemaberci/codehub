@@ -39,53 +39,42 @@ export default function Upload() {
 					}}
 				>
 					{({ errors, isSubmitting }) => (
-						<FormikForm className="w-full max-w-5xl">
-							<table className="table">
-								<tbody>
-									<FormRow name="name" title="Feladatnév" error={errors.name} />
-									<FormRow
-										name="shortDescription"
-										title="Rövid leírás"
-										error={errors.shortDescription}
-									/>
-									<FormRow
-										name="description"
-										type="textarea"
-										title={
-											<>
-												Feladat szövege
-												<br />
-												<a
-													href="https://www.markdownguide.org/basic-syntax/"
-													target="_blank"
-													className="link link-primary text-xs"
-												>
-													Formázás segédlet
-												</a>
-											</>
-										}
-										error={errors.description}
-									/>
-									<tr>
-										<td>Elfogadott programozási nyelvek</td>
-										<td>
-											<CheckboxField name="enabledLanguages" value="java" title="Java" />
-											<CheckboxField name="enabledLanguages" value="cpp" title="C++" />
-											{/*<CheckboxField name="enabledLanguages" value="python" title="Python" />*/}
-										</td>
-									</tr>
-								</tbody>
-								<tfoot>
-									<tr>
-										<td className="text-center" colSpan={2}>
-											<Button type="submit" disabled={isSubmitting} className="w-1/2">
-												Tovább
-											</Button>
-										</td>
-									</tr>
-								</tfoot>
-							</table>
-							<br />
+						<FormikForm className="w-full max-w-5xl flex flex-col space-y-6">
+							<FormRow name="name" title="Feladatnév" error={errors.name} />
+							<FormRow name="shortDescription" title="Rövid leírás" error={errors.shortDescription} />
+							<FormRow
+								name="description"
+								type="textarea"
+								title={
+									<>
+										Feladat szövege
+										<br />
+										<a
+											href="https://www.markdownguide.org/basic-syntax/"
+											target="_blank"
+											className="link link-primary text-xs"
+										>
+											Formázás segédlet
+										</a>
+									</>
+								}
+								error={errors.description}
+							/>
+							<div className="form-control w-full">
+								<label className="label">
+									<span className="label-text font-medium">Elfogadott programozási nyelvek</span>
+								</label>
+								<div className="flex flex-wrap gap-4">
+									<CheckboxField name="enabledLanguages" value="java" title="Java" />
+									<CheckboxField name="enabledLanguages" value="cpp" title="C++" />
+									{/*<CheckboxField name="enabledLanguages" value="python" title="Python" />*/}
+								</div>
+							</div>
+							<div className="form-control mt-6 flex justify-center">
+								<Button type="submit" disabled={isSubmitting} className="btn btn-primary w-1/2">
+									Tovább
+								</Button>
+							</div>
 						</FormikForm>
 					)}
 				</Formik>

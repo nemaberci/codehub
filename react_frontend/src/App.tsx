@@ -9,6 +9,7 @@ import Login from "./Login/Login";
 import axios from "axios";
 import AuthSuccess from "./Login/AuthSuccess.tsx";
 import { isTokenValid, clearAuth } from "./utils/auth";
+import Register from "./Register/Register";
 
 axios.interceptors.request.use(
 	(config) => {
@@ -68,6 +69,11 @@ const router = createBrowserRouter([
 				path: "/",
 				element: <Login />,
 				//loader:authLoader
+			},
+			{
+				path: "/register",
+				element: <Register />,
+				loader: authLoader,
 			},
 			{
 				path: "/edit/:id/testcases",

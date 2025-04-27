@@ -50,7 +50,6 @@ export default class ChallengeImpl implements ChallengeService {
         let challenge = {
             created_by: decode(body.authToken, {json: true})!.userId,
             description: body.description,
-            language_name: body.controlSolution?.language ?? "",
             name: body.name,
             short_description: body.shortDescription,
             time_uploaded: new Date(),
@@ -100,9 +99,6 @@ export default class ChallengeImpl implements ChallengeService {
             language: body.controlSolution.language,
         });
 
-        await db.collection("Challenge").doc(body.challengeId).update({
-            solution_id: db.collection("Solution").doc(solutionId)
-        });
         console.log("Uploaded solution to firestore: ", solutionId);
 
         // todo: normal language handling

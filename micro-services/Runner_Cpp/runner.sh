@@ -3,7 +3,7 @@
 cd /work
 
 curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${EXECUTABLE_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_executable.txt"
-# curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/helloworld_cpp -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_helloworld.txt"
+curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/helloworld_cpp -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_helloworld.txt"
 python3 ./create_files_executable.py 
 
 mkdir /work/input

@@ -24,7 +24,8 @@
     "react-markdown": "^9.0.1",
     "react-resizable": "^3.0.5",
     "react-router-dom": "^6.16.0",
-    "remark-math": "^6.0.0"
+    "remark-math": "^6.0.0",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",

@@ -23,30 +23,21 @@ export default function FormRow({name, type, title, error, disabled, tooltip}: F
     }
 
     return (
-        <>
-            <tr>
-                <td className="w-1/4">
-                    {title}
-                    {
-                        tooltip &&
-                        <Tooltip message={tooltip} style={{marginLeft: "8px"}}>
-                            <Question size={16}/>
-                        </Tooltip>
-                    }
-                </td>
-                <td>
-                    {error ? (
-                        <Indicator>
-                            <Indicator.Item className="badge text-red-500">
-                                <ErrorMessage name={name}/>
-                            </Indicator.Item>
-                            {input}
-                        </Indicator>
-                    ) : (
-                        input
-                    )}
-                </td>
-            </tr>
-        </>
+        <div className="form-control w-full">
+            <label className="label">
+                <span className="label-text font-medium">{title}</span>
+                {tooltip && (
+                    <Tooltip message={tooltip}>
+                        <Question size={16} className="ml-1" />
+                    </Tooltip>
+                )}
+            </label>
+            {input}
+            {error && (
+                <div className="mt-1 text-error text-sm">
+                    <ErrorMessage name={name}/>
+                </div>
+            )}
+        </div>
     );
 }

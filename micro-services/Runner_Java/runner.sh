@@ -3,7 +3,7 @@
 cd /work
 
 curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/${EXECUTABLE_FOLDER_NAME} -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_executable.txt"
-# curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/helloworld_java -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_helloworld.txt"
+curl ${FILE_HANDLER_URL}/file_handling/download_folder_content/helloworld_java -H "Authorization: Bearer ${TOKEN}" -o "/work/downloaded_helloworld.txt"
 python3 ./create_files_executable.py 
 
 mkdir /work/input
@@ -33,10 +33,10 @@ done
 
 adduser --system --shell /bin/bash --disabled-password runneruser
 date +%s%N > /work/time/before_helloworld1;
-/usr/bin/time -o /work/memory/peak_helloworld1 -f '%M' timeout 20s su runneruser -c "cd /work && ${JAVA_HOME}/bin/java HelloWorld > output_helloworld1";
+/usr/bin/time -o /work/memory/peak_helloworld1 -f '%M' timeout 5s su runneruser -c "cd /work && ${JAVA_HOME}/bin/java HelloWorld > output_helloworld1";
 date +%s%N > /work/time/after_helloworld1;
 date +%s%N > /work/time/before_helloworld2;
-/usr/bin/time -o /work/memory/peak_helloworld2 -f '%M' timeout 20s su runneruser -c "cd /work && ${JAVA_HOME}/bin/java HelloWorld > output_helloworld2";
+/usr/bin/time -o /work/memory/peak_helloworld2 -f '%M' timeout 5s su runneruser -c "cd /work && ${JAVA_HOME}/bin/java HelloWorld > output_helloworld2";
 date +%s%N > /work/time/after_helloworld2;
 
 # Step 3: Run the executable files

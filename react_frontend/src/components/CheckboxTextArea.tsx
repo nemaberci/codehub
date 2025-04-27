@@ -39,7 +39,7 @@ def verify(input_file_contents, output_file_contents):
 				<Editor
 					height={"35vh"}
 					language="python"
-					theme={"vs-dark"}
+					theme={"vs-light"}
 					value={context.values[textAreaName]}
 					onChange={(value) => {
 						context.setFieldValue(textAreaName, value);

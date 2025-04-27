@@ -1,3 +1,4 @@
+// @ts-ignore
 import * as model from "./index";
 
 interface SolutionResult {

@@ -1,9 +1,8 @@
-import {Checkbox, Divider} from "react-daisyui";
-import {useFormikContext} from "formik";
-import FormRow from "@components/FormRow";
+import { Checkbox, Divider, Input } from "react-daisyui";
+import { useFormikContext, Field, ErrorMessage } from "formik";
 import RadioTextArea from "@components/RadioTextArea";
-import {Editor} from "@monaco-editor/react";
-import {useEffect, useState} from "react";
+import { Editor } from "@monaco-editor/react";
+import { useEffect, useState } from "react";
 
 function OutputFields({objectPath}: { objectPath: string }) {
     const context: any = useFormikContext();
@@ -23,7 +22,7 @@ function OutputFields({objectPath}: { objectPath: string }) {
             <Editor
                 height={"35vh"}
                 language="plaintext"
-                theme={"vs-dark"}
+                theme={"vs-light"}
                 value={context.values.testCases[0].output}
                 options={{
                     readOnly: disabled,
@@ -34,7 +33,6 @@ function OutputFields({objectPath}: { objectPath: string }) {
                 onChange={(value) => {
                     context.setFieldValue(`${objectPath}.output`, value);
                 }}
-
             />
         </>
     );
@@ -48,34 +46,77 @@ export default function TestCase({index}: { index: number }) {
             <Divider/>
             <table className="table">
                 <tbody>
-                <FormRow name={`testCases.${index}.name`} title="Név"/>
                 <tr>
-                    <td className="w-1/4">Leírás</td>
+                    <td className="font-medium">Név</td>
                     <td>
-                        <Editor
-                            height={"20vh"}
-                            language="markdown"
-                            theme={"vs-dark"}
-                            value={context.values.testCases[index].description}
-                            onChange={(value) => {
-                                context.setFieldValue(`testCases.${index}.description`, value);
-                            }}
+                        <Field
+                            as={Input}
+                            name={`testCases.${index}.name`}
+                            className="w-full input-bordered"
+                        />
+                        <ErrorMessage
+                            name={`testCases.${index}.name`}
+                            component="div"
+                            className="text-sm text-error"
                         />
                     </td>
                 </tr>
-                <FormRow name={`testCases.${index}.points`} title="Pontszám" type="number"/>
-                <FormRow name={`testCases.${index}.overheadMultiplier`} title="Tolerancia szorzó" type="number"
-                         tooltip={"Az etalon megoldáshoz képest hányszoros maximális memóriahasználat és futásidő megengedett."}/>
                 <tr>
-                    <td>KJiválasztott nyelv</td>
+                    <td className="font-medium">Leírás</td>
                     <td>
-                        <select className="select w-full max-w-xs"
-                                onChange={(e) => setSelectedLanguage(e.target.value)}>
-                            {
-                                context.values.testCases[index].limits.map(
-                                    (limit: any) => <option>{limit.language}</option>
-                                )
+                        <Editor
+                            height="20vh"
+                            language="markdown"
+                            theme="vs-light"
+                            value={context.values.testCases[index].description}
+                            onChange={(value) =>
+                                context.setFieldValue(`testCases.${index}.description`, value)
                             }
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td className="font-medium">Pontszám</td>
+                    <td>
+                        <Field
+                            as={Input}
+                            type="number"
+                            name={`testCases.${index}.points`}
+                            className="w-full input-bordered"
+                        />
+                        <ErrorMessage
+                            name={`testCases.${index}.points`}
+                            component="div"
+                            className="text-sm text-error"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td className="font-medium">Tolerancia szorzó</td>
+                    <td>
+                        <Field
+                            as={Input}
+                            type="number"
+                            name={`testCases.${index}.overheadMultiplier`}
+                            className="w-full input-bordered"
+                        />
+                        <ErrorMessage
+                            name={`testCases.${index}.overheadMultiplier`}
+                            component="div"
+                            className="text-sm text-error"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Kiválasztott nyelv</td>
+                    <td>
+                        <select
+                            className="select w-full max-w-xs"
+                            onChange={(e) => setSelectedLanguage(e.target.value)}
+                        >
+                            {context.values.testCases[index].limits.map((limit: any) => (
+                                <option key={limit.language}>{limit.language}</option>
+                            ))}
                         </select>
                     </td>
                 </tr>

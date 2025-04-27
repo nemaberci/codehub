@@ -4,6 +4,7 @@ import type CreatedAt from "./CreatedAt";
 import type Testcase from "./Testcase";
 import type TestCaseLimit from "./TestCaseLimit";
 import type Solution from "./Solution";
+import type SolutionResult from "./SolutionResult";
 import type TestCaseResult from "./TestCaseResult";
 import type File from "./File";
 import type SolutionBuildResult from "./SolutionBuildResult";
@@ -15,6 +16,7 @@ export {
     Testcase,
     TestCaseLimit,
     Solution,
+    SolutionResult,
     TestCaseResult,
     File,
     SolutionBuildResult,

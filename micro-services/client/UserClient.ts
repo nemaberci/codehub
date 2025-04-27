@@ -85,7 +85,7 @@ class UserClient {
         });
     }
     static async register(
-        
+        authToken: string,
         
         
         username: string,
@@ -98,7 +98,8 @@ class UserClient {
                 {
                     method: "POST",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
                     },
                     agent: false
                 }, (res) => {

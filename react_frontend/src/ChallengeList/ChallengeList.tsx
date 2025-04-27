@@ -57,19 +57,21 @@ export default function ChallengeList() {
 	}, []);
 
 	return (
-		<>
-			<div className="h-screen w-full flex flex-col items-center">
-				<h2>Feladatok</h2>
-				<div className="max-w-1/2 text-center mt-10">
-					<Table>
-						<Table.Head>
-							<span/>
+		<div className="w-full flex flex-col items-center py-8">
+			<div className="container mx-auto px-6">
+				<h2 className="text-3xl font-bold mb-6 text-center">
+					Feladatok
+				</h2>
+				<div className="overflow-x-auto shadow-lg rounded-lg">
+					<Table className="w-full border-0 [&_th]:border-0 [&_td]:border-0">
+						<Table.Head className="bg-primary text-primary-content">
+							<span className="pl-6">#</span>
 							<span>Név</span>
 							<span>Leírás</span>
 							<span>Pontszámok</span>
 							<span>Feltöltötte</span>
 							<span>Feltöltés ideje</span>
-							<span>Műveletek</span>
+							<span className="pr-6 text-center">Műveletek</span>
 						</Table.Head>
 
 						<Table.Body>
@@ -80,6 +82,6 @@ export default function ChallengeList() {
 					</Table>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 }

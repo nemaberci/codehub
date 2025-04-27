@@ -57,7 +57,7 @@ class SolutionClient {
         authToken: string,
         
         challengeId: string
-    ): Promise<returnValueModel.Solution[]> {
+    ): Promise<returnValueModel.SolutionResult[]> {
         const url = (process.env as any).SOLUTION_URL ?? "http://127.0.0.1";
         return new Promise((resolve, reject) => {
             const req = http.request(

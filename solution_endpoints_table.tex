@@ -1,0 +1,117 @@
+\begin{table}[!h]
+\caption{Megoldás mikroszolgáltatás végpontjai}
+\label{tab:solution_endpoints}
+\footnotesize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llll}
+\hline
+\textbf{Végpont neve} & \textbf{Bemenet} & \textbf{Leírás} & \textbf{Visszatérési érték} \\
+\hline
+POST /solve/ & 
+SolveBody & 
+\begin{tabular}[c]{@{}l@{}}
+Feladat megoldása. \\
+A felhasználó megoldását feltölti és értékeli.
+\end{tabular} & 
+Solution
+\\ \hline
+GET /list/:challenge\_id & 
+N/A & 
+\begin{tabular}[c]{@{}l@{}}
+Feladat összes megoldásának listázása. \\
+Rangsorot ad vissza a feladathoz.
+\end{tabular} & 
+SolutionResult[]
+\\ \hline
+GET /result/:challenge\_id/:user\_id & 
+N/A & 
+\begin{tabular}[c]{@{}l@{}}
+Felhasználó megoldásának eredményének lekérdezése \\
+egy feladatra.
+\end{tabular} & 
+Solution
+\\ \hline
+GET /build\_result/:challenge\_id/:user\_id & 
+N/A & 
+\begin{tabular}[c]{@{}l@{}}
+Felhasználó megoldásának fordítási eredményének \\
+lekérdezése egy feladatra.
+\end{tabular} & 
+SolutionBuildResult
+\\ \hline
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[!h]
+\caption{Megoldás mikroszolgáltatáshoz szükséges típusok}
+\label{tab:solution_types}
+\footnotesize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{ll}
+\hline
+\textbf{Típus neve} & \textbf{Definíció} \\
+\hline
+SolveBody & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}authToken: string, \\ 
+\hspace*{0.5em}challengeId: string, \\ 
+\hspace*{0.5em}folderContents: File[], \\ 
+\hspace*{0.5em}entryPoint?: string, \\ 
+\hspace*{0.5em}language?: string\\ 
+\}\end{tabular} \\
+\hline
+File & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}name: string, \\ 
+\hspace*{0.5em}content: string\\ 
+\}\end{tabular} \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[!h]
+\caption{Megoldás mikroszolgáltatás visszatérési értékei}
+\label{tab:solution_returned}
+\footnotesize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{ll}
+\hline
+\textbf{Típus neve} & \textbf{Definíció} \\
+\hline
+Solution & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}id: string, \\ 
+\hspace*{0.5em}user: User, \\ 
+\hspace*{0.5em}challengeId: string, \\ 
+\hspace*{0.5em}language: string, \\ 
+\hspace*{0.5em}testCaseResults: TestCaseResult[], \\ 
+\hspace*{0.5em}files: File[] | null\\ 
+\}\end{tabular} \\
+\hline
+SolutionResult & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}user: User, \\ 
+\hspace*{0.5em}maxPoints: number, \\ 
+\hspace*{0.5em}maxMemory: number, \\ 
+\hspace*{0.5em}language: string, \\ 
+\hspace*{0.5em}attempts: number\\ 
+\}\end{tabular} \\
+\hline
+SolutionBuildResult & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}solutionId: string, \\ 
+\hspace*{0.5em}buildResult: boolean, \\ 
+\hspace*{0.5em}buildOutput: string\\ 
+\}\end{tabular} \\
+\hline
+User & 
+\begin{tabular}[c]{@{}l@{}}\{\\ 
+\hspace*{0.5em}id: string, \\ 
+\hspace*{0.5em}username: string\\ 
+\}\end{tabular} \\
+\hline
+\end{tabular}%
+}
+\end{table} 

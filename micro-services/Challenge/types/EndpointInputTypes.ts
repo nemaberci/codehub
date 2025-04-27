@@ -36,10 +36,6 @@ interface UploadBody {
     * @description Output verifier of the challenge
     */
     outputVerifier?: model.File;
-    /** 
-    * @description How much to multiply the time and memory limits by compared to the control solution
-    */
-    overheadMultiplier?: number;
 }
 /** 
 * @description Add test cases to a challenge
