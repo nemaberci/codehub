@@ -3,7 +3,7 @@ import { Button, Navbar, Tooltip } from "react-daisyui";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {useState, useEffect} from "react";
-import { getTokenPayload, hasRole } from "../utils/auth";
+import { hasRole } from "../utils/auth";
 
 export default function NavBar() {
 	const navigate = useNavigate();

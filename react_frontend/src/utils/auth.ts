@@ -1,5 +1,4 @@
 import { jwtDecode } from "jwt-decode";
-import axios from "axios";
 
 interface TokenPayload {
     userId: string;

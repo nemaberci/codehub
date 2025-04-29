@@ -1,5 +1,5 @@
 import {ErrorMessage, Field} from "formik";
-import {Indicator, Input, Textarea, Tooltip} from "react-daisyui";
+import {Input, Textarea, Tooltip} from "react-daisyui";
 import {Question} from "@phosphor-icons/react";
 
 interface FormFieldProps {

@@ -4,7 +4,7 @@ import { Form as FormikForm, Formik } from "formik";
 import { Button } from "react-daisyui";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { isTokenValid, getTokenPayload, hasRole } from "../utils/auth";
+import { isTokenValid, hasRole } from "../utils/auth";
 import * as Yup from "yup";
 
 export default function Register() {

@@ -199,7 +199,10 @@ export default class SolutionImpl implements SolutionService {
                 if (!userSolutions.has(userId)) {
                     userSolutions.set(userId, []);
                 }
-                userSolutions.get(userId)!.push(data);
+                userSolutions.get(userId)!.push({
+                    ...data,
+                    id: doc.id
+                });
             }
             console.log("User solutions map size:", userSolutions.size);
 
@@ -215,10 +218,24 @@ export default class SolutionImpl implements SolutionService {
 
                 // First pass: find the best solution
                 for (const doc of userDocs) {
-                    console.log("Checking solution:", doc.source_folder);
+                    console.log("Checking solution:", doc.id);
                     try {
+                        const resultDoc = await db.collection("Solution")
+                            .doc(doc.id)
+                            .collection("Result")
+                            .doc("Result")
+                            .get();
+
+                        if (!resultDoc.exists) {
+                            await db.collection("Solution")
+                                .doc(doc.id)
+                                .collection("Result")
+                                .doc("Result")
+                                .set({ initialized: true }, { merge: true });
+                        }
+                        
                         const subResults = await db.collection("Solution")
-                            .doc(doc.source_folder)
+                            .doc(doc.id)
                             .collection("Result")
                             .doc("Result")
                             .collection("SubResults")
@@ -231,11 +248,11 @@ export default class SolutionImpl implements SolutionService {
                         if (points > maxPoints) {
                             maxPoints = points;
                             bestLanguage = doc.language;
-                            bestSolutionId = doc.source_folder;
+                            bestSolutionId = doc.id;
                             console.log("New best solution found:", bestSolutionId, "with points:", maxPoints);
                         }
                     } catch (error) {
-                        console.error("Error processing solution:", doc.source_folder, error);
+                        console.error("Error processing solution:", doc.id, error);
                     }
                 }
 
