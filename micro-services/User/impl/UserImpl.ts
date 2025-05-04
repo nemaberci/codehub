@@ -85,7 +85,7 @@ export default class UserImpl implements UserService {
         return sign({
             userId: createdUser.id,
             roles: []
-        }, privateKey, {expiresIn: "1y", algorithm: "RS256"});
+        }, privateKey, {expiresIn: "1h", algorithm: "RS256"});
 
     }
 

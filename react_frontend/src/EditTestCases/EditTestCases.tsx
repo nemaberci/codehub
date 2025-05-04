@@ -49,7 +49,7 @@ export default function EditTestCases() {
                         inputType: testCase.inputGenerated ? "script" : "raw",
                         input: testCase.inputGenerated ? undefined : testCase.input,
                         inputGenerator: testCase.inputGenerated ? testCase.input : undefined,
-                        output: testCase.output,
+                        output: testCase.output
                     })
                 )
             });
@@ -184,7 +184,14 @@ export default function EditTestCases() {
                                                                 time: 30_000,
                                                                 language: lang
                                                             })
-                                                        )
+                                                        ),
+                                                        name: "",
+                                                        description: "",
+                                                        points: 0,
+                                                        overheadMultiplier: 1,
+                                                        inputType: "raw",
+                                                        input: "",
+                                                        output: ""
                                                     });
                                                 }}
                                                 type="button"

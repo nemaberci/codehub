@@ -36,7 +36,16 @@ for i in range(len(test_cases)):
         # print(test_case)
         millis = (int(open("after_" + str(i), "r").read()) - int(open("before_" + str(i), "r").read())) / 1_000_000
         print("Test case " + str(i) + " took " + str(millis) + " milliseconds")
-        kbytes = int(open("peak_" + str(i), "r").read())
+        try:
+            kbytes = int(open("peak_" + str(i), "r").read())
+        except:
+            try:
+                print(f"Test case {i}'s peak memory consumption is not a number")
+                kbytesFile = open("peak_" + str(i), "r").readlines()
+                kbytes = int(kbytesFile[-1])
+            except:
+                print(f"Test case {i}'s peak memory consumption cannot be read")
+                kbytes = 0
         print(f"Test case {i}'s peak memory consumption is {kbytes} KB")
         limits = db.collection("Challenge").document(os.getenv('CHALLENGE_ID')).collection("Testcases").document(test_case_doc_refs[i].id).collection("limits").document(lang).get()
         max_runtime = limits.to_dict()["max_runtime"]

@@ -17,8 +17,11 @@ export default function CheckboxTextArea({
 	const currentValue: string = context.values[textAreaName];
 	useEffect(
 		() => {
-			if (!disabled && currentValue === "") {
-				console.log("Setting default value");
+			if (!disabled && 
+				(currentValue === "" 
+					|| currentValue === undefined 
+					|| currentValue === null)
+			) {
 				context.setFieldValue(textAreaName, `# Implement the verify function
 # The function should return True if the output is correct, False otherwise
 # The function receives two parameters:

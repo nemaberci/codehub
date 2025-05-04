@@ -195,7 +195,7 @@ export default class ChallengeImpl implements ChallengeService {
         )
         console.log("Published message to pubsub topic: ", topicName);
 
-        return await this.freshDTO(body.authToken, body.challengeId);
+        return await this.internalDTO(body.authToken, body.challengeId);
 
     }
 
@@ -398,10 +398,88 @@ export default class ChallengeImpl implements ChallengeService {
             }
         }
 
-        return await this.freshDTO(body.authToken, body.challengeId);
+        return await this.internalDTO(body.authToken, body.challengeId);
     }
 
     private async freshDTO(authToken: string, challengeId: string): Promise<Challenge> {
+        const db = getFirestore();
+        const challenge = await db.collection("Challenge").doc(challengeId).get();
+        const currentUserId = decode(authToken, {json: true})!.userId;
+        const isOwner = currentUserId === challenge.data()!.created_by;
+
+        let fileHandlingClient = FileHandlingClient;
+        let testCases: model.Testcase[] = [];
+        for (let testCase of (await db.collection("Challenge").doc(challengeId).collection("Testcases").get()).docs) {
+            console.log("testcase: ", testCase.data())
+            console.log("challenge:", challenge.data());
+            let inputFile: File | null = null;
+            let outputFile: File | null = null;
+
+            if (isOwner) {
+                if (challenge.data()!.text_location === undefined) {
+                    inputFile = await fileHandlingClient.downloadFile(
+                        authToken,
+                        challenge.data()!.script_location + "/" + testCase.data()!.location
+                    );
+                } else {
+                    inputFile = await fileHandlingClient.downloadFile(
+                        authToken,
+                        challenge.data()!.text_location + "/" + testCase.data().location
+                    );
+                }
+
+                if (challenge.data()!.results_location !== undefined) {
+                    outputFile = await fileHandlingClient.downloadFile(
+                        authToken,
+                        challenge.data()!.results_location + "/" + testCase.data().output_file_location
+                    );
+                }
+            }
+
+            let limits = await testCase.ref.collection("limits").get();
+            testCases.push({
+                id: testCase.id,
+                name: testCase.data().name,
+                description: testCase.data().description,
+                points: testCase.data().points,
+                limits: limits.docs.map(
+                    d => ({
+                        memory: d.data().max_memory,
+                        time: d.data().max_runtime,
+                        language: d.ref.id
+                    })
+                ),
+                input: inputFile ? Buffer.from(inputFile.content, 'base64').toString() : null,
+                inputGenerated: testCase.data().is_generated,
+                output: outputFile ? Buffer.from(outputFile.content, 'base64').toString() : null,
+                overheadMultiplier: testCase.data().overhead_multiplier
+            })
+        }
+
+        let outputVerifier: string | null = null;
+        if (isOwner && challenge.data()!.output_verifier_location) {
+            let outputVerifierFile = await FileHandlingClient.downloadFile(
+                authToken,
+                challenge.data()!.output_verifier_location + "/verifier.py"
+            );
+            outputVerifier = Buffer.from(outputVerifierFile.content, 'base64').toString();
+        }
+
+        return {
+            id: challengeId,
+            name: challenge.data()!.name,
+            description: challenge.data()!.description,
+            shortDescription: challenge.data()!.short_description,
+            userId: challenge.data()!.created_by,
+            createdAt: challenge.data()!.time_uploaded,
+            testCases: testCases,
+            enabledLanguages: challenge.data()!.enabled_languages,
+            outputScript: outputVerifier,
+            isOutputScript: !!challenge.data()!.output_verifier_location
+        };
+    }
+
+    private async internalDTO(authToken: string, challengeId: string): Promise<Challenge> {
         const db = getFirestore();
         const challenge = await db.collection("Challenge").doc(challengeId).get();
 
@@ -488,54 +566,10 @@ export default class ChallengeImpl implements ChallengeService {
         const challengeDTOs: Challenge[] = [];
 
         for (let challenge of challenges.docs) {
-            let testCases: model.Testcase[] = [];
-            for (let d of (await db.collection("Challenge").doc(challenge.id).collection("Testcases").get()).docs) {
-                await this.addTestcase(d, testCases);
-            }
-            let outputVerifier: string | null = null;
-            if (challenge.data()!.output_verifier_location) {
-                let outputVerifierFile = await FileHandlingClient.downloadFile(
-                    body.authToken,
-                    challenge.data()!.output_verifier_location + "/verifier.py"
-                );
-                outputVerifier = Buffer.from(outputVerifierFile.content, 'base64').toString();
-            }
-            challengeDTOs.push({
-                id: challenge.id,
-                name: challenge.data().name,
-                description: challenge.data().description,
-                userId: challenge.data().created_by,
-                shortDescription: challenge.data().short_description,
-                createdAt: challenge.data()!.time_uploaded,
-                testCases: testCases,
-                enabledLanguages: challenge.data().enabled_languages,
-                outputScript: outputVerifier,
-                isOutputScript: !!outputVerifier
-            });
+            challengeDTOs.push(await this.freshDTO(body.authToken, challenge.id));
         }
 
         return challengeDTOs;
-    }
-
-    private async addTestcase(d: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>, testCases: model.Testcase[]) {
-        let limits = await d.ref.collection("limits").get();
-        testCases.push({
-            id: d.id,
-            name: d.data().name,
-            description: d.data().description,
-            points: d.data().points,
-            limits: limits.docs.map(
-                l => ({
-                    memory: l.data().max_memory,
-                    time: l.data().max_runtime,
-                    language: l.ref.id
-                })
-            ),
-            output: null,
-            inputGenerated: null,
-            input: null,
-            overheadMultiplier: d.data().overhead_multiplier
-        });
     }
 
     async listByUser(body: ListByUserBody): Promise<ListByUserReturned> {
@@ -548,30 +582,7 @@ export default class ChallengeImpl implements ChallengeService {
         const challengeDTOs: Challenge[] = [];
 
         for (let challenge of challenges.docs) {
-            let testCases: model.Testcase[] = [];
-            for (let d of (await db.collection("Challenge").doc(challenge.id).collection("Testcases").get()).docs) {
-                await this.addTestcase(d, testCases);
-            }
-            let outputVerifier: string | null = null;
-            if (challenge.data()!.output_verifier_location) {
-                let outputVerifierFile = await FileHandlingClient.downloadFile(
-                    body.authToken,
-                    challenge.data()!.output_verifier_location + "/verifier.py"
-                );
-                outputVerifier = Buffer.from(outputVerifierFile.content, 'base64').toString();
-            }
-            challengeDTOs.push({
-                id: challenge.id,
-                name: challenge.data().name,
-                description: challenge.data().description,
-                userId: challenge.data().created_by,
-                createdAt: challenge.data()!.time_uploaded,
-                shortDescription: challenge.data().short_description,
-                testCases: testCases,
-                enabledLanguages: challenge.data().enabled_languages,
-                outputScript: outputVerifier,
-                isOutputScript: !!outputVerifier
-            });
+            challengeDTOs.push(await this.freshDTO(body.authToken, challenge.id));
         }
 
         return challengeDTOs;

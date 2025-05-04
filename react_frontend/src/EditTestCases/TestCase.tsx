@@ -3,15 +3,23 @@ import { useFormikContext, Field, ErrorMessage } from "formik";
 import RadioTextArea from "@components/RadioTextArea";
 import { Editor } from "@monaco-editor/react";
 import { useEffect, useState } from "react";
+import _ from "lodash";
 
 function OutputFields({objectPath}: { objectPath: string }) {
     const context: any = useFormikContext();
     const [disabled, setDisabled] = useState(context.values.isOutputScript);
+    const [value, setValue] = useState(context.values.testCases[0].output);
     useEffect(
         () => {
             setDisabled(context.values.isOutputScript);
         },
         [context.values]
+    )
+    useEffect(
+        () => {
+            setValue(_.get(context.values, objectPath));
+        },
+        [context.values[objectPath]]
     )
     return (
         <>
@@ -23,7 +31,7 @@ function OutputFields({objectPath}: { objectPath: string }) {
                 height={"35vh"}
                 language="plaintext"
                 theme={"vs-light"}
-                value={context.values.testCases[0].output}
+                value={value}
                 options={{
                     readOnly: disabled,
                     readOnlyMessage: {
@@ -31,7 +39,7 @@ function OutputFields({objectPath}: { objectPath: string }) {
                     },
                 }}
                 onChange={(value) => {
-                    context.setFieldValue(`${objectPath}.output`, value);
+                    context.setFieldValue(objectPath, value);
                 }}
             />
         </>
@@ -41,6 +49,8 @@ function OutputFields({objectPath}: { objectPath: string }) {
 export default function TestCase({index}: { index: number }) {
     const context: any = useFormikContext();
     const [selectedLanguage, setSelectedLanguage] = useState(context.values.testCases[index].limits[0]?.language ?? "java");
+    const [isOpen, setIsOpen] = useState(false);
+    
     return (
         <>
             <Divider/>
@@ -108,32 +118,48 @@ export default function TestCase({index}: { index: number }) {
                     </td>
                 </tr>
                 <tr>
-                    <td>Kiválasztott nyelv</td>
-                    <td>
-                        <select
-                            className="select w-full max-w-xs"
-                            onChange={(e) => setSelectedLanguage(e.target.value)}
-                        >
-                            {context.values.testCases[index].limits.map((limit: any) => (
-                                <option key={limit.language}>{limit.language}</option>
-                            ))}
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Max. futásidő (ms)</td>
-                    <td>
-                        <input value={context.values.testCases[index].limits.find((l: { memory: number; time: number; language: string; }) => l.language === selectedLanguage)?.time ?? "N/A"}
-                               className={"input w-full input-bordered focus:outline-offset-0"}
-                               disabled={true} />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Max. memória (kB)</td>
-                    <td>
-                        <input value={context.values.testCases[index].limits.find((l: { memory: number; time: number; language: string; }) => l.language === selectedLanguage)?.memory ?? "N/A"}
-                               className={"input w-full input-bordered focus:outline-offset-0"}
-                               disabled={true}/>
+                    <td colSpan={2}>
+                        <div className="collapse collapse-arrow bg-base-200">
+                            <input type="checkbox" checked={isOpen} onChange={() => setIsOpen(!isOpen)} />
+                            <div className="collapse-title text-xl font-medium flex items-center gap-2" style={{padding: 0}}>
+                                Jelenlegi korlátok
+                            </div>
+                            <div className="collapse-content">
+                                <table className="table">
+                                    <tbody>
+                                        <tr>
+                                            <td>Kiválasztott nyelv</td>
+                                            <td>
+                                                <select
+                                                    className="select w-full max-w-xs"
+                                                    onChange={(e) => setSelectedLanguage(e.target.value)}
+                                                >
+                                                    {context.values.testCases[index].limits.map((limit: any) => (
+                                                        <option key={limit.language}>{limit.language}</option>
+                                                    ))}
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Max. futásidő (ms)</td>
+                                            <td>
+                                                <input value={context.values.testCases[index].limits.find((l: { memory: number; time: number; language: string; }) => l.language === selectedLanguage)?.time ?? "N/A"}
+                                                       className={"input w-full input-bordered focus:outline-offset-0"}
+                                                       disabled={true} />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Max. memória (kB)</td>
+                                            <td>
+                                                <input value={context.values.testCases[index].limits.find((l: { memory: number; time: number; language: string; }) => l.language === selectedLanguage)?.memory ?? "N/A"}
+                                                       className={"input w-full input-bordered focus:outline-offset-0"}
+                                                       disabled={true}/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </td>
                 </tr>
                 <tr>
@@ -160,7 +186,7 @@ export default function TestCase({index}: { index: number }) {
                         <h4>Kimenet</h4>
                     </td>
                     <td>
-                        <OutputFields objectPath={`testCases.${index}`}/>
+                        <OutputFields objectPath={`testCases.${index}.output`}/>
                     </td>
                 </tr>
                 </tbody>

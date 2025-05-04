@@ -70,8 +70,8 @@ export default function Upload() {
 									{/*<CheckboxField name="enabledLanguages" value="python" title="Python" />*/}
 								</div>
 							</div>
-							<div className="form-control mt-6 flex justify-center">
-								<Button type="submit" disabled={isSubmitting} className="btn btn-primary w-1/2">
+							<div className="form-control mt-6 flex items-center">
+								<Button type="submit" disabled={isSubmitting} className="btn btn-primary w-1/3">
 									Tovább
 								</Button>
 							</div>
